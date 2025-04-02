@@ -1,0 +1,26 @@
+/* styles/cropper.css */
+.cropper-container {
+  direction: ltr;
+  font-size: 0;
+  line-height: 0;
+  position: relative;
+  -ms-touch-action: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+.cropper-canvas,
+.cropper-crop-box,
+.cropper-drag-box,
+.cropper-modal,
+.cropper-view-box {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.cropper-crop-box {
+  border: 1px solid #39f;
+}
