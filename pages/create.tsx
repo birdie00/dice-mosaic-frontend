@@ -13,7 +13,6 @@ interface MosaicOption {
 type AspectRatioOption = "square" | "portrait" | "landscape";
 
 export default function CreatePage() {
-  const router = useRouter();
 
   const [step, setStep] = useState(1);
   const [projectName, setProjectName] = useState("");
@@ -161,44 +160,6 @@ export default function CreatePage() {
     setLoading(false);
   };
 
-  const generatePDF = async () => {
-    if (selectedStyleId === null) return;
-  
-    const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
-    if (!selected) return;
-  
-    try {
-      setLoading(true);
-  
-      localStorage.setItem("grid_data", JSON.stringify(selected.grid));
-      localStorage.setItem("style_id", selectedStyleId.toString());
-      localStorage.setItem("project_name", projectName);
-  
-      console.log("📦 Saving project data and creating Stripe session...");
-  
-      const res = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectName }),
-      });
-  
-      const data = await res.json();
-      console.log("🔁 Stripe session response:", data);
-  
-      if (res.ok && data.url) {
-        console.log("✅ Redirecting to Stripe:", data.url);
-        window.location.href = data.url;
-      } else {
-        console.error("❌ Stripe session creation failed:", data);
-        alert("Could not start payment session.");
-      }
-    } catch (err) {
-      console.error("🔥 Stripe error:", err);
-      alert("Something went wrong starting the payment.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const clampDiceValue = (val: number | string): number => {
     const num = parseInt(val as string);
@@ -216,85 +177,92 @@ export default function CreatePage() {
   
   return (
     <Layout>
-  {expandedImage !== null && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(0, 0, 0, 0.85)",
-      zIndex: 9999,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: "2rem",
-    }}
-    onClick={() => setExpandedImage(null)} // click background to close
-  >
-    {/* Close Button */}
-    <button
-      onClick={() => setExpandedImage(null)}
-      style={{
-        position: "absolute",
-        top: "0.75rem",
-        right: "0.75rem",
-        background: "transparent",
-        color: "#fff",
-        fontSize: "1.5rem",
-        border: "none",
-        cursor: "pointer",
-        zIndex: 10000,
-      }}
-      aria-label="Close Zoom"
-    >
-      ✖
-    </button>
-
-    {/* Modal Content */}
-    {/* Your modal content here */}
-  </div>
-)}
-
-
-      {showGeneratingMessage && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      zIndex: 9999,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    }}
-  >
-    <div
-      style={{
-        background: "#fff",
-        padding: "2rem",
-        borderRadius: "12px",
-        boxShadow: "0 0 15px rgba(0,0,0,0.3)",
-        maxWidth: "90%",
-        textAlign: "center",
-      }}
-    >
-      <h2 style={{ marginBottom: "1rem", color: "#ECB84A" }}>Generating Dice Mosaics...</h2>
-      <p style={{ fontSize: "1rem", lineHeight: 1.5 }}>
-        Please be patient while your dice mosaic previews are being generated.
-        <br />
-        This can take up to <strong>60 seconds</strong>.
-        <br />
-        <strong>Do not refresh</strong> or exit this page.
-      </p>
-    </div>
-  </div>
-)}
-
+      {expandedImage !== null && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "2rem",
+          }}
+          onClick={() => setExpandedImage(null)}
+        >
+          <button
+            onClick={() => setExpandedImage(null)}
+            style={{
+              position: "absolute",
+              top: "0.75rem",
+              right: "0.75rem",
+              background: "transparent",
+              color: "#fff",
+              fontSize: "1.5rem",
+              border: "none",
+              cursor: "pointer",
+              zIndex: 10000,
+            }}
+            aria-label="Close Zoom"
+          >
+            ✖
+          </button>
+  
+          {/* Modal Content */}
+          <div
+            style={{
+              maxWidth: "95vw",
+              maxHeight: "90vh",
+              overflow: "auto",
+              background: "#111",
+              borderRadius: "8px",
+              padding: "1rem",
+              position: "relative",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {(() => {
+              const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
+              const cols = expanded?.grid?.[0]?.length || 1;
+              const rows = expanded?.grid?.length || 1;
+              const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
+  
+              return (
+                <div
+                  className="grid gap-[1px] bg-black"
+                  style={{
+                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                    width: "100%",
+                    height: "auto",
+                    maxWidth: "80vw",
+                    maxHeight: "80vh",
+                    aspectRatio: `${cols} / ${rows}`,
+                    overflow: "hidden",
+                    imageRendering: "pixelated",
+                  }}
+                >
+                  {expanded?.grid?.map((row, y) =>
+                    row.map((cell, x) => (
+                      <div
+                        key={`${x}-${y}`}
+                        className="w-2 h-2 sm:w-3 sm:h-3"
+                        style={{ backgroundColor: colors[cell] }}
+                      />
+                    ))
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+        {showGeneratingMessage && (
+      <div>{/* your existing generating message overlay code */}</div>
+    )}
 {/* ✅ Simple Bold Block-Style Step Tracker */}
 <div
   style={{
@@ -948,32 +916,9 @@ export default function CreatePage() {
     >
       {(() => {
         const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
-        const cols = expanded?.grid?.[0]?.length || 1;
-        const rows = expanded?.grid?.length || 1;
-        const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
 
-        return (
-          <div
-            className="grid gap-[1px] bg-black"
-            style={{
-              gridTemplateColumns: `repeat(${cols}, 1fr)`,
-              width: "100%",
-              height: "auto",
-              maxWidth: "80vw",
-              maxHeight: "80vh",
-              aspectRatio: `${cols} / ${rows}`,
-              overflow: "hidden",
-              imageRendering: "pixelated",
-            }}
-          >
-            {expanded?.grid?.map((row, y) =>
-              row.map((cell, x) => (
-                <div
-                  key={`${x}-${y}`}
-                  className="w-2 h-2 sm:w-3 sm:h-3"
-                  style={{ backgroundColor: colors[cell] }}
-                />
-              ))
+       
+            
             )}
           </div>
         );
