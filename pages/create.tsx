@@ -82,11 +82,18 @@ export default function CreatePage() {
         console.error("PDF generation failed:", err);
         alert("Something went wrong creating your PDF.");
       }
-          if (!res.ok) throw new Error("Failed to generate PDF.");
-          return res.blob();
-})()}
-        .then((blob) => {
-          const url = window.URL.createObjectURL(blob);
+        const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ grid_data, style_id, project_name }),
+        });
+        if (!res.ok) throw new Error("Failed to generate PDF.");
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${project_name}.pdf`;
+        a.click();
           const a = document.createElement("a");
           a.href = url;
           a.download = `${project_name}.pdf`;
