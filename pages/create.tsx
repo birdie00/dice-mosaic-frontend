@@ -732,8 +732,9 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
   <div
     style={{
       display: "grid",
-      gridTemplateColumns: `repeat(${option.grid[0].length}, 1fr)`,
-      aspectRatio: `${option.grid[0].length} / ${option.grid.length}`,
+      gridTemplateColumns: `repeat(${option.grid[0]?.length || 1}, 1fr)`,
+aspectRatio: `${option.grid[0]?.length || 1} / ${option.grid?.length || 1}`,
+
       width: "100%",
       lineHeight: 0,
     }}
