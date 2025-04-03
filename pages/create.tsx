@@ -882,82 +882,86 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
             </div>
           </section>
         )}
-      {expandedImage !== null && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(0, 0, 0, 0.85)",
-      zIndex: 9999,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: "2rem",
-    }}
-    onClick={() => setExpandedImage(null)} // click background to close
-  >
-    {/* Close Button */}
-    <button
-      onClick={() => setExpandedImage(null)}
-      style={{
-        position: "absolute",
-        top: "0.75rem",
-        right: "0.75rem",
-        background: "transparent",
-        color: "#fff",
-        fontSize: "1.5rem",
-        border: "none",
-        cursor: "pointer",
-        zIndex: 10000,
-      }}
-      aria-label="Close Zoom"
-    >
-      ✖
-    </button>
-
-    {/* Modal Content */}
+      return (
+  <Layout>
     <div
       style={{
-        maxWidth: "95vw",
-        maxHeight: "90vh",
-        overflow: "auto",
-        background: "#111",
-        borderRadius: "8px",
-        padding: "1rem",
-        position: "relative",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.85)",
+        zIndex: 9999,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "2rem",
       }}
-      onClick={(e) => e.stopPropagation()} // prevent modal from closing when clicking inside
+      onClick={() => setExpandedImage(null)} // click background to close
     >
-      {/* Calculate cols and rows */}
-      {(() => {
-        const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
-        const cols = expanded?.grid?.[0]?.length || 1;
-        const rows = expanded?.grid?.length || 1;
+      {/* Close Button */}
+      <button
+        onClick={() => setExpandedImage(null)}
+        style={{
+          position: "absolute",
+          top: "0.75rem",
+          right: "0.75rem",
+          background: "transparent",
+          color: "#fff",
+          fontSize: "1.5rem",
+          border: "none",
+          cursor: "pointer",
+          zIndex: 10000,
+        }}
+        aria-label="Close Zoom"
+      >
+        ✖
+      </button>
 
-        return (
-          <div
-            className="grid gap-[1px] bg-black"
-            style={{
-              gridTemplateColumns: `repeat(${cols}, 1fr)`,
-              width: "100%",
-              height: "auto",
-              maxWidth: "80vw",
-              maxHeight: "80vh",
-              aspectRatio: `${cols} / ${rows}`,
-              overflow: "hidden",
-              imageRendering: "pixelated",
-            }}
-          >
-            {/* Grid Rendering */}
-            {expanded?.grid?.map((row, y) =>
-              row.map((cell: number, x: number) => (
-                <div
-                  key={`${x}-${y}`}
-                  className="w-2 h-2 sm:w-3 sm:h-3"
-                  style={{ backgroundColor: colors[cell] }}
+      {/* Modal Content */}
+      <div
+        style={{
+          maxWidth: "95vw",
+          maxHeight: "90vh",
+          overflow: "auto",
+          background: "#111",
+          borderRadius: "8px",
+          padding: "1rem",
+          position: "relative",
+        }}
+        onClick={(e) => e.stopPropagation()} // prevent modal from closing when clicking inside
+      >
+        {/* Calculate cols and rows */}
+        {(() => {
+          const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
+          const cols = expanded?.grid?.[0]?.length || 1;
+          const rows = expanded?.grid?.length || 1;
+
+          // Define colors for each cell value
+          const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"]; // Add more colors if needed
+
+          return (
+            <div
+              className="grid gap-[1px] bg-black"
+              style={{
+                gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                width: "100%",
+                height: "auto",
+                maxWidth: "80vw",
+                maxHeight: "80vh",
+                aspectRatio: `${cols} / ${rows}`,
+                overflow: "hidden",
+                imageRendering: "pixelated",
+              }}
+            >
+              {/* Grid Rendering */}
+              {expanded?.grid?.map((row, y) =>
+                row.map((cell: number, x: number) => (
+                  <div
+                    key={`${x}-${y}`}
+                    className="w-2 h-2 sm:w-3 sm:h-3"
+                    style={{ backgroundColor: colors[cell] }} // Use colors[cell] to get the color
                   />
                 ))
               )}
@@ -966,7 +970,5 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
         })()}
       </div>
     </div>
-  )}
-</div>
-</Layout>
+  </Layout>
 );
