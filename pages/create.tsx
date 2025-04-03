@@ -156,32 +156,36 @@ export default function CreatePage() {
 
 
   const generatePDF = async () => {
-    if (selectedStyleId === null) return;
- 
-    const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
-    if (!selected) return;
- 
-    try {
-      setLoading(true);
-      const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          grid_data: selected.grid,
-          style_id: selectedStyleId,
-          project_name: projectName, // ✅ INCLUDE project name here
-        }),
-      });
- 
-      const data = await res.json();
-      setPdfUrl(`${BACKEND_URL}${data.dice_map_url}`);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    } finally {
-      setLoading(false);
-    }
+  if (selectedStyleId === null) return;
+
+  const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
+  if (!selected) return;
+
+  try {
+    setLoading(true);
+
+    const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        grid_data: selected.grid,
+        style_id: selectedStyleId,
+        project_name: projectName,
+      }),
+    });
+
+    if (!res.ok) throw new Error("Failed to generate PDF.");
+
+    const data = await res.json();
+    setPdfUrl(`${BACKEND_URL}${data.dice_map_url}`);
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+  } finally {
+    setLoading(false);
+  }
+};
   };
  
 
