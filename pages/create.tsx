@@ -44,19 +44,52 @@ export default function CreatePage() {
   }, []);
 
   useEffect(() => {
-    const { success } = router.query;
-
-    if (
-      success === "true" &&
-      selectedStyleId !== null &&
-      mosaicOptions.length > 0 &&
-      pdfUrl === null
-    ) {
-      generatePDF();
-      setStep(5);
-      router.replace("/create", undefined, { shallow: true });
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get("success");
+    const projectFromUrl = urlParams.get("project");
+  
+    if (success === "true" && projectFromUrl) {
+      const grid_data = JSON.parse(localStorage.getItem("grid_data") || "null");
+      const style_id = parseInt(localStorage.getItem("style_id") || "0");
+      const project_name = localStorage.getItem("project_name") || projectFromUrl;
+  
+      if (!grid_data || !style_id || !project_name) {
+        alert("Missing project data. Please try again.");
+        return;
+      }
+  
+      fetch(`${BACKEND_URL}/generate-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          grid_data,
+          style_id,
+          project_name,
+        }),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to generate PDF.");
+          return res.blob();
+        })
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${project_name}.pdf`;
+          a.click();
+  
+          // ✅ Clean up
+          localStorage.removeItem("grid_data");
+          localStorage.removeItem("style_id");
+          localStorage.removeItem("project_name");
+        })
+        .catch((err) => {
+          console.error("PDF generation failed:", err);
+          alert("Something went wrong creating your PDF.");
+        });
     }
-  }, [router.query, selectedStyleId, mosaicOptions, pdfUrl]);
+  }, []);
+  
 
   const handleAspectRatioChange = (option: AspectRatioOption) => {
     setAspectRatio(option);
@@ -130,23 +163,42 @@ export default function CreatePage() {
 
   const generatePDF = async () => {
     if (selectedStyleId === null) return;
-
+  
     const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
     if (!selected) return;
-
+  
     try {
       setLoading(true);
-      const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
+  
+      // Store selected grid/style info in localStorage for use after Stripe
+      localStorage.setItem("grid_data", JSON.stringify(selected.grid));
+      localStorage.setItem("style_id", selectedStyleId.toString());
+      localStorage.setItem("project_name", projectName);
+  
+      const res = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          grid_data: selected.grid,
-          style_id: selectedStyleId,
-          project_name: projectName,
-        }),
+        body: JSON.stringify({ projectName }),
       });
+  
+      const data = await res.json();
+  
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Error creating Stripe checkout session.");
+        console.error(data);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error("Stripe session error:", err);
+      alert("Something went wrong.");
+      setLoading(false);
+    }
+  };
+  
 
       const data: { dice_map_url: string } = await res.json();
       setPdfUrl(`${BACKEND_URL}${data.dice_map_url}`);
