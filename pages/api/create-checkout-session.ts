@@ -1,17 +1,32 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2023-10-16",
-});
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  console.log("🔁 Hitting create-checkout-session");
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
+
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+  if (!stripeSecretKey) {
+    console.error("❌ STRIPE_SECRET_KEY is missing!");
+    return res.status(500).json({ error: "Stripe key not set in environment." });
+  }
+
+  if (!siteUrl) {
+    console.error("❌ NEXT_PUBLIC_SITE_URL is missing!");
+    return res.status(500).json({ error: "Site URL not configured in environment." });
+  }
+
+  const stripe = new Stripe(stripeSecretKey, {
+    apiVersion: "2023-10-16",
+  });
 
   const { projectName } = req.body;
 
@@ -31,13 +46,13 @@ export default async function handler(
         },
       ],
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/create?success=true&project=${encodeURIComponent(
+      success_url: `${siteUrl}/create?success=true&project=${encodeURIComponent(
         projectName || ""
       )}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/create?canceled=true`,
+      cancel_url: `${siteUrl}/create?canceled=true`,
     });
 
-    // ✅ RETURN JSON with session URL
+    console.log("✅ Stripe session created:", session.url);
     return res.status(200).json({ url: session.url });
   } catch (err) {
     console.error("❌ Stripe session error:", err);
