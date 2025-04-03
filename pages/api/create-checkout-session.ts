@@ -1,15 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
-
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2023-10-16",
+});
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { projectName } = req.body;
@@ -24,7 +25,7 @@ export default async function handler(
             product_data: {
               name: `Dice Map PDF - ${projectName || "Untitled"}`,
             },
-            unit_amount: 500,
+            unit_amount: 500, // in cents ($5.00)
           },
           quantity: 1,
         },
@@ -36,11 +37,12 @@ export default async function handler(
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/create?canceled=true`,
     });
 
+    // ✅ RETURN JSON with session URL
     return res.status(200).json({ url: session.url });
   } catch (err) {
-    console.error("Stripe checkout session error:", err);
-    return res
-      .status(500)
-      .json({ error: (err as Error).message || "Something went wrong" });
+    console.error("❌ Stripe session error:", err);
+    return res.status(500).json({
+      error: (err as Error).message || "Stripe session creation failed.",
+    });
   }
 }
