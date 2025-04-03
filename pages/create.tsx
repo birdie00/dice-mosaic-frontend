@@ -175,7 +175,6 @@ export default function CreatePage() {
     "Download",
   ];
   
-  return (
     <Layout>
       {expandedImage !== null && (
         <div
@@ -231,7 +230,6 @@ export default function CreatePage() {
               const rows = expanded?.grid?.length || 1;
               const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
   
-              return (
                 <div
                   className="grid gap-[1px] bg-black"
                   style={{
@@ -288,7 +286,6 @@ export default function CreatePage() {
       textColor = "#6b7280"; // muted gray
     }
 
-    return (
       <div
         key={index}
         style={{
@@ -470,7 +467,6 @@ export default function CreatePage() {
       ].map(({ label, ratio, grid, key }) => {
         const isSelected = aspectRatio === key;
 
-        return (
           <div
             key={key}
             onClick={() => {
@@ -864,7 +860,6 @@ export default function CreatePage() {
             </div>
           </section>
         )}
-      return (
 
         {expandedImage !== null && (
   <div
@@ -921,7 +916,6 @@ export default function CreatePage() {
           const cols = expanded.grid[0].length;
           const rows = expanded.grid.length;
           const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
-          return (
             <div
               className="grid gap-[1px] bg-black"
               style={{
