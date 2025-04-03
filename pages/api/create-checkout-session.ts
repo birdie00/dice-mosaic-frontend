@@ -5,7 +5,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2023-10-16",
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
@@ -22,19 +25,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             product_data: {
               name: `Dice Map PDF - ${projectName || "Untitled"}`,
             },
-            unit_amount: 500, // Amount in cents ($5.00)
+            unit_amount: 500,
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/create?success=true&project=${encodeURIComponent(projectName)}`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/create?success=true&project=${encodeURIComponent(
+        projectName || ""
+      )}`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/create?canceled=true`,
     });
 
-    res.status(200).json({ url: session.url });
-  } catch (err: any) {
-    console.error("Stripe checkout session error:", err.message);
-    res.status(500).json({ error: err.message });
+    return res.status(200).json({ url: session.url });
+  } catch (err) {
+    console.error("Stripe checkout session error:", err);
+    return res
+      .status(500)
+      .json({ error: (err as Error).message || "Something went wrong" });
   }
 }
