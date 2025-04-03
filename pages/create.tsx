@@ -170,34 +170,36 @@ export default function CreatePage() {
     try {
       setLoading(true);
   
-      // Store selected grid/style info in localStorage for use after Stripe
       localStorage.setItem("grid_data", JSON.stringify(selected.grid));
       localStorage.setItem("style_id", selectedStyleId.toString());
       localStorage.setItem("project_name", projectName);
   
+      console.log("📦 Saving project data and creating Stripe session...");
+  
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ projectName }),
       });
   
       const data = await res.json();
+      console.log("🔁 Stripe session response:", data);
   
       if (res.ok && data.url) {
+        console.log("✅ Redirecting to Stripe:", data.url);
         window.location.href = data.url;
       } else {
-        alert("Error creating Stripe checkout session.");
-        console.error(data);
-        setLoading(false);
+        console.error("❌ Stripe session creation failed:", data);
+        alert("Could not start payment session.");
       }
     } catch (err) {
-      console.error("Stripe session error:", err);
-      alert("Something went wrong.");
+      console.error("🔥 Stripe error:", err);
+      alert("Something went wrong starting the payment.");
+    } finally {
       setLoading(false);
     }
   };
+  
   
 
       const data: { dice_map_url: string } = await res.json();
