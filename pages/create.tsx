@@ -922,43 +922,34 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
       }}
       onClick={(e) => e.stopPropagation()} // prevent modal from closing when clicking inside
     >
-     <div
+     const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
+const cols = expanded?.grid?.[0]?.length || 1;
+const rows = expanded?.grid?.length || 1;
+
+<div
+  className="grid gap-[1px] bg-black"
   style={{
-    display: "grid",
-    gridTemplateColumns: `repeat(${
-      mosaicOptions.find((o) => o.style_id === expandedImage)?.grid?.[0]?.length || 1
-    }, 1fr)`,
-    
+    gridTemplateColumns: `repeat(${cols}, 1fr)`,
     width: "100%",
     height: "auto",
     maxWidth: "80vw",
     maxHeight: "80vh",
-    aspectRatio: `${
-      mosaicOptions.find((o) => o.style_id === expandedImage)?.grid[0]?.length || 1
-    } / ${
-      mosaicOptions.find((o) => o.style_id === expandedImage)?.grid.length || 1
-    }`,
+    aspectRatio: `${cols} / ${rows}`,
     overflow: "hidden",
     imageRendering: "pixelated",
   }}
 >
-  {mosaicOptions
-    .find((option) => option.style_id === expandedImage)
-    ?.grid.flatMap((row, y) =>
-      row.map((val, x) => (
-        <img
-          key={`${y}-${x}`}
-          src={`/dice/dice_${clampDiceValue(val)}.png`}
-          alt={`dice ${val}`}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-          }}
-        />
-      ))
-    )}
+  {expanded?.grid?.map((row, y) =>
+    row.map((cell: number, x: number) => (
+      <div
+        key={`${x}-${y}`}
+        className="w-2 h-2 sm:w-3 sm:h-3"
+        style={{ backgroundColor: colors[cell] }}
+      />
+    ))
+  )}
 </div>
+
 
 
 </div>
