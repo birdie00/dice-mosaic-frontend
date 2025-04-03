@@ -230,8 +230,8 @@ export default function CreatePage() {
       alignItems: "center",
       padding: "2rem",
     }}
-  >
-    <div
+  
+    
       style={{
         maxWidth: "1200px",
         margin: "auto",
