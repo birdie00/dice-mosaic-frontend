@@ -200,17 +200,6 @@ export default function CreatePage() {
     }
   };
   
-  
-
-  const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ projectName }),
-  });
-  
-  const data: { dice_map_url: string } = await res.json();
-  setPdfUrl(`${BACKEND_URL}${data.dice_map_url}`);
-  
     } catch (error) {
       console.error("Error generating PDF:", error);
     } finally {
