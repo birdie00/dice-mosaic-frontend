@@ -82,12 +82,6 @@ export default function CreatePage() {
         console.error("PDF generation failed:", err);
         alert("Something went wrong creating your PDF.");
       }
-        const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ grid_data, style_id, project_name }),
-        });
-        a.download = `${project_name}.pdf`;
         a.click();
           const a = document.createElement("a");
           a.href = url;
@@ -613,7 +607,6 @@ export default function CreatePage() {
       <button
         onClick={() => {
           setShowGeneratingMessage(true);
-          generateMosaics().then(() => {
             setShowGeneratingMessage(false);
             setStep(4);
           });
