@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { Cropper } from "react-cropper";
 import type { Cropper as CropperType } from "cropperjs";
 import Layout from "@/components/Layout";
+import React from "react";
 
 
 interface MosaicOption {
