@@ -874,7 +874,7 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
             </div>
           </section>
         )}
-        {expandedImage !== null && (
+      {expandedImage !== null && (
   <div
     style={{
       position: "fixed",
@@ -891,25 +891,26 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
     }}
     onClick={() => setExpandedImage(null)} // click background to close
   >
-          {/* ❌ Close Button */}
-          <button
-        onClick={() => setExpandedImage(null)}
-        style={{
-          position: "absolute",
-          top: "0.75rem",
-          right: "0.75rem",
-          background: "transparent",
-          color: "#fff",
-          fontSize: "1.5rem",
-          border: "none",
-          cursor: "pointer",
-          zIndex: 10000,
-        }}
-        aria-label="Close Zoom"
-      >
-        ✖
-      </button>
+    {/* Close Button */}
+    <button
+      onClick={() => setExpandedImage(null)}
+      style={{
+        position: "absolute",
+        top: "0.75rem",
+        right: "0.75rem",
+        background: "transparent",
+        color: "#fff",
+        fontSize: "1.5rem",
+        border: "none",
+        cursor: "pointer",
+        zIndex: 10000,
+      }}
+      aria-label="Close Zoom"
+    >
+      ✖
+    </button>
 
+    {/* Modal Content */}
     <div
       style={{
         maxWidth: "95vw",
@@ -918,45 +919,47 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
         background: "#111",
         borderRadius: "8px",
         padding: "1rem",
-        position: "relative", // ✅ add this line!
+        position: "relative",
       }}
       onClick={(e) => e.stopPropagation()} // prevent modal from closing when clicking inside
     >
-     const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
-const cols = expanded?.grid?.[0]?.length || 1;
-const rows = expanded?.grid?.length || 1;
+      {/* Calculate cols and rows */}
+      {(() => {
+        const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
+        const cols = expanded?.grid?.[0]?.length || 1;
+        const rows = expanded?.grid?.length || 1;
 
-<div
-  className="grid gap-[1px] bg-black"
-  style={{
-    gridTemplateColumns: `repeat(${cols}, 1fr)`,
-    width: "100%",
-    height: "auto",
-    maxWidth: "80vw",
-    maxHeight: "80vh",
-    aspectRatio: `${cols} / ${rows}`,
-    overflow: "hidden",
-    imageRendering: "pixelated",
-  }}
->
-  {expanded?.grid?.map((row, y) =>
-    row.map((cell: number, x: number) => (
-      <div
-        key={`${x}-${y}`}
-        className="w-2 h-2 sm:w-3 sm:h-3"
-        style={{ backgroundColor: colors[cell] }}
-      />
-    ))
-  )}
-</div>
-
-
-
-</div>
-      </div>
-    )}
+        return (
+          <div
+            className="grid gap-[1px] bg-black"
+            style={{
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              width: "100%",
+              height: "auto",
+              maxWidth: "80vw",
+              maxHeight: "80vh",
+              aspectRatio: `${cols} / ${rows}`,
+              overflow: "hidden",
+              imageRendering: "pixelated",
+            }}
+          >
+            {/* Grid Rendering */}
+            {expanded?.grid?.map((row, y) =>
+              row.map((cell: number, x: number) => (
+                <div
+                  key={`${x}-${y}`}
+                  className="w-2 h-2 sm:w-3 sm:h-3"
+                  style={{ backgroundColor: colors[cell] }}
+                />
+              ))
+            )}
+          </div>
+        );
+      })()}
+    </div>
   </div>
-  </div>
-</Layout>
-  );
-}
+)}
+
+{/* Close the section and layout properly */}
+</section> {/* Assuming the section is opened before */}
+</Layout> {/* Correctly close Layout here */}
