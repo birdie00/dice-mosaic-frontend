@@ -216,13 +216,13 @@ export default function CreatePage() {
   
   return (
     <Layout>
-  <div
+  <div>
     style={{
       backgroundColor: "#1c4c54", // 💚 outer background
       padding: "2rem 1rem",
       minHeight: "100vh",
     }}
-  >
+  </div>
     <div
       style={{
         maxWidth: "1200px",
@@ -950,17 +950,15 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
                   key={`${x}-${y}`}
                   className="w-2 h-2 sm:w-3 sm:h-3"
                   style={{ backgroundColor: colors[cell] }}
-                />
-              ))
-            )}
-          </div>
-        );
-      })()}
+                  />
+                ))
+              )}
+            </div>
+          );
+        })()}
+      </div>
     </div>
-  </div>
-)}
-
-{/* Close the section and layout properly */}
-</section> {/* Assuming the section is opened before */}
-</Layout> {/* Correctly close Layout here */}
-
+  )}
+</div>
+</Layout>
+);
