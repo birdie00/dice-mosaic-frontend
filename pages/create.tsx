@@ -199,13 +199,6 @@ export default function CreatePage() {
       setLoading(false);
     }
   };
-  
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const clampDiceValue = (val: number | string): number => {
     const num = parseInt(val as string);
