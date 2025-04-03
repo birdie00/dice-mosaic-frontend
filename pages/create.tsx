@@ -915,16 +915,35 @@ export default function CreatePage() {
       onClick={(e) => e.stopPropagation()}
     >
       {(() => {
-        return (
-
-        );
-       
-            
-            )}
-          </div>
-        );
-      })()}
-    </div>
-  </div>
-  </Layout>
-)}
+        {(() => {
+          const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
+          if (!expanded) return null;
+          const cols = expanded.grid[0].length;
+          const rows = expanded.grid.length;
+          const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
+          return (
+            <div
+              className="grid gap-[1px] bg-black"
+              style={{
+                gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                width: "100%",
+                height: "auto",
+                maxWidth: "80vw",
+                maxHeight: "80vh",
+                aspectRatio: `${cols} / ${rows}`,
+                overflow: "hidden",
+                imageRendering: "pixelated",
+              }}
+            >
+              {expanded.grid.map((row, y) =>
+                row.map((cell, x) => (
+                  <div
+                    key={`${x}-${y}`}
+                    className="w-2 h-2 sm:w-3 sm:h-3"
+                    style={{ backgroundColor: colors[cell] }}
+                  />
+                ))
+              )}
+            </div>
+          );
+        })()}
