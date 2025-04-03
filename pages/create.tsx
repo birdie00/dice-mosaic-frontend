@@ -44,6 +44,10 @@ export default function CreatePage() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    const run = async () => {
+    };
+    run();
+    const urlParams = new URLSearchParams(window.location.search);
     const success = urlParams.get("success");
     const projectFromUrl = urlParams.get("project");
   
