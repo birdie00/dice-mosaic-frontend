@@ -116,10 +116,12 @@ export default function CreatePage() {
     formData.append("grid_height", gridSize[1].toString());
 
     setLoading(true);
-    const res = await fetch(`${BACKEND_URL}/analyze`, {
+    const res = await fetch("/api/create-checkout-session", {
       method: "POST",
-      body: formData,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ projectName }),
     });
+    
 
     const data: { styles: MosaicOption[] } = await res.json();
     setMosaicOptions(data.styles);
