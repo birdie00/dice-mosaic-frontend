@@ -915,7 +915,6 @@ export default function CreatePage() {
       onClick={(e) => e.stopPropagation()}
     >
       {(() => {
-      {(() => {
         return (
 
         );
