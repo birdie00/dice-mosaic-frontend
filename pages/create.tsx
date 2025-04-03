@@ -230,17 +230,6 @@ export default function CreatePage() {
       alignItems: "center",
       padding: "2rem",
     }}
-  
-    
-      style={{
-        maxWidth: "1200px",
-        margin: "auto",
-        borderRadius: "16px",
-        padding: "2rem",
-        backgroundColor: "#FDF7F1",
-color: "#2F5884", // Deep navy for text
-boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
-}}
     >
 </div>
 
