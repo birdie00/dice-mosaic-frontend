@@ -1,18 +1,22 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
-import Cropper from "react-cropper";
-import type CropperJS from "cropperjs"; // default export from cropperjs
-import "cropperjs/dist/cropper.css";
+import { Cropper } from "react-cropper";
+import type { Cropper as CropperType } from "cropperjs";
 import Layout from "@/components/Layout";
+
 
 interface MosaicOption {
   style_id: number;
   grid: number[][];
 }
 
+
 type AspectRatioOption = "square" | "portrait" | "landscape";
 
+
 export default function CreatePage() {
+  const router = useRouter();
+
 
   const [step, setStep] = useState(1);
   const [projectName, setProjectName] = useState("");
@@ -28,10 +32,13 @@ export default function CreatePage() {
   const [gridSize, setGridSize] = useState<[number, number]>([100, 100]);
   const [showGeneratingMessage, setShowGeneratingMessage] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
-  const cropperRef = useRef<{ cropper: CropperJS }>(null);
+  const cropperRef = useRef<CropperType>(null);
+
 
   const BACKEND_URL = "https://dice-mosaic-backend.onrender.com";
 
+
+  // ✅ Preload dice images
   useEffect(() => {
     const preloadDiceImages = () => {
       for (let i = 0; i <= 6; i++) {
@@ -42,72 +49,35 @@ export default function CreatePage() {
     preloadDiceImages();
   }, []);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const run = async () => {
-    };
-    run();
-  }, []);
-    const urlParams = new URLSearchParams(window.location.search);
-    const success = urlParams.get("success");
-    const projectFromUrl = urlParams.get("project");
-  
-    if (success === "true" && projectFromUrl) {
-      const grid_data = JSON.parse(localStorage.getItem("grid_data") || "null");
-      const style_id = parseInt(localStorage.getItem("style_id") || "0");
-      const project_name = localStorage.getItem("project_name") || projectFromUrl;
-  
-      if (!grid_data || !style_id || !project_name) {
-        alert("Missing project data. Please try again.");
-        return;
-      }
-  
-      try {
-        const response = await fetch(`${BACKEND_URL}/generate-pdf`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ grid_data, style_id, project_name }),
-        });
-        if (!response.ok) throw new Error("Failed to generate PDF.");
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${project_name}.pdf`;
-        a.click();
-        localStorage.removeItem("grid_data");
-        localStorage.removeItem("style_id");
-        localStorage.removeItem("project_name");
-      } catch (err) {
-        console.error("PDF generation failed:", err);
-        alert("Something went wrong creating your PDF.");
-      }
-        a.click();
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `${project_name}.pdf`;
-          a.click();
-  
-          // ✅ Clean up
-          localStorage.removeItem("grid_data");
-          localStorage.removeItem("style_id");
-          localStorage.removeItem("project_name");
-})()}
-        .catch((err) => {
-          console.error("PDF generation failed:", err);
-          alert("Something went wrong creating your PDF.");
-        });
-    }
-  }, []);
-  
 
+  // ✅ Check for Stripe success flag
+  useEffect(() => {
+    const { success } = router.query;
+
+
+    if (
+      success === "true" &&
+      selectedStyleId !== null &&
+      mosaicOptions.length > 0 &&
+      pdfUrl === null
+    ) {
+      generatePDF();
+      setStep(5);
+      router.replace("/create", undefined, { shallow: true });
+    }
+  }, [router.query, selectedStyleId, mosaicOptions, pdfUrl]);
+
+
+  // 🔧 Image crop ratio logic
   const handleAspectRatioChange = (option: AspectRatioOption) => {
     setAspectRatio(option);
     const cropper = cropperRef.current?.cropper;
     if (!cropper) return;
 
+
     let ratio = 1;
     let newGrid: [number, number] = [100, 100];
+
 
     if (option === "portrait") {
       ratio = 2 / 3;
@@ -117,10 +87,13 @@ export default function CreatePage() {
       newGrid = [120, 80];
     }
 
+
     cropper.setAspectRatio(ratio);
     setGridSize(newGrid);
   };
 
+
+  // 🔧 Handle image upload
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -133,15 +106,19 @@ export default function CreatePage() {
     }
   };
 
+
+  // 🔧 Crop the image to canvas
   const cropImage = () => {
     const cropper = cropperRef.current?.cropper;
     if (!cropper) return;
+
 
     const canvas = cropper.getCroppedCanvas();
     if (!canvas || canvas.width === 0 || canvas.height === 0) {
       alert("Please resize your crop area.");
       return;
     }
+
 
     canvas.toBlob((blob) => {
       if (blob) {
@@ -151,6 +128,9 @@ export default function CreatePage() {
     }, "image/png");
   };
 
+
+
+
   const generateMosaics = async () => {
     if (!croppedImage) return;
     const formData = new FormData();
@@ -158,22 +138,53 @@ export default function CreatePage() {
     formData.append("grid_width", gridSize[0].toString());
     formData.append("grid_height", gridSize[1].toString());
 
-    setLoading(true);
-    const res = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ projectName }),
-    });
-    
 
-    const data: { styles: MosaicOption[] } = await res.json();
+    setLoading(true);
+    const res = await fetch(`${BACKEND_URL}/analyze`, {
+      method: "POST",
+      body: formData,
+    });
+
+
+    const data = await res.json();
     setMosaicOptions(data.styles);
     setLoading(false);
   };
 
 
-  const clampDiceValue = (val: number | string): number => {
-    const num = parseInt(val as string);
+  const generatePDF = async () => {
+    if (selectedStyleId === null) return;
+ 
+    const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
+    if (!selected) return;
+ 
+    try {
+      setLoading(true);
+      const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          grid_data: selected.grid,
+          style_id: selectedStyleId,
+          project_name: projectName, // ✅ INCLUDE project name here
+        }),
+      });
+ 
+      const data = await res.json();
+      setPdfUrl(`${BACKEND_URL}${data.dice_map_url}`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+ 
+
+
+  const clampDiceValue = (val: any): number => {
+    const num = parseInt(val);
     if (isNaN(num)) return 0;
     return Math.max(0, Math.min(6, num));
   };
@@ -185,93 +196,69 @@ export default function CreatePage() {
     "Generate PDF",
     "Download",
   ];
+ 
   return (
     <Layout>
-      {expandedImage !== null && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.85)",
-            zIndex: 9999,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "2rem",
-          }}
-          onClick={() => setExpandedImage(null)}
-        >
-          <button
-            onClick={() => setExpandedImage(null)}
-            style={{
-              position: "absolute",
-              top: "0.75rem",
-              right: "0.75rem",
-              background: "transparent",
-              color: "#fff",
-              fontSize: "1.5rem",
-              border: "none",
-              cursor: "pointer",
-              zIndex: 10000,
-            }}
-            aria-label="Close Zoom"
-          >
-            ✖
-          </button>
-  
-          {/* Modal Content */}
-          <div
-            style={{
-              maxWidth: "95vw",
-              maxHeight: "90vh",
-              overflow: "auto",
-              background: "#111",
-              borderRadius: "8px",
-              padding: "1rem",
-              position: "relative",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {(() => {
-              const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
-              const cols = expanded?.grid?.[0]?.length || 1;
-              const rows = expanded?.grid?.length || 1;
-              const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
-  
-                <div
-                  className="grid gap-[1px] bg-black"
-                  style={{
-                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                    width: "100%",
-                    height: "auto",
-                    maxWidth: "80vw",
-                    maxHeight: "80vh",
-                    aspectRatio: `${cols} / ${rows}`,
-                    overflow: "hidden",
-                    imageRendering: "pixelated",
-                  }}
-                >
-                  {expanded?.grid?.map((row, y) =>
-                    row.map((cell, x) => (
-                      <div
-                        key={`${x}-${y}`}
-                        className="w-2 h-2 sm:w-3 sm:h-3"
-                        style={{ backgroundColor: colors[cell] }}
-                      />
-                    ))
-                  )}
-                </div>
-              );
-            })()}
-          </div>
-        </div>
-      )}
-        {showGeneratingMessage && (
-      <div>{/* your existing generating message overlay code */}</div>
-    )}
+  <div
+    style={{
+      backgroundColor: "#f0fdf4", // 💚 outer background
+      padding: "2rem 1rem",
+      minHeight: "100vh",
+    }}
+  >
+    <div
+      style={{
+        maxWidth: "1200px",
+        margin: "auto",
+        backgroundColor: "#ffffff", // ✅ white inner background
+        borderRadius: "16px",
+        boxShadow: "0 0 20px rgba(0,0,0,0.06)",
+        padding: "2rem",
+        color: "#1a1a1a",
+      }}
+    >
+
+
+
+
+      {showGeneratingMessage && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      zIndex: 9999,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <div
+      style={{
+        background: "#fff",
+        padding: "2rem",
+        borderRadius: "12px",
+        boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+        maxWidth: "90%",
+        textAlign: "center",
+      }}
+    >
+      <h2 style={{ marginBottom: "1rem", color: "#2f855a" }}>Generating Dice Mosaics...</h2>
+      <p style={{ fontSize: "1rem", lineHeight: 1.5 }}>
+        Please be patient while your dice mosaic previews are being generated.
+        <br />
+        This can take up to <strong>60 seconds</strong>.
+        <br />
+        <strong>Do not refresh</strong> or exit this page.
+      </p>
+    </div>
+  </div>
+)}
+
+
 {/* ✅ Simple Bold Block-Style Step Tracker */}
 <div
   style={{
@@ -286,17 +273,21 @@ export default function CreatePage() {
     const isActive = step === stepNum;
     const isCompleted = step > stepNum;
 
-    let backgroundColor = "#fdf7f1"; // light green (completed)
-    let textColor = "#613073"; // dark green
+
+    let backgroundColor = "#d1fae5"; // light green (completed)
+    let textColor = "#065f46"; // dark green
+
 
     if (isActive) {
-      backgroundColor = "#edb84a"; // solid green (active)
+      backgroundColor = "#10b981"; // solid green (active)
       textColor = "#ffffff";
     } else if (!isCompleted) {
       backgroundColor = "#e5e7eb"; // gray (upcoming)
       textColor = "#6b7280"; // muted gray
     }
 
+
+    return (
       <div
         key={index}
         style={{
@@ -316,10 +307,11 @@ export default function CreatePage() {
   })}
 </div>
 
+
 {/* ✅ Raised Heading Box snapped to step tracker */}
 <div
   style={{
-    backgroundColor: "#EAAA4F",
+    backgroundColor: "#065f46",
     height: "48px", // match the height
     display: "flex",
     alignItems: "center",
@@ -332,7 +324,7 @@ export default function CreatePage() {
     style={{
       fontSize: "1.5rem",
       fontWeight: 700,
-      color: "#338A9D",
+      color: "#bbf7d0",
       margin: 0,
     }}
   >
@@ -342,21 +334,26 @@ export default function CreatePage() {
 
 
 
+
+
+
         {step === 1 && (
   <section style={{ padding: "2rem 1rem" }}>
-    <h2 style={{ fontSize: "2rem", marginBottom: "1rem", color: "#338a9d", textAlign: "center" }}>Welcome to Pipcasso Dice Mosaic Generator</h2>
+    <h2 style={{ fontSize: "2rem", marginBottom: "1rem", color: "#22c55e", textAlign: "center" }}>Welcome to Pipcasso Dice Mosaic Generator</h2>
     <p style={{ fontSize: "1rem", lineHeight: "1.6", marginBottom: "2rem", maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
       At <strong>Pipcasso</strong>, we turn your unique images into stunning dice mosaic portraits. Upload a photo, and we’ll
       transform it into a custom portrait made entirely from dice. You can download it as a high-resolution image, have it printed and shipped to your door,
       or even receive a <strong>DIY Dice Kit</strong> with a personalized Dice Map to build your own mosaic masterpiece at home.
     </p>
 
+
     <div
       style={{
+        border: "1px solid #ccc",
         borderRadius: "16px",
         padding: "2rem",
         background: "#ffffff",
-        border: "1px solid #338a9d", // greenish border
+        border: "1px solid #c6f6d5", // greenish border
         maxWidth: "600px",
         margin: "2rem auto",
         boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
@@ -365,6 +362,7 @@ export default function CreatePage() {
       <h3 style={{ fontSize: "1.4rem", marginBottom: "1rem", textAlign: "center", color: "#333" }}>
         Upload your image here to move to Step 2
       </h3>
+
 
       {/* Project Name */}
       <label style={{ display: "block", marginBottom: "1.5rem" }}>
@@ -384,6 +382,7 @@ export default function CreatePage() {
         />
       </label>
 
+
       {/* Image Upload */}
       <label style={{ display: "block", marginBottom: "1.5rem" }}>
         <div style={{ marginBottom: "0.5rem", fontWeight: 600 }}>Choose Image</div>
@@ -401,6 +400,7 @@ export default function CreatePage() {
         />
       </label>
 
+
       {/* Terms and Conditions */}
       <label style={{ display: "flex", alignItems: "flex-start", fontSize: "0.95rem", lineHeight: "1.5", marginBottom: "1.5rem" }}>
         <input
@@ -416,6 +416,7 @@ export default function CreatePage() {
         </span>
       </label>
 
+
       {/* Continue Button */}
       <div style={{ textAlign: "center" }}>
         <button
@@ -427,7 +428,7 @@ export default function CreatePage() {
             backgroundColor:
               !imagePreviewUrl || !agreedToTerms || projectName.trim() === ""
                 ? "#ccc"
-                : "#ECB84A",
+                : "#2f855a",
             color: "#fff",
             border: "none",
             borderRadius: "8px",
@@ -447,17 +448,23 @@ export default function CreatePage() {
 
 
 
-  
+
+
+
+ 
 {step === 2 && imagePreviewUrl && (
   <section style={{ padding: "2rem 0" }}>
     <h2 style={{
   fontSize: "2rem",
   textAlign: "center",
-  color: "#613073",
+  color: "#065f46",
   marginBottom: "1.5rem",
 }}>
   Crop Your Image - Choose Aspect Ratio
 </h2>
+
+
+
 
 
 
@@ -478,6 +485,8 @@ export default function CreatePage() {
       ].map(({ label, ratio, grid, key }) => {
         const isSelected = aspectRatio === key;
 
+
+        return (
           <div
             key={key}
             onClick={() => {
@@ -486,7 +495,7 @@ export default function CreatePage() {
             style={{
               cursor: "pointer",
               padding: "1rem",
-              border: isSelected ? "3px solid #ECB84A" : "2px solid #ccc",
+              border: isSelected ? "3px solid #2f855a" : "2px solid #ccc",
               borderRadius: "12px",
               backgroundColor: isSelected ? "#e6fffa" : "#fff",
               width: "140px",
@@ -496,8 +505,8 @@ export default function CreatePage() {
           >
             <div
               style={{
-                backgroundColor: "#338a9d",
-                border: "3px solid #ECB84A",
+                backgroundColor: "#b2f5ea",
+                border: "3px solid #2f855a",
                 margin: "0 auto 0.75rem",
                 width: "80px",
                 height: ratio === 1 ? "80px" : ratio < 1 ? "100px" : "60px",
@@ -522,7 +531,7 @@ export default function CreatePage() {
     maxWidth: "800px",
     marginInline: "auto",
     textAlign: "center",
-    color: "#613073", // dark green
+    color: "#065f46", // dark green
     fontSize: "1rem",
     lineHeight: 1.6,
     boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
@@ -530,6 +539,7 @@ export default function CreatePage() {
 >
   Choose the aspect ratio that best matches your image. HINT: Select a smaller area for greater detail.
 </div>
+
 
     {/* Cropper */}
     <div style={{ width: "100%", maxWidth: "600px", margin: "0 auto" }}>
@@ -549,6 +559,7 @@ export default function CreatePage() {
       />
     </div>
 
+
     {/* Navigation Buttons */}
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
       <button
@@ -559,7 +570,7 @@ export default function CreatePage() {
         style={{
           padding: "0.75rem 1.5rem",
           fontSize: "1rem",
-          backgroundColor: "#ECB84A",
+          backgroundColor: "#2f855a",
           color: "#fff",
           border: "none",
           borderRadius: "6px",
@@ -585,6 +596,7 @@ export default function CreatePage() {
   </section>
 )}
 
+
 {step === 3 && croppedImageUrl && (
   <section style={{ padding: "2rem 0", textAlign: "center" }}>
     <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>3. Preview</h2>
@@ -603,10 +615,12 @@ export default function CreatePage() {
       />
     </div>
 
+
     <div style={{ marginTop: "2rem" }}>
       <button
         onClick={() => {
           setShowGeneratingMessage(true);
+          generateMosaics().then(() => {
             setShowGeneratingMessage(false);
             setStep(4);
           });
@@ -614,7 +628,7 @@ export default function CreatePage() {
         style={{
           padding: "0.75rem 1.5rem",
           fontSize: "1rem",
-          backgroundColor: "#2f5884",
+          backgroundColor: "#007bff",
           color: "#fff",
           border: "none",
           borderRadius: "6px",
@@ -645,7 +659,9 @@ export default function CreatePage() {
 )}
 
 
-  
+
+
+ 
         {step === 4 && mosaicOptions.length > 0 && (
           <section style={{ padding: "2rem 0" }}>
             <h2 style={{ fontSize: "1.5rem", textAlign: "center", marginBottom: "1.5rem" }}>4. Select a Mosaic Style</h2>
@@ -659,7 +675,7 @@ export default function CreatePage() {
     maxWidth: "800px",
     marginInline: "auto",
     textAlign: "center",
-    color: "#613073", // ✅ dark green text (same as heading)
+    color: "#065f46", // ✅ dark green text (same as heading)
     fontSize: "1rem",
     lineHeight: 1.6,
     boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
@@ -667,6 +683,7 @@ export default function CreatePage() {
 >
   Click on the image to zoom in. Choose which option looks best and we will convert it into a high resolution print and Dice Map PDF!
 </div>
+
 
             <div
               style={{
@@ -728,10 +745,8 @@ export default function CreatePage() {
   <div
     style={{
       display: "grid",
-      gridTemplateColumns: `repeat(${option.grid?.[0]?.length || 1}, 1fr)`,
-      aspectRatio: `${option.grid?.[0]?.length || 1} / ${option.grid?.length || 1}`,
-      
-
+      gridTemplateColumns: `repeat(${option.grid[0].length}, 1fr)`,
+      aspectRatio: `${option.grid[0].length} / ${option.grid.length}`,
       width: "100%",
       lineHeight: 0,
     }}
@@ -747,6 +762,7 @@ export default function CreatePage() {
       ))
     )}
   </div>
+
 
   {/* 🔍 Zoom Overlay Icon */}
   <div
@@ -779,9 +795,12 @@ export default function CreatePage() {
   }}
 />
 
+
   </div>
 </div>
 </div>
+
+
 
 
                   <button
@@ -791,7 +810,7 @@ export default function CreatePage() {
                       padding: "0.4rem 0.8rem",
                       fontSize: "0.85rem",
                       borderRadius: "4px",
-                      background: selectedStyleId === option.style_id ? "#2f5884" : "#333",
+                      background: selectedStyleId === option.style_id ? "#007bff" : "#333",
                       color: "#fff",
                       border: "none",
                       cursor: "pointer",
@@ -802,12 +821,12 @@ export default function CreatePage() {
                 </div>
               ))}
             </div>
-  
+ 
             <div style={{ marginTop: "2rem", textAlign: "center" }}>
               <button
                 onClick={async () => {
                   if (!selectedStyleId) return;
-                
+               
                   const res = await fetch("/api/create-checkout-session", {
                     method: "POST",
                     headers: {
@@ -815,7 +834,7 @@ export default function CreatePage() {
                     },
                     body: JSON.stringify({ projectName }),
                   });
-                
+               
                   const data = await res.json();
                   if (data.url) {
                     window.location.href = data.url; // Redirect to Stripe
@@ -823,12 +842,12 @@ export default function CreatePage() {
                     alert("Failed to redirect to payment.");
                   }
                 }}
-                
+               
                 disabled={selectedStyleId === null}
                 style={{
                   padding: "0.75rem 1.5rem",
                   fontSize: "1rem",
-                  background: selectedStyleId === null ? "#aaa" : "#ECB84A",
+                  background: selectedStyleId === null ? "#aaa" : "#28a745",
                   color: "#fff",
                   border: "none",
                   borderRadius: "6px",
@@ -844,7 +863,7 @@ export default function CreatePage() {
             </div>
           </section>
         )}
-  
+ 
         {step === 5 && pdfUrl && (
           <section style={{ padding: "2rem 0", textAlign: "center" }}>
             <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>5. Download Your Dice Map</h2>
@@ -853,7 +872,7 @@ export default function CreatePage() {
                 style={{
                   padding: "0.75rem 1.5rem",
                   fontSize: "1rem",
-                  backgroundColor: "#2f5884",
+                  backgroundColor: "#007bff",
                   color: "#fff",
                   border: "none",
                   borderRadius: "6px",
@@ -870,7 +889,6 @@ export default function CreatePage() {
             </div>
           </section>
         )}
-
         {expandedImage !== null && (
   <div
     style={{
@@ -886,27 +904,28 @@ export default function CreatePage() {
       alignItems: "center",
       padding: "2rem",
     }}
-    onClick={() => setExpandedImage(null)}
+    onClick={() => setExpandedImage(null)} // click background to close
   >
-    <button
-      onClick={() => setExpandedImage(null)}
-      style={{
-        position: "absolute",
-        top: "0.75rem",
-        right: "0.75rem",
-        background: "transparent",
-        color: "#fff",
-        fontSize: "1.5rem",
-        border: "none",
-        cursor: "pointer",
-        zIndex: 10000,
-      }}
-      aria-label="Close Zoom"
-    >
-      ✖
-    </button>
-    
-    {/* Modal Content */}
+          {/* ❌ Close Button */}
+          <button
+        onClick={() => setExpandedImage(null)}
+        style={{
+          position: "absolute",
+          top: "0.75rem",
+          right: "0.75rem",
+          background: "transparent",
+          color: "#fff",
+          fontSize: "1.5rem",
+          border: "none",
+          cursor: "pointer",
+          zIndex: 10000,
+        }}
+        aria-label="Close Zoom"
+      >
+        ✖
+      </button>
+
+
     <div
       style={{
         maxWidth: "95vw",
@@ -915,41 +934,55 @@ export default function CreatePage() {
         background: "#111",
         borderRadius: "8px",
         padding: "1rem",
-        position: "relative",
+        position: "relative", // ✅ add this line!
       }}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()} // prevent modal from closing when clicking inside
     >
-      {(() => {
-        {(() => {
-          const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
-          if (!expanded) return null;
-          const cols = expanded.grid[0].length;
-          const rows = expanded.grid.length;
-          const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff"];
-            <div
-              className="grid gap-[1px] bg-black"
-              style={{
-                gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                width: "100%",
-                height: "auto",
-                maxWidth: "80vw",
-                maxHeight: "80vh",
-                aspectRatio: `${cols} / ${rows}`,
-                overflow: "hidden",
-                imageRendering: "pixelated",
-              }}
-            >
-              {expanded.grid.map((row, y) =>
-                row.map((cell, x) => (
-                  <div
-                    key={`${x}-${y}`}
-                    className="w-2 h-2 sm:w-3 sm:h-3"
-                    style={{ backgroundColor: colors[cell] }}
-                  />
-                ))
-              )}
-            </div>
-    </Layout>
+     <div
+  style={{
+    display: "grid",
+    gridTemplateColumns: `repeat(${
+      mosaicOptions.find((o) => o.style_id === expandedImage)?.grid[0]?.length || 1
+    }, 1fr)`,
+    width: "100%",
+    height: "auto",
+    maxWidth: "80vw",
+    maxHeight: "80vh",
+    aspectRatio: `${
+      mosaicOptions.find((o) => o.style_id === expandedImage)?.grid[0]?.length || 1
+    } / ${
+      mosaicOptions.find((o) => o.style_id === expandedImage)?.grid.length || 1
+    }`,
+    overflow: "hidden",
+    imageRendering: "pixelated",
+  }}
+>
+  {mosaicOptions
+    .find((option) => option.style_id === expandedImage)
+    ?.grid.flatMap((row, y) =>
+      row.map((val, x) => (
+        <img
+          key={`${y}-${x}`}
+          src={`/dice/dice_${clampDiceValue(val)}.png`}
+          alt={`dice ${val}`}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+          }}
+        />
+      ))
+    )}
+</div>
+
+
+
+
+</div>
+      </div>
+    )}
+  </div>
+  </div>
+</Layout>
   );
-          );
-        })()}
+}
