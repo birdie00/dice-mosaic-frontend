@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import Cropper from "react-cropper";
-import type CropperType from "cropperjs";
+import type CropperJS from "cropperjs"; // default export from cropperjs
+import "cropperjs/dist/cropper.css";
 import Layout from "@/components/Layout";
 
 interface MosaicOption {
@@ -28,7 +29,7 @@ export default function CreatePage() {
   const [gridSize, setGridSize] = useState<[number, number]>([100, 100]);
   const [showGeneratingMessage, setShowGeneratingMessage] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
-  const cropperRef = useRef<CropperType>(null);
+  const cropperRef = useRef<{ cropper: CropperJS }>(null);
 
   const BACKEND_URL = "https://dice-mosaic-backend.onrender.com";
 
