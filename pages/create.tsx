@@ -174,7 +174,7 @@ export default function CreatePage() {
     "Generate PDF",
     "Download",
   ];
-  
+  return (
     <Layout>
       {expandedImage !== null && (
         <div
