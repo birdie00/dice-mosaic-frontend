@@ -216,46 +216,7 @@ export default function CreatePage() {
   
   return (
     <Layout>
-  {expandedImage !== null && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: "rgba(0, 0, 0, 0.85)",
-      zIndex: 9999,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: "2rem",
-    }}
-    onClick={() => setExpandedImage(null)} // click background to close
-  >
-    {/* Close Button */}
-    <button
-      onClick={() => setExpandedImage(null)}
-      style={{
-        position: "absolute",
-        top: "0.75rem",
-        right: "0.75rem",
-        background: "transparent",
-        color: "#fff",
-        fontSize: "1.5rem",
-        border: "none",
-        cursor: "pointer",
-        zIndex: 10000,
-      }}
-      aria-label="Close Zoom"
-    >
-      ✖
-    </button>
 
-    {/* Modal Content */}
-    {/* Your modal content here */}
-  </div>
-)}
 
 
       {showGeneratingMessage && (
