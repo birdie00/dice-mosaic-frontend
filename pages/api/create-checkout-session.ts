@@ -38,7 +38,7 @@ export default async function handler(
             product_data: {
               name: `Dice Map PDF - ${projectName || "Untitled"}`,
             },
-            unit_amount: 500, // in cents ($5.00)
+            unit_amount: 20, // in cents ($0.20)
           },
           quantity: 1,
         },
