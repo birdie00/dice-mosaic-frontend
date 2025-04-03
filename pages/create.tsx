@@ -57,16 +57,26 @@ export default function CreatePage() {
         return;
       }
   
-      fetch(`${BACKEND_URL}/generate-pdf`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          grid_data,
-          style_id,
-          project_name,
-        }),
-})()}
-        .then((res) => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/generate-pdf`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ grid_data, style_id, project_name }),
+        });
+        if (!response.ok) throw new Error("Failed to generate PDF.");
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${project_name}.pdf`;
+        a.click();
+        localStorage.removeItem("grid_data");
+        localStorage.removeItem("style_id");
+        localStorage.removeItem("project_name");
+      } catch (err) {
+        console.error("PDF generation failed:", err);
+        alert("Something went wrong creating your PDF.");
+      }
           if (!res.ok) throw new Error("Failed to generate PDF.");
           return res.blob();
 })()}
