@@ -915,8 +915,10 @@ export default function CreatePage() {
       onClick={(e) => e.stopPropagation()}
     >
       {(() => {
-        const expanded = mosaicOptions.find((o) => o.style_id === expandedImage);
+      {(() => {
+        return (
 
+        );
        
             
             )}
