@@ -963,3 +963,4 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
 {/* Close the section and layout properly */}
 </section> {/* Assuming the section is opened before */}
 </Layout> {/* Correctly close Layout here */}
+
