@@ -24,7 +24,7 @@ export default async function handler(
     return res.status(500).json({ error: "Site URL not configured in environment." });
   }
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+  const stripe = new Stripe(stripeSecretKey); // ✅ FIXED: removed apiVersion
 
   const { projectName } = req.body;
 
