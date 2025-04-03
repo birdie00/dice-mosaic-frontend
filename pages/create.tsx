@@ -65,11 +65,11 @@ export default function CreatePage() {
           style_id,
           project_name,
         }),
-      })
+})()}
         .then((res) => {
           if (!res.ok) throw new Error("Failed to generate PDF.");
           return res.blob();
-        })
+})()}
         .then((blob) => {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
@@ -81,7 +81,7 @@ export default function CreatePage() {
           localStorage.removeItem("grid_data");
           localStorage.removeItem("style_id");
           localStorage.removeItem("project_name");
-        })
+})()}
         .catch((err) => {
           console.error("PDF generation failed:", err);
           alert("Something went wrong creating your PDF.");
