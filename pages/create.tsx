@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
-import { Cropper } from "react-cropper";
+import Cropper from "react-cropper";
 import type { Cropper as CropperType } from "cropperjs";
 import Layout from "@/components/Layout";
 
