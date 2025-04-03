@@ -1,9 +1,10 @@
+import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
-import { Cropper } from "react-cropper";
-import type { Cropper as CropperType } from "cropperjs";
+import type CropperType from "cropperjs";
 import Layout from "@/components/Layout";
-import React from "react";
+import { Cropper } from "react-cropper";
+import type { ReactCropperElement } from "react-cropper";
 
 
 interface MosaicOption {
@@ -33,7 +34,7 @@ export default function CreatePage() {
   const [gridSize, setGridSize] = useState<[number, number]>([100, 100]);
   const [showGeneratingMessage, setShowGeneratingMessage] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
-  const cropperRef = useRef<CropperType>(null);
+  const cropperRef = useRef<ReactCropperElement>(null);
 
 
   const BACKEND_URL = "https://dice-mosaic-backend.onrender.com";
@@ -121,12 +122,13 @@ export default function CreatePage() {
     }
 
 
-    canvas.toBlob((blob) => {
+    canvas.toBlob((blob: Blob | null) => {
       if (blob) {
         setCroppedImage(blob);
         setCroppedImageUrl(URL.createObjectURL(blob));
       }
     }, "image/png");
+    
   };
 
 
@@ -350,7 +352,6 @@ export default function CreatePage() {
 
     <div
       style={{
-        border: "1px solid #ccc",
         borderRadius: "16px",
         padding: "2rem",
         background: "#ffffff",
