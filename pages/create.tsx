@@ -732,9 +732,9 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
   <div
     style={{
       display: "grid",
-      gridTemplateColumns: `repeat(${option.grid[0]?.length || 1}, 1fr)`,
-aspectRatio: `${option.grid[0]?.length || 1} / ${option.grid?.length || 1}`,
-
+      gridTemplateColumns: `repeat(${option.grid?.[0]?.length || 1}, 1fr)`,
+      aspectRatio: `${option.grid?.[0]?.length || 1} / ${option.grid?.length || 1}`,
+      
 
       width: "100%",
       lineHeight: 0,
@@ -926,8 +926,9 @@ aspectRatio: `${option.grid[0]?.length || 1} / ${option.grid?.length || 1}`,
   style={{
     display: "grid",
     gridTemplateColumns: `repeat(${
-      mosaicOptions.find((o) => o.style_id === expandedImage)?.grid[0]?.length || 1
+      mosaicOptions.find((o) => o.style_id === expandedImage)?.grid?.[0]?.length || 1
     }, 1fr)`,
+    
     width: "100%",
     height: "auto",
     maxWidth: "80vw",
