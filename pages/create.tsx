@@ -316,7 +316,6 @@ boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
 
     <div
       style={{
-        border: "1px solid #ccc",
         borderRadius: "16px",
         padding: "2rem",
         background: "#ffffff",
