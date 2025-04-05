@@ -76,7 +76,7 @@ export default function CreatePage() {
   // 🔧 Image crop ratio logic
   const handleAspectRatioChange = (option: AspectRatioOption) => {
     setAspectRatio(option);
-    const cropper = cropperRef.current?.cropper;
+    const cropper = cropperRef.current;
     if (!cropper) return;
 
 
