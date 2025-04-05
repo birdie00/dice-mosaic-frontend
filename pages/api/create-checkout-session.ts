@@ -1,61 +1,49 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import Stripe from "stripe";
+import { NextApiRequest, NextApiResponse } from 'next';
+import Stripe from 'stripe';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  console.log("🔁 Hitting create-checkout-session");
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2022-11-15',
+});
 
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
-
-  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-
-  if (!stripeSecretKey) {
-    console.error("❌ STRIPE_SECRET_KEY is missing!");
-    return res.status(500).json({ error: "Stripe key not set in environment." });
-  }
-
-  if (!siteUrl) {
-    console.error("❌ NEXT_PUBLIC_SITE_URL is missing!");
-    return res.status(500).json({ error: "Site URL not configured in environment." });
-  }
-
-  const stripe = new Stripe(stripeSecretKey); // ✅ FIXED: removed apiVersion
-
-  const { projectName } = req.body;
 
   try {
+    const { pdfUrl, projectName, email } = req.body;
+
+    if (!pdfUrl || !projectName || !email) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ['card'],
+      mode: 'payment',
+      success_url: `${req.headers.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}/create`,
+      metadata: {
+        pdfUrl,
+        projectName,
+        email, // ✅ include email in metadata
+      },
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: 'usd',
+            unit_amount: 999, // change this if needed
             product_data: {
-              name: `Dice Map PDF - ${projectName || "Untitled"}`,
+              name: 'Custom Dice Map PDF',
             },
-            unit_amount: 20, // in cents ($0.20)
           },
           quantity: 1,
         },
       ],
-      mode: "payment",
-      success_url: `${siteUrl}/create?success=true&project=${encodeURIComponent(
-        projectName || ""
-      )}`,
-      cancel_url: `${siteUrl}/create?canceled=true`,
     });
 
-    console.log("✅ Stripe session created:", session.url);
-    return res.status(200).json({ url: session.url });
+    res.status(200).json({ url: session.url });
   } catch (err) {
-    console.error("❌ Stripe session error:", err);
-    return res.status(500).json({
-      error: (err as Error).message || "Stripe session creation failed.",
-    });
+    console.error('Error creating Stripe session:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }

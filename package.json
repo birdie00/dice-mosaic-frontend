@@ -9,12 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
     "cropperjs": "^1.5.13",
+    "nanoid": "^5.1.5",
     "next": "15.2.4",
+    "nodemailer": "^6.10.0",
     "react": "^19.1.0",
     "react-compare-image": "^3.5.0",
     "react-cropper": "^2.3.3",
     "react-dom": "^19.1.0",
+    "resend": "^4.2.0",
     "stripe": "^18.0.0"
   },
   "devDependencies": {
