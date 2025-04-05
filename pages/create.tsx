@@ -351,7 +351,6 @@ export default function CreatePage() {
 
     <div
       style={{
-        border: "1px solid #ccc",
         borderRadius: "16px",
         padding: "2rem",
         background: "#ffffff",
