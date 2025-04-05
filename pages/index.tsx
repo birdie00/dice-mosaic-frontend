@@ -105,47 +105,63 @@ export default function Home() {
       </header>
 
       <section style={styles.sideBySide}>
-  <div style={styles.splitContainer}>
-    {/* Slider - 30% on desktop, 80% on mobile */}
-    <div style={styles.sliderWrapper} className="responsive-slider">
-      <ReactCompareImage
-        leftImage="/dog_real.png"
-        rightImage="/dog_dice.png"
-        sliderPositionPercentage={0.5}
-        sliderLineColor="#EAAA4F"
-      />
-    </div>
+        <div style={styles.splitContainer}>
+          {/* Slider - 30% on desktop, 80% on mobile */}
+          <div style={styles.sliderWrapper} className="responsive-slider">
+            <ReactCompareImage
+              leftImage="/dog_real.png"
+              rightImage="/dog_dice.png"
+              sliderPositionPercentage={0.5}
+              sliderLineColor="#EAAA4F"
+            />
+          </div>
 
-    {/* Features - 70% on desktop, full width on mobile */}
-    <div style={styles.features}>
-      <div style={styles.featureCard}>
-        <h3>🧰 DIY Kits</h3>
-        <p>Create your own dice mosaic using our software and build it yourself at home!</p>
-        <Link href="/create">Create Now →</Link>
-      </div>
-      <div style={styles.featureCard}>
-        <h3>🎨 Commissions</h3>
-        <p>Want us to build it for you? Commission a professional dice artist.</p>
-        <Link href="/commissions">Request a Quote →</Link>
-      </div>
-      <div style={styles.featureCard}>
-        <h3>🖼️ Prints</h3>
-        <p>Order custom-printed versions of your mosaic — no dice needed!</p>
-        <Link href="/store">View Prints →</Link>
-      </div>
-    </div>
-  </div>
+          {/* Features - 70% on desktop, full width on mobile */}
+          <div style={styles.features}>
+            <div style={styles.featureCard}>
+              <h3>🧰 DIY Kits</h3>
+              <p>Create your own dice mosaic using our software and build it yourself at home!</p>
+              <Link href="/create">Create Now →</Link>
+            </div>
+            <div style={styles.featureCard}>
+              <h3>🎨 Commissions</h3>
+              <p>Want us to build it for you? Commission a professional dice artist.</p>
+              <Link href="/commissions">Request a Quote →</Link>
+            </div>
+            <div style={styles.featureCard}>
+              <h3>🖼️ Prints</h3>
+              <p>Order custom-printed versions of your mosaic — no dice needed!</p>
+              <Link href="/store">View Prints →</Link>
+            </div>
+          </div>
+        </div>
 
-  {/* Media query for mobile responsiveness */}
-  <style jsx>{`
-    @media (max-width: 768px) {
-      .responsive-slider {
-        width: 80% !important;
-        margin: 0 auto;
-      }
-    }
-  `}</style>
-</section>
+        {/* Media query for mobile responsiveness */}
+        <style jsx>{`
+          @media (max-width: 768px) {
+            header {
+              height: 55vh !important;
+            }
+
+            img[alt='Pipcasso Logo'] {
+              max-width: 70vw !important;
+              margin-bottom: 1rem;
+            }
+
+            button {
+              white-space: nowrap;
+              font-size: 1rem !important;
+              padding: 0.75rem 1.5rem !important;
+            }
+
+            .responsive-slider {
+              width: 80% !important;
+              margin: 0 auto;
+            }
+          }
+        `}</style>
+      </section>
+    
 
 
       <footer style={styles.footer}>
