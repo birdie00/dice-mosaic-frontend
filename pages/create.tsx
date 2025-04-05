@@ -114,7 +114,7 @@ export default function CreatePage() {
 
   // 🔧 Crop the image to canvas
   const cropImage = () => {
-    const cropper = cropperRef.current?.cropper;
+    const cropper = cropperRef.current;
     if (!cropper) return;
 
 
