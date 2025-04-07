@@ -19,7 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   style={{
     backgroundColor: "#000",
     color: "#fff",
-    padding: "1rem 1.5rem",
+    padding: "0.75rem 1.5rem",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -28,18 +28,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     zIndex: 1000,
   }}
 >
+  {/* Logo */}
   <Link href="/" style={{ display: "flex", alignItems: "center" }}>
     <Image
       src="/images/HeaderLogo.png"
       alt="Pipcasso Logo"
-      width={180}
+      width={160}
       height={50}
       priority
+      style={{ objectFit: "contain", height: "auto", width: "auto", maxHeight: "50px" }}
     />
   </Link>
 
+  {/* Hamburger toggle */}
   <button
-    onClick={() => setMenuOpen(!menuOpen)}
+    onClick={() => setMenuOpen((prev) => !prev)}
     style={{
       background: "none",
       border: "none",
@@ -54,7 +57,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     {menuOpen ? "✖" : "☰"}
   </button>
 
+  {/* Navigation menu */}
   <nav
+    className={`site-nav ${menuOpen ? "open" : ""}`}
     style={{
       display: menuOpen ? "flex" : "none",
       flexDirection: "column",
@@ -66,18 +71,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       textAlign: "center",
       padding: "1rem",
     }}
-    className="mobile-nav"
   >
-    <Link href="/create" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
+    <Link href="/create" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.75rem 0" }}>
       Create
     </Link>
-    <Link href="/commissions" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
+    <Link href="/commissions" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.75rem 0" }}>
       Commissions
     </Link>
-    <Link href="/store" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
+    <Link href="/store" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.75rem 0" }}>
       DIY Kits
     </Link>
-    <Link href="/cart" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
+    <Link href="/cart" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.75rem 0" }}>
       🛒 Cart
     </Link>
   </nav>
@@ -87,18 +91,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       .mobile-toggle {
         display: none;
       }
-      .mobile-nav {
+      .site-nav {
         display: flex !important;
-        position: static;
+        position: static !important;
         flex-direction: row;
         gap: 2rem;
         padding: 0;
         align-items: center;
-        background: none;
+        background: none !important;
       }
     }
   `}</style>
 </header>
+
 
 
       <main>{children}</main>
