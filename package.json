@@ -14,6 +14,7 @@
     "nanoid": "^5.1.5",
     "next": "15.2.4",
     "nodemailer": "^6.10.0",
+    "pdfkit": "^0.16.0",
     "react": "^19.1.0",
     "react-compare-image": "^3.5.0",
     "react-cropper": "^2.3.3",
