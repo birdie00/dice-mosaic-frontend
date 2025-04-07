@@ -6,7 +6,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil", // ✅ match your installed version
 });
 
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -25,12 +24,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       : "https://dice-mosaic-frontend.vercel.app/"; // 🔁 update with your live domain if different
 
   try {
-console.log("📦 Creating Stripe session with metadata:", {
-  email,
-  projectName,
-  pdfUrl,
-});
+    // Log the values being passed to Stripe
+    console.log("📦 Creating Stripe session with metadata:", {
+      email,
+      projectName,
+      pdfUrl,
+    });
 
+    // Create the Stripe session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       customer_email: email,
@@ -48,7 +49,7 @@ console.log("📦 Creating Stripe session with metadata:", {
         },
       ],
       mode: "payment",
-success_url: `${domain}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${domain}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${domain}/create?cancelled=true`,
       metadata: {
         pdfUrl,
