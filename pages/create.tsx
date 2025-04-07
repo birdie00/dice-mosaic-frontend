@@ -417,16 +417,26 @@ export default function CreatePage() {
 
 
     <div
-      style={{
-        borderRadius: "16px",
-        padding: "2rem",
-        background: "#ffffff",
-        border: "1px solid #c6f6d5", // greenish border
-        maxWidth: "600px",
-        margin: "2rem auto",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-      }}
-    >
+  className="upload-card"
+  style={{
+    borderRadius: "16px",
+    padding: "2rem", // desktop default
+    background: "#ffffff",
+    border: "1px solid #c6f6d5",
+    maxWidth: "600px",
+    margin: "2rem auto",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  }}
+>
+<style jsx>{`
+  @media (max-width: 600px) {
+    .upload-card {
+      padding-left: 1rem !important;
+      padding-right: 1rem !important;
+    }
+  }
+`}</style>
+
       <h3 style={{ fontSize: "1.4rem", marginBottom: "1rem", textAlign: "center", color: "#333" }}>
         Upload your image here to move to Step 2
       </h3>
