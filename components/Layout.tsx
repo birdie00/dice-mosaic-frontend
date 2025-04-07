@@ -30,18 +30,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 >
   {/* Logo */}
   <Link href="/" style={{ display: "flex", alignItems: "center" }}>
-  <Image
+  <img
   src="/images/HeaderLogo.png"
   alt="Pipcasso Logo"
-  priority
-  width={0}
-  height={0}
   style={{
-    width: "auto",
+    width: "100%",
+    maxWidth: "180px",
     height: "auto",
-    maxHeight: "60px",
+    objectFit: "contain",
   }}
 />
+
 
 
   </Link>
