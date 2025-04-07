@@ -10,25 +10,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { email, pdfUrl, projectName, stripeData } = req.body;
+console.log("📥 Received purchase payload:", req.body);
 
   if (!email || !pdfUrl || !projectName) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
+  console.error("❌ Missing required field(s):", { email, pdfUrl, projectName });
+  return res.status(400).json({ error: 'Missing one or more required fields' });
+}
 
   const code = nanoid(6).toUpperCase(); // e.g., "XK49HZ"
 
   console.log("📦 Recording purchase for:", { email, projectName, pdfUrl });
 
   // Save purchase info to Supabase
-  const { error } = await supabase.from('purchases').insert([
-    {
-      code,
-      email,
-      pdf_url: pdfUrl,
-      project_name: projectName,
-      stripe_data: stripeData,
-    },
-  ]);
+  // 🧪 TEMPORARY BYPASS FOR TESTING
+const error = null;
+// Comment out the real DB call for now to isolate the issue
+// const { error } = await supabase.from('purchases').insert([...]);
+
 
   if (error) {
     console.error("❌ Error inserting into Supabase:", error);
