@@ -398,13 +398,11 @@ export default function CreatePage() {
     color: "#155E63",
     textAlign: "center",
     lineHeight: 1.3,
-    wordBreak: "break-word",         // ✅ wrap long words
     maxWidth: "90%",                 // ✅ prevents overflow
     marginInline: "auto",   
   }}
 >
-  Welcome to Pipcasso
-  Dice Mosaic Generator
+  Welcome to Pipcasso Dice Mosaic Generator
 </h2>
 
     <p style={{ fontSize: "1rem", lineHeight: "1.4", marginBottom: "0.5rem", maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
