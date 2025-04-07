@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       ],
       mode: "payment",
-      success_url: `${domain}/create?success=true`,
+success_url: `${domain}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${domain}/create?cancelled=true`,
       metadata: {
         pdfUrl,
