@@ -290,20 +290,25 @@ export default function CreatePage() {
 
     return (
       <div
-        key={index}
-        style={{
-          flex: 1,
-          padding: "0.5rem 0.25rem",
-          backgroundColor,
-          color: textColor,
-          textAlign: "center",
-          fontSize: "1.1rem",
-          fontWeight: "bold",
-          borderLeft: index !== 0 ? "1px solid #fff" : "none",
-        }}
-      >
-        Step {stepNum}
-      </div>
+  key={index}
+  style={{
+    flex: 1,
+    padding: "0.5rem 0.25rem",
+    backgroundColor,
+    color: textColor,
+    textAlign: "center",
+    fontSize: "1.1rem",
+    fontWeight: "bold",
+    borderLeft: index !== 0 ? "1px solid #fff" : "none",
+  }}
+>
+  <img
+    src={`/icons/dicevector_${stepNum}.png`}
+    alt={`Step ${stepNum}`}
+    style={{ width: "32px", height: "32px", marginBottom: "0.25rem" }}
+  />
+</div>
+
     );
   })}
 </div>
