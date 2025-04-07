@@ -30,34 +30,36 @@ if (!pdfUrl) {
 
     console.log('📦 Stripe session metadata:', metadata);
 
-    // 🔧 Call record-purchase and get the code
-    const baseUrl =
-  process.env.NEXT_PUBLIC_BASE_URL || 'https://dice-mosaic-frontend.vercel.app';
+// 🔧 Call record-purchase and get the code (with fallback protection)
+try {
+  const recordRes = await fetch(`${req.headers.origin}/api/record-purchase`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      projectName,
+      pdfUrl,
+      stripeData: session,
+    }),
+  });
 
-const recordRes = await fetch(`${baseUrl}/api/record-purchase`, {
+  const recordData = await recordRes.json();
 
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        projectName,
-        pdfUrl,
-        stripeData: session,
-      }),
-    });
+  if (!recordRes.ok) {
+    console.error('❌ Failed to record purchase:', recordData);
+    return res.status(500).json({ error: 'Failed to save purchase info' });
+  }
 
-    const recordData = await recordRes.json();
+  return res.status(200).json({
+    metadata: session.metadata,
+    pdfUrl,
+    code: recordData.code,
+  });
+} catch (err) {
+  console.error('❌ record-purchase call failed:', err);
+  return res.status(500).json({ error: 'record-purchase fetch failed' });
+}
 
-    if (!recordRes.ok) {
-      console.error('❌ Failed to record purchase:', recordData);
-      return res.status(500).json({ error: 'Failed to save purchase info' });
-    }
-
-    return res.status(200).json({
-  metadata,
-  pdfUrl, // ✅ makes frontend simpler
-  code: recordData.code,
-});
 
   } catch (err) {
     console.error('❌ Error retrieving Stripe session:', err);
