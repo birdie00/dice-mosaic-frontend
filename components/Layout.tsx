@@ -35,9 +35,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   alt="Pipcasso Logo"
   style={{
     width: "100%",
-    maxWidth: "180px",
-    height: "80px",
+    maxWidth: "100%",
     objectFit: "contain",
+    marginBottom: "1.25rem",
   }}
 />
 
