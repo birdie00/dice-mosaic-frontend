@@ -388,23 +388,13 @@ export default function CreatePage() {
 </div>
 
 
-
-
-
-
-
-
-
-
-
-
         {step === 1 && (
   <section style={{ padding: "2rem 1rem" }}>
 <h2
   style={{
-    fontSize: "1.75rem",
+    fontSize: "1.4rem",
     fontWeight: "800",
-    margin: "1rem 0 0.5rem",
+    margin: "0.25rem 0 0.5rem",
     color: "#155E63",
     textAlign: "center",
     lineHeight: 1.3,
