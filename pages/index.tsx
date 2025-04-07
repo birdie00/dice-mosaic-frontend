@@ -1,18 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import ReactCompareImage from "react-compare-image";
 import Link from "next/link";
+
 
 export default function Home() {
   const contentRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [showNav, setShowNav] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     let latestScrollY = 0;
     let ticking = false;
     let windowHeight = window.innerHeight;
+
+    setIsMobile(window.innerWidth < 768);
 
     const onScroll = () => {
       latestScrollY = window.scrollY;
@@ -76,33 +80,84 @@ export default function Home() {
         </div>
       </nav>
 
-      <header style={styles.header}>
+      <header
+        style={{
+          height: isMobile ? "50vh" : "100vh",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
         <video
           autoPlay
           muted
           loop
           playsInline
-          style={styles.videoBackground}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            zIndex: 0,
+          }}
           src="/videos/dice-falling.mp4"
         />
-        <div style={styles.videoOverlay}></div>
 
-        <div ref={contentRef} style={styles.content}>
-          <div style={styles.hgroup}>
-            <img
-              src="/images/HeaderLogo.png"
-              alt="Pipcasso Logo"
-              style={styles.imageLogo}
-            />
-            <button
-              onClick={() => router.push("/create")}
-              style={styles.button}
-            >
-              Start Creating →
-            </button>
-          </div>
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            zIndex: 1,
+          }}
+        />
+
+        <div
+          ref={contentRef}
+          style={{
+            position: "relative",
+            zIndex: 2,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "1rem",
+          }}
+        >
+          <img
+            src="/images/HeaderLogo.png"
+            alt="Pipcasso Logo"
+            style={{
+              width: "100%",
+              maxWidth: "100%",
+              objectFit: "contain",
+              marginBottom: "1.25rem",
+            }}
+          />
+          <button
+            onClick={() => router.push("/create")}
+            style={{
+              fontSize: "1rem",
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "#E84C3D",
+              color: "#fff",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+            }}
+          >
+            Start Creating
+          </button>
         </div>
       </header>
+  
+      
+
 
       <section style={styles.sideBySide}>
         <div style={styles.splitContainer}>

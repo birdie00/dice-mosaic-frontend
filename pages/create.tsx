@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Cropper } from "react-cropper";
-import type CropperType from "cropperjs";
+import type { Cropper as CropperType } from "cropperjs";
 import Layout from "@/components/Layout";
 import React from "react";
 
@@ -76,7 +76,7 @@ export default function CreatePage() {
   // 🔧 Image crop ratio logic
   const handleAspectRatioChange = (option: AspectRatioOption) => {
     setAspectRatio(option);
-    const cropper = cropperRef.current;
+    const cropper = cropperRef.current?.cropper;
     if (!cropper) return;
 
 
@@ -114,7 +114,7 @@ export default function CreatePage() {
 
   // 🔧 Crop the image to canvas
   const cropImage = () => {
-    const cropper = cropperRef.current;
+    const cropper = cropperRef.current?.cropper;
     if (!cropper) return;
 
 
@@ -971,6 +971,7 @@ export default function CreatePage() {
         
 
         const data = await res.json();
+        console.log("Stripe session response:", data);
         if (data.url) {
           window.location.href = data.url;
         } else {
