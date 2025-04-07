@@ -1,23 +1,19 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Cropper } from "react-cropper";
-import type CropperType from "cropperjs";
+import type CropperJS from "cropperjs";
 import Layout from "@/components/Layout";
 import React from "react";
-
 
 interface MosaicOption {
   style_id: number;
   grid: number[][];
 }
 
-
 type AspectRatioOption = "square" | "portrait" | "landscape";
-
 
 export default function CreatePage() {
   const router = useRouter();
-
 
   const [step, setStep] = useState(1);
   const [projectName, setProjectName] = useState("");
@@ -33,12 +29,15 @@ export default function CreatePage() {
   const [gridSize, setGridSize] = useState<[number, number]>([100, 100]);
   const [showGeneratingMessage, setShowGeneratingMessage] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
-  const cropperRef = useRef<CropperType>(null);
+
+  // ✅ Correct ref typing for react-cropper instance
+  const cropperRef = useRef<HTMLImageElement & { cropper: CropperJS }>(null);
+
   const [email, setEmail] = useState('');
   const isValidEmail = (email: string): boolean => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
-  
+
 
   const BACKEND_URL = "https://dice-mosaic-backend.onrender.com";
 
