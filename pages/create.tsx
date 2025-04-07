@@ -400,7 +400,7 @@ export default function CreatePage() {
 
         {step === 1 && (
   <section style={{ padding: "2rem 1rem" }}>
-    <h2 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: ".5rem", color: "#155E63", textAlign: "center" }}>Welcome to Pipcasso Dice Mosaic Generator</h2>
+    <h2 style={{ fontSize: "1.8rem", fontWeight: "bold", marginBottom: ".5rem", color: "#155E63", textAlign: "center" }}>Welcome to Pipcasso Dice Mosaic Generator</h2>
     <p style={{ fontSize: "1rem", lineHeight: "1.4", marginBottom: "2rem", maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
       At <strong>Pipcasso</strong>, we turn your unique images into stunning dice mosaic portraits. Upload a photo, and we’ll
       transform it into a custom portrait made entirely from dice. You can download it as a high-resolution image, have it printed and shipped to your door,
