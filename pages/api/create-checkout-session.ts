@@ -52,8 +52,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       success_url: `${domain}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${domain}/create?cancelled=true`,
       metadata: {
-        pdfUrl,
-        projectName,
+    email,         // ✅ NOW INCLUDED!
+    pdfUrl,
+    projectName,
       },
     });
 
