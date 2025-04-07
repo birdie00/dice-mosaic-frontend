@@ -30,9 +30,8 @@ if (!pdfUrl) {
 
     console.log('📦 Stripe session metadata:', metadata);
 
-// 🔧 Call record-purchase and get the code (with fallback protection)
 try {
-  const recordRes = await fetch(`${req.headers.origin}/api/record-purchase`, {
+  const recordRes = await fetch(`https://dice-mosaic-frontend.vercel.app/api/record-purchase`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -58,11 +57,4 @@ try {
 } catch (err) {
   console.error('❌ record-purchase call failed:', err);
   return res.status(500).json({ error: 'record-purchase fetch failed' });
-}
-
-
-  } catch (err) {
-    console.error('❌ Error retrieving Stripe session:', err);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
 }
