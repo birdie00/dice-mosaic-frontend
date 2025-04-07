@@ -254,24 +254,17 @@ export default function CreatePage() {
         }}
       >
         <div
-          style={{
-            maxWidth: "1000px",
-            margin: "auto",
-            backgroundColor: "#FDF7F1", // cream card color
-            borderRadius: "16px",
-            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
-            padding: "2rem",
-            color: "#2F5884", // navy for text
-          }}
-    >
-
-
-
-
-
-
-
-
+  style={{
+    maxWidth: "1100px",             // ⬆️ slightly wider
+    margin: "2rem auto",            // ⬆️ add top/bottom margin
+    backgroundColor: "#FDF7F1",
+    borderRadius: "16px",
+    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+    padding: "3rem 2.5rem",         // ⬆️ more breathing room
+    color: "#2F5884",
+    lineHeight: 1.65,               // ⬆️ better readability
+  }}
+>
       {showGeneratingMessage && (
   <div
     style={{
