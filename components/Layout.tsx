@@ -34,12 +34,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   src="/images/HeaderLogo.png"
   alt="Pipcasso Logo"
   style={{
-    width: "100%",
-    maxWidth: "100%",
+    height: "40px",
+    width: "auto",
     objectFit: "contain",
-    marginBottom: "1.25rem",
   }}
 />
+
 
 
 
