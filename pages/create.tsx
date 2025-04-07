@@ -5,15 +5,19 @@ import type CropperJS from "cropperjs";
 import Layout from "@/components/Layout";
 import React from "react";
 
+
 interface MosaicOption {
   style_id: number;
   grid: number[][];
 }
 
+
 type AspectRatioOption = "square" | "portrait" | "landscape";
+
 
 export default function CreatePage() {
   const router = useRouter();
+
 
   const [step, setStep] = useState(1);
   const [projectName, setProjectName] = useState("");
@@ -30,8 +34,10 @@ export default function CreatePage() {
   const [showGeneratingMessage, setShowGeneratingMessage] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
 
+
   // ✅ Correct ref typing for react-cropper instance
   const cropperRef = useRef<HTMLImageElement & { cropper: CropperJS }>(null);
+
 
   const [email, setEmail] = useState('');
   const isValidEmail = (email: string): boolean => {
@@ -39,7 +45,11 @@ export default function CreatePage() {
   };
 
 
+
+
   const BACKEND_URL = "https://dice-mosaic-backend.onrender.com";
+
+
 
 
   // ✅ Preload dice images
@@ -54,9 +64,13 @@ export default function CreatePage() {
   }, []);
 
 
+
+
   // ✅ Check for Stripe success flag
   useEffect(() => {
     const { success } = router.query;
+
+
 
 
     if (
@@ -72,6 +86,8 @@ export default function CreatePage() {
   }, [router.query, selectedStyleId, mosaicOptions, pdfUrl]);
 
 
+
+
   // 🔧 Image crop ratio logic
   const handleAspectRatioChange = (option: AspectRatioOption) => {
     setAspectRatio(option);
@@ -79,8 +95,12 @@ export default function CreatePage() {
     if (!cropper) return;
 
 
+
+
     let ratio = 1;
     let newGrid: [number, number] = [100, 100];
+
+
 
 
     if (option === "portrait") {
@@ -92,9 +112,13 @@ export default function CreatePage() {
     }
 
 
+
+
     cropper.setAspectRatio(ratio);
     setGridSize(newGrid);
   };
+
+
 
 
   // 🔧 Handle image upload
@@ -111,10 +135,14 @@ export default function CreatePage() {
   };
 
 
+
+
   // 🔧 Crop the image to canvas
   const cropImage = () => {
     const cropper = cropperRef.current?.cropper;
     if (!cropper) return;
+
+
 
 
     const canvas = cropper.getCroppedCanvas();
@@ -122,6 +150,8 @@ export default function CreatePage() {
       alert("Please resize your crop area.");
       return;
     }
+
+
 
 
     canvas.toBlob((blob) => {
@@ -135,12 +165,18 @@ export default function CreatePage() {
 
 
 
+
+
+
+
   const generateMosaics = async () => {
     if (!croppedImage) return;
     const formData = new FormData();
     formData.append("file", croppedImage, "cropped.png");
     formData.append("grid_width", gridSize[0].toString());
     formData.append("grid_height", gridSize[1].toString());
+
+
 
 
     setLoading(true);
@@ -150,10 +186,14 @@ export default function CreatePage() {
     });
 
 
+
+
     const data = await res.json();
     setMosaicOptions(data.styles);
     setLoading(false);
   };
+
+
 
 
   const generatePDF = async () => {
@@ -187,6 +227,8 @@ export default function CreatePage() {
  
 
 
+
+
   const clampDiceValue = (val: any): number => {
     const num = parseInt(val);
     if (isNaN(num)) return 0;
@@ -213,16 +255,19 @@ export default function CreatePage() {
       >
         <div
           style={{
-  maxWidth: "1100px",
-  margin: "2rem auto",
-  backgroundColor: "#FDF7F1",
-  borderRadius: "16px",
-  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
-  padding: "3rem 2.5rem",
-  color: "#2F5884",
-  lineHeight: 1.6,
-}}
+            maxWidth: "1000px",
+            margin: "auto",
+            backgroundColor: "#FDF7F1", // cream card color
+            borderRadius: "16px",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+            padding: "2rem",
+            color: "#2F5884", // navy for text
+          }}
     >
+
+
+
+
 
 
 
@@ -265,6 +310,8 @@ export default function CreatePage() {
 )}
 
 
+
+
 <div
           style={{
             display: "flex",
@@ -278,8 +325,10 @@ export default function CreatePage() {
             const isActive = step === stepNum;
             const isCompleted = step > stepNum;
 
+
             let backgroundColor = "#F1943C"; // orange (completed)
             let textColor = "#fff";
+
 
             if (isActive) {
               backgroundColor = "#E84C3D"; // red (active)
@@ -289,25 +338,36 @@ export default function CreatePage() {
               textColor = "#3B1B47"; // deep purple for contrast
             }
 
+
     return (
       <div
-        key={index}
-        style={{
-          flex: 1,
-          padding: "0.5rem 0.25rem",
-          backgroundColor,
-          color: textColor,
-          textAlign: "center",
-          fontSize: "1.1rem",
-          fontWeight: "bold",
-          borderLeft: index !== 0 ? "1px solid #fff" : "none",
-        }}
-      >
-        Step {stepNum}
-      </div>
+  key={index}
+  style={{
+    flex: 1,
+    padding: "0.5rem 0.25rem",
+    backgroundColor,
+    borderLeft: index !== 0 ? "1px solid #fff" : "none",
+    display: "flex",                  // ✅ enable flexbox
+    alignItems: "center",            // ✅ vertical centering
+    justifyContent: "center",        // ✅ horizontal centering
+    minHeight: "60px",               // ✅ ensure enough height
+  }}
+>
+  <img
+    src={`/icons/dicevector_${stepNum}.png`}
+    alt={`Step ${stepNum}`}
+    style={{ width: "32px", height: "32px" }}
+  />
+</div>
+
+
+
+
     );
   })}
 </div>
+
+
 
 
 {/* ✅ Raised Heading Box snapped to step tracker */}
@@ -339,6 +399,12 @@ export default function CreatePage() {
 
 
 
+
+
+
+
+
+
         {step === 1 && (
   <section style={{ padding: "2rem 1rem" }}>
     <h2 style={{ fontSize: "2rem", marginBottom: "1rem", color: "#155E63", textAlign: "center" }}>Welcome to Pipcasso Dice Mosaic Generator</h2>
@@ -347,6 +413,8 @@ export default function CreatePage() {
       transform it into a custom portrait made entirely from dice. You can download it as a high-resolution image, have it printed and shipped to your door,
       or even receive a <strong>DIY Dice Kit</strong> with a personalized Dice Map to build your own mosaic masterpiece at home.
     </p>
+
+
 
 
     <div
@@ -363,6 +431,8 @@ export default function CreatePage() {
       <h3 style={{ fontSize: "1.4rem", marginBottom: "1rem", textAlign: "center", color: "#333" }}>
         Upload your image here to move to Step 2
       </h3>
+
+
 
 
       {/* Project Name */}
@@ -402,6 +472,8 @@ export default function CreatePage() {
 </label>
 
 
+
+
       {/* Image Upload */}
       <label style={{ display: "block", marginBottom: "1.5rem" }}>
         <div style={{ marginBottom: "0.5rem", fontWeight: 600 }}>Choose Image</div>
@@ -420,6 +492,8 @@ export default function CreatePage() {
       </label>
 
 
+
+
       {/* Terms and Conditions */}
       <label style={{ display: "flex", alignItems: "flex-start", fontSize: "0.95rem", lineHeight: "1.5", marginBottom: "1.5rem" }}>
         <input
@@ -434,6 +508,8 @@ export default function CreatePage() {
           to create the resulting dice portrait.
         </span>
       </label>
+
+
 
 
       {/* Continue Button */}
@@ -473,8 +549,9 @@ export default function CreatePage() {
   Continue to Step 2
 </button>
 
+
       </div>
-      
+     
     </div>
     {/* 🧾 Second card: Redeem existing code */}
 <div
@@ -513,8 +590,15 @@ export default function CreatePage() {
   </a>
 </div>
 
+
   </section>
 )}
+
+
+
+
+
+
 
 
 
@@ -533,6 +617,7 @@ export default function CreatePage() {
   Crop Your Image - Choose Aspect Ratio
 </h2>
 
+
     {/* Aspect Ratio Options */}
     <div
       style={{
@@ -549,6 +634,8 @@ export default function CreatePage() {
         { label: "Landscape", ratio: 3 / 2, grid: [120, 80], key: "landscape" },
       ].map(({ label, ratio, grid, key }) => {
         const isSelected = aspectRatio === key;
+
+
 
 
         return (
@@ -603,6 +690,8 @@ export default function CreatePage() {
 </div>
 
 
+
+
     {/* Cropper */}
     <div
   style={{
@@ -627,6 +716,8 @@ export default function CreatePage() {
         ref={cropperRef as any}
       />
     </div>
+
+
 
 
     {/* Navigation Buttons */}
@@ -666,6 +757,8 @@ export default function CreatePage() {
 )}
 
 
+
+
 {step === 3 && croppedImageUrl && (
   <section style={{ padding: "2rem 0", textAlign: "center" }}>
     <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>3. Preview</h2>
@@ -686,7 +779,10 @@ export default function CreatePage() {
   }}
 />
 
+
     </div>
+
+
 
 
     <div style={{ marginTop: "2rem" }}>
@@ -734,6 +830,10 @@ export default function CreatePage() {
 
 
 
+
+
+
+
  
         {step === 4 && mosaicOptions.length > 0 && (
           <section style={{ padding: "2rem 0" }}>
@@ -758,6 +858,8 @@ export default function CreatePage() {
 </div>
 
 
+
+
             <div
               style={{
                 display: "flex",
@@ -780,7 +882,7 @@ export default function CreatePage() {
                   transition: "border 0.2s ease-in-out",
                 }}
               >
-              
+             
               <div
   onClick={() => setExpandedImage(option.style_id)}
   style={{
@@ -835,6 +937,7 @@ export default function CreatePage() {
     )}
   </div>
 
+
   {/* ✅ Watermark Overlay */}
   <div
     style={{
@@ -862,6 +965,7 @@ export default function CreatePage() {
       pipcasso.com
     </span>
   </div>
+
 
   {/* 🔍 Zoom Overlay Icon */}
   <div
@@ -899,6 +1003,9 @@ export default function CreatePage() {
 
 
 
+
+
+
                   <button
                     onClick={() => setSelectedStyleId(option.style_id)}
                     style={{
@@ -923,20 +1030,24 @@ export default function CreatePage() {
     onClick={async () => {
       if (!selectedStyleId) return;
 
+
       const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
       if (!selected) return;
+
 
       setLoading(true);
       try {
 
+
         // Step 1: Generate the PDF
+
 
         if (!email || !email.includes("@")) {
           alert("Please enter a valid email address.");
           setLoading(false);
           return;
         }
-        
+       
         const pdfRes = await fetch(`${BACKEND_URL}/generate-pdf`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -947,7 +1058,9 @@ export default function CreatePage() {
           }),
         });
 
+
         const pdfData = await pdfRes.json();
+
 
         if (!pdfData.dice_map_url) {
           alert("PDF generation failed.");
@@ -955,8 +1068,10 @@ export default function CreatePage() {
           return;
         }
 
+
         const generatedUrl = `${BACKEND_URL}${pdfData.dice_map_url}`;
         setPdfUrl(generatedUrl); // Save for use in Step 5
+
 
         // Step 2: Create Stripe Checkout Session
         const res = await fetch("/api/create-checkout-session", {
@@ -968,7 +1083,8 @@ export default function CreatePage() {
             email, // ✅ Add this!
           }),
         });
-        
+       
+
 
         const data = await res.json();
         console.log("Stripe session response:", data);
@@ -999,6 +1115,7 @@ export default function CreatePage() {
     Generate Dice Map PDF
   </button>
 
+
   <button
     onClick={() => setStep(3)}
     style={{
@@ -1013,6 +1130,7 @@ export default function CreatePage() {
     ⬅ Back
   </button>
 </div>
+
 
           </section>
         )}
@@ -1047,6 +1165,7 @@ export default function CreatePage() {
           </div>
         </section>
       )}
+
 
       {/* ✅ Zoomed-In Mosaic with Watermark */}
       {expandedImage !== null && (
@@ -1084,6 +1203,7 @@ export default function CreatePage() {
           >
             ✖
           </button>
+
 
           <div
             style={{
@@ -1134,6 +1254,7 @@ export default function CreatePage() {
                 )}
             </div>
 
+
             {/* ✅ Watermark Overlay */}
             <div
               style={{
@@ -1169,3 +1290,4 @@ export default function CreatePage() {
 </Layout>
   );
 }
+
