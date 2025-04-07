@@ -18,6 +18,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const metadata = session.metadata || {};
     const email = metadata.email;
     const pdfUrl = metadata.pdfUrl;
+if (!pdfUrl) {
+  console.warn("⚠️ Warning: pdfUrl is missing from Stripe session metadata.");
+}
+
     const projectName = metadata.projectName;
 
     console.log('📦 Stripe session metadata:', metadata);
@@ -42,9 +46,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     return res.status(200).json({
-      metadata,
-      code: recordData.code, // ✅ now it's defined!
-    });
+  metadata,
+  pdfUrl, // ✅ makes frontend simpler
+  code: recordData.code,
+});
+
   } catch (err) {
     console.error('❌ Error retrieving Stripe session:', err);
     return res.status(500).json({ error: 'Internal Server Error' });
