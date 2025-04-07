@@ -36,7 +36,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   style={{
     width: "100%",
     maxWidth: "180px",
-    height: "auto",
+    height: "80px",
     objectFit: "contain",
   }}
 />
