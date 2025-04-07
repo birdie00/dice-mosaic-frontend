@@ -403,7 +403,7 @@ export default function CreatePage() {
     marginInline: "auto",   
   }}
 >
-  Welcome to Pipcasso<br />
+  Welcome to Pipcasso
   Dice Mosaic Generator
 </h2>
 
