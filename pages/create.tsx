@@ -295,19 +295,20 @@ export default function CreatePage() {
     flex: 1,
     padding: "0.5rem 0.25rem",
     backgroundColor,
-    color: textColor,
-    textAlign: "center",
-    fontSize: "1.1rem",
-    fontWeight: "bold",
     borderLeft: index !== 0 ? "1px solid #fff" : "none",
+    display: "flex",                  // ✅ enable flexbox
+    alignItems: "center",            // ✅ vertical centering
+    justifyContent: "center",        // ✅ horizontal centering
+    minHeight: "60px",               // ✅ ensure enough height
   }}
 >
   <img
     src={`/icons/dicevector_${stepNum}.png`}
     alt={`Step ${stepNum}`}
-    style={{ width: "32px", height: "32px", marginBottom: "0.25rem" }}
+    style={{ width: "32px", height: "32px" }}
   />
 </div>
+
 
     );
   })}
