@@ -30,14 +30,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 >
   {/* Logo */}
   <Link href="/" style={{ display: "flex", alignItems: "center" }}>
-    <Image
-      src="/images/HeaderLogo.png"
-      alt="Pipcasso Logo"
-      width={160}
-      height={50}
-      priority
-      style={{ objectFit: "contain", height: "auto", width: "auto", maxHeight: "50px" }}
-    />
+  <Image
+  src="/images/HeaderLogo.png"
+  alt="Pipcasso Logo"
+  priority
+  width={0}
+  height={0}
+  style={{
+    width: "auto",
+    height: "auto",
+    maxHeight: "60px",
+  }}
+/>
+
+
   </Link>
 
   {/* Hamburger toggle */}
