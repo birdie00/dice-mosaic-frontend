@@ -406,9 +406,7 @@ export default function CreatePage() {
 </h2>
 
     <p style={{ fontSize: "1rem", lineHeight: "1.4", marginBottom: "0.5rem", maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
-      At <strong>Pipcasso</strong>, we turn your unique images into stunning dice mosaic portraits. Upload a photo, and we’ll
-      transform it into a custom portrait made entirely from dice. You can download it as a high-resolution image, have it printed and shipped to your door,
-      or even receive a <strong>DIY Dice Kit</strong> with a personalized Dice Map to build your own mosaic masterpiece at home.
+    At Pipcasso, you can turn your favorite photo into a custom dice mosaic. Just upload an image and we will generate a downloadable Dice Portrait or Dice Map - ready to print or build with real dice!
     </p>
 
 
