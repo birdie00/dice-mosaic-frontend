@@ -10,6 +10,7 @@ export default function Home() {
   const router = useRouter();
   const [showNav, setShowNav] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     let latestScrollY = 0;
@@ -80,7 +81,7 @@ export default function Home() {
   {isMobile ? (
     <>
       <button
-        onClick={() => setShowNav((prev) => !prev)}
+        onClick={() => setMobileMenuOpen((prev) => !prev)}
         style={{
           background: "none",
           border: "none",
@@ -89,11 +90,11 @@ export default function Home() {
           cursor: "pointer",
         }}
         aria-label="Toggle navigation"
-      >
-        ☰
-      </button>
+        >
+          {mobileMenuOpen ? "✖" : "☰"}
+        </button>
 
-      {showNav && (
+      {mobileMenuOpen && (
         <div
           style={{
             position: "absolute",
@@ -106,16 +107,28 @@ export default function Home() {
             zIndex: 999,
           }}
         >
-          <Link href="/create" style={{ color: "#fff", display: "block", margin: "1rem 0" }}>
-            Create
-          </Link>
-          <Link href="/commissions" style={{ color: "#fff", display: "block", margin: "1rem 0" }}>
-            Commissions
-          </Link>
-          <Link href="/store" style={{ color: "#fff", display: "block", margin: "1rem 0" }}>
-            Store
-          </Link>
-        </div>
+          <Link
+          href="/create"
+          onClick={() => setMobileMenuOpen(false)}
+          style={{ color: "#fff", display: "block", margin: "1rem 0" }}
+        >
+          Create
+        </Link>
+        <Link
+          href="/commissions"
+          onClick={() => setMobileMenuOpen(false)}
+          style={{ color: "#fff", display: "block", margin: "1rem 0" }}
+        >
+          Commissions
+        </Link>
+        <Link
+          href="/store"
+          onClick={() => setMobileMenuOpen(false)}
+          style={{ color: "#fff", display: "block", margin: "1rem 0" }}
+        >
+          Store
+        </Link>
+      </div>
       )}
     </>
   ) : (
