@@ -71,19 +71,24 @@ export default function Home() {
         }}
       >
         <div style={styles.navInner}>
-  <img src="/images/HeaderLogo.png" alt="Pipcasso Logo" style={styles.navLogo} />
+  <img
+    src="/images/HeaderLogo.png"
+    alt="Pipcasso Logo"
+    style={styles.navLogo}
+  />
 
   {isMobile ? (
-    <div>
+    <>
       <button
         onClick={() => setShowNav((prev) => !prev)}
         style={{
           background: "none",
           border: "none",
-          fontSize: "1.5rem",
+          fontSize: "1.75rem",
+          color: "#fff",
           cursor: "pointer",
         }}
-        aria-label="Toggle menu"
+        aria-label="Toggle navigation"
       >
         ☰
       </button>
@@ -93,31 +98,31 @@ export default function Home() {
           style={{
             position: "absolute",
             top: "70px",
-            right: "0",
-            backgroundColor: "#fff",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+            right: 0,
+            left: 0,
+            backgroundColor: "#000",
             padding: "1rem",
+            textAlign: "center",
             zIndex: 999,
-            borderBottomLeftRadius: "12px",
           }}
         >
-          <Link href="/create" style={{ display: "block", marginBottom: "0.75rem" }}>
+          <Link href="/create" style={{ color: "#fff", display: "block", margin: "1rem 0" }}>
             Create
           </Link>
-          <Link href="/commissions" style={{ display: "block", marginBottom: "0.75rem" }}>
+          <Link href="/commissions" style={{ color: "#fff", display: "block", margin: "1rem 0" }}>
             Commissions
           </Link>
-          <Link href="/store" style={{ display: "block" }}>
+          <Link href="/store" style={{ color: "#fff", display: "block", margin: "1rem 0" }}>
             Store
           </Link>
         </div>
       )}
-    </div>
+    </>
   ) : (
     <div style={styles.navLinks}>
-      <Link href="/create">Create</Link>
-      <Link href="/commissions">Commissions</Link>
-      <Link href="/store">Store</Link>
+      <Link href="/create" style={{ color: "#fff" }}>Create</Link>
+      <Link href="/commissions" style={{ color: "#fff" }}>Commissions</Link>
+      <Link href="/store" style={{ color: "#fff" }}>Store</Link>
     </div>
   )}
 </div>
@@ -369,8 +374,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: "1.5rem",
     fontSize: "1rem",
     fontWeight: "bold",
-    color: "#fff",
+    color: "#fff", // ✅ white link text
   },
+  
   sideBySide: {
     display: "flex",
     flexWrap: "wrap",
