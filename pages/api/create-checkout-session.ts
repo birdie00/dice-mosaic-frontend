@@ -1,43 +1,57 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import Stripe from 'stripe';
+import { NextApiRequest, NextApiResponse } from "next";
+import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2022-11-15",
+});
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { email, projectName, pdfUrl } = req.body;
+  const { projectName, pdfUrl, email } = req.body;
+
+  if (!projectName || !pdfUrl || !email) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  // Determine base domain depending on environment
+  const domain =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : "https://dice-mosaic-frontend.vercel.app/"; // 🔁 update with your live domain if different
 
   try {
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'payment',
+      payment_method_types: ["card"],
+      customer_email: email,
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: "usd",
+            unit_amount: 2500,
             product_data: {
-              name: `Dice Map for ${projectName}`,
+              name: `Dice Map - ${projectName}`,
+              images: ["https://pipcasso.com/images/HeaderLogo.png"], // ✅ fallback image
             },
-            unit_amount: 999,
           },
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/create`,
+      mode: "payment",
+      success_url: `${domain}/create?success=true`,
+      cancel_url: `${domain}/create?cancelled=true`,
       metadata: {
-        email,
-        projectName,
         pdfUrl,
+        projectName,
       },
     });
 
-    return res.status(200).json({ id: session.id });
-  } catch (err: any) {
-    console.error('Stripe error:', err.message);
-    return res.status(500).json({ error: err.message });
+    res.status(200).json({ url: session.url });
+  } catch (error) {
+    console.error("Stripe session creation failed:", error);
+    res.status(500).json({ error: "Stripe session creation failed" });
   }
 }
