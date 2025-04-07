@@ -394,7 +394,7 @@ export default function CreatePage() {
   style={{
     fontSize: "1.4rem",
     fontWeight: "800",
-    margin: "0.25rem 0 0.5rem",
+    margin: "0 0 0.75rem",
     color: "#155E63",
     textAlign: "center",
     lineHeight: 1.3,
