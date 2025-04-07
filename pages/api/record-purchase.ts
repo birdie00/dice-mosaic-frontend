@@ -23,9 +23,23 @@ console.log("📥 Received purchase payload:", req.body);
 
   // Save purchase info to Supabase
   // 🧪 TEMPORARY BYPASS FOR TESTING
-const error = null;
-// Comment out the real DB call for now to isolate the issue
-// const { error } = await supabase.from('purchases').insert([...]);
+const { error } = await supabase.from('purchases').insert([
+  {
+    code,
+    email,
+    pdf_url: pdfUrl,
+    project_name: projectName,
+    stripe_data: JSON.stringify(stripeData), // ✅ Ensure this is a string
+  },
+]);
+
+console.log("📝 Supabase insert attempted with:", {
+  code,
+  email,
+  pdf_url: pdfUrl,
+  project_name: projectName,
+  stripe_data: JSON.stringify(stripeData),
+});
 
 
   if (error) {
