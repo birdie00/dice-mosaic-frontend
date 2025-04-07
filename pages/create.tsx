@@ -371,7 +371,7 @@ export default function CreatePage() {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: "2rem",
+    marginBottom: "0.5rem",
     marginTop: "0", // flush to step bar
   }}
 >
