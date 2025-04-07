@@ -71,13 +71,58 @@ export default function Home() {
         }}
       >
         <div style={styles.navInner}>
-          <img src="/images/HeaderLogo.png" alt="Pipcasso Logo" style={styles.navLogo} />
-          <div style={styles.navLinks}>
-            <Link href="/create">Create</Link>
-            <Link href="/commissions">Commissions</Link>
-            <Link href="/store">Store</Link>
-          </div>
+  <img src="/images/HeaderLogo.png" alt="Pipcasso Logo" style={styles.navLogo} />
+
+  {isMobile ? (
+    <div>
+      <button
+        onClick={() => setShowNav((prev) => !prev)}
+        style={{
+          background: "none",
+          border: "none",
+          fontSize: "1.5rem",
+          cursor: "pointer",
+        }}
+        aria-label="Toggle menu"
+      >
+        ☰
+      </button>
+
+      {showNav && (
+        <div
+          style={{
+            position: "absolute",
+            top: "70px",
+            right: "0",
+            backgroundColor: "#fff",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+            padding: "1rem",
+            zIndex: 999,
+            borderBottomLeftRadius: "12px",
+          }}
+        >
+          <Link href="/create" style={{ display: "block", marginBottom: "0.75rem" }}>
+            Create
+          </Link>
+          <Link href="/commissions" style={{ display: "block", marginBottom: "0.75rem" }}>
+            Commissions
+          </Link>
+          <Link href="/store" style={{ display: "block" }}>
+            Store
+          </Link>
         </div>
+      )}
+    </div>
+  ) : (
+    <div style={styles.navLinks}>
+      <Link href="/create">Create</Link>
+      <Link href="/commissions">Commissions</Link>
+      <Link href="/store">Store</Link>
+    </div>
+  )}
+</div>
+
+
       </nav>
 
       <header
@@ -297,7 +342,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     left: 0,
     right: 0,
     height: "70px",
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
     boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
     display: "flex",
     alignItems: "center",
@@ -324,7 +369,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     gap: "1.5rem",
     fontSize: "1rem",
     fontWeight: "bold",
-    color: "#333",
+    color: "#fff",
   },
   sideBySide: {
     display: "flex",
