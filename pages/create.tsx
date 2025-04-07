@@ -402,12 +402,15 @@ export default function CreatePage() {
   <section style={{ padding: "2rem 1rem" }}>
 <h2
   style={{
-    fontSize: "2rem",
+    fontSize: "1.75rem",
     fontWeight: "800",
     margin: "1rem 0 0.5rem",
     color: "#155E63",
     textAlign: "center",
     lineHeight: 1.3,
+    wordBreak: "break-word",         // ✅ wrap long words
+    maxWidth: "90%",                 // ✅ prevents overflow
+    marginInline: "auto",   
   }}
 >
   Welcome to Pipcasso<br />
