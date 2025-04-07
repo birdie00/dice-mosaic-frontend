@@ -447,7 +447,7 @@ export default function CreatePage() {
           type="text"
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
-          placeholder="e.g. Grandma Portrait"
+          placeholder="e.g. Happy Dog"
           style={{
             width: "100%",
             padding: "0.65rem 0.9rem",
@@ -464,7 +464,7 @@ export default function CreatePage() {
     type="email"
     value={email}
     onChange={(e) => setEmail(e.target.value)}
-    placeholder="you@example.com"
+    placeholder="pablo@pipcasso.com"
     style={{
       width: "100%",
       padding: "0.65rem 0.9rem",
