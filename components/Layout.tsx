@@ -30,80 +30,97 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 >
   {/* Logo */}
   <Link href="/" style={{ display: "flex", alignItems: "center" }}>
-  <img
-  src="/images/HeaderLogo.png"
-  alt="Pipcasso Logo"
-  style={{
-    height: "40px",
-    width: "auto",
-    objectFit: "contain",
-  }}
-/>
-
-
-
-
+    <img
+      src="/images/HeaderLogo.png"
+      alt="Pipcasso Logo"
+      style={{
+        height: "40px",
+        width: "auto",
+        objectFit: "contain",
+      }}
+    />
   </Link>
 
-  {/* Hamburger toggle */}
+  {/* Desktop Nav */}
+  <nav className="desktop-nav">
+    <Link href="/create" style={{ color: "#fff", margin: "0 1rem" }}>
+      Create
+    </Link>
+    <Link href="/commissions" style={{ color: "#fff", margin: "0 1rem" }}>
+      Commissions
+    </Link>
+    <Link href="/store" style={{ color: "#fff", margin: "0 1rem" }}>
+      DIY Kits
+    </Link>
+    <Link href="/cart" style={{ color: "#fff", margin: "0 1rem" }}>
+      🛒 Cart
+    </Link>
+  </nav>
+
+  {/* Mobile hamburger */}
   <button
     onClick={() => setMenuOpen((prev) => !prev)}
+    className="mobile-toggle"
+    aria-label="Toggle menu"
     style={{
       background: "none",
       border: "none",
       fontSize: "1.75rem",
       color: "#fff",
       cursor: "pointer",
-      display: "inline-block",
     }}
-    className="mobile-toggle"
-    aria-label="Toggle menu"
   >
     {menuOpen ? "✖" : "☰"}
   </button>
 
-  {/* Navigation menu */}
-  <nav
-    className={`site-nav ${menuOpen ? "open" : ""}`}
-    style={{
-      display: menuOpen ? "flex" : "none",
-      flexDirection: "column",
-      position: "absolute",
-      top: "70px",
-      right: 0,
-      backgroundColor: "#000",
-      width: "100%",
-      textAlign: "center",
-      padding: "1rem",
-    }}
-  >
-    <Link href="/create" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.75rem 0" }}>
-      Create
-    </Link>
-    <Link href="/commissions" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.75rem 0" }}>
-      Commissions
-    </Link>
-    <Link href="/store" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.75rem 0" }}>
-      DIY Kits
-    </Link>
-    <Link href="/cart" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.75rem 0" }}>
-      🛒 Cart
-    </Link>
-  </nav>
+  {/* Mobile dropdown nav */}
+  {menuOpen && (
+    <nav
+      className="mobile-nav"
+      style={{
+        position: "absolute",
+        top: "70px",
+        left: 0,
+        right: 0,
+        backgroundColor: "#000",
+        padding: "1rem",
+        textAlign: "center",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Link href="/create" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
+        Create
+      </Link>
+      <Link href="/commissions" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
+        Commissions
+      </Link>
+      <Link href="/store" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
+        DIY Kits
+      </Link>
+      <Link href="/cart" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
+        🛒 Cart
+      </Link>
+    </nav>
+  )}
 
   <style jsx>{`
     @media (min-width: 768px) {
-      .mobile-toggle {
+      .desktop-nav {
+        display: flex;
+      }
+      .mobile-toggle,
+      .mobile-nav {
         display: none;
       }
-      .site-nav {
-        display: flex !important;
-        position: static !important;
-        flex-direction: row;
-        gap: 2rem;
-        padding: 0;
-        align-items: center;
-        background: none !important;
+    }
+
+    @media (max-width: 767px) {
+      .desktop-nav {
+        display: none;
+      }
+      .mobile-toggle {
+        display: inline-block;
       }
     }
   `}</style>
