@@ -7,6 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { session_id } = req.query;
+console.log("🔍 Received session_id:", session_id);
 
   if (!session_id || typeof session_id !== 'string') {
     return res.status(400).json({ error: 'Missing or invalid session_id' });
@@ -14,13 +15,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const session = await stripe.checkout.sessions.retrieve(session_id);
+console.log("🧾 Full Stripe session:", session);
 
     const metadata = session.metadata || {};
     const email = metadata.email;
     const pdfUrl = metadata.pdfUrl;
 if (!pdfUrl) {
   console.warn("⚠️ Warning: pdfUrl is missing from Stripe session metadata.");
+  return res.status(400).json({ error: "Missing PDF URL in session metadata." });
 }
+
 
     const projectName = metadata.projectName;
 

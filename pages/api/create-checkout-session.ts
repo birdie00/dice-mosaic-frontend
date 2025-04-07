@@ -25,6 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       : "https://dice-mosaic-frontend.vercel.app/"; // 🔁 update with your live domain if different
 
   try {
+console.log("📦 Creating Stripe session with metadata:", {
+  email,
+  projectName,
+  pdfUrl,
+});
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       customer_email: email,
