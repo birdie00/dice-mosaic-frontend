@@ -392,13 +392,13 @@ export default function CreatePage() {
   <section style={{ padding: "2rem 1rem" }}>
 <h2
   style={{
-    fontSize: "1.4rem",
+    fontSize: "1.6rem",
     fontWeight: "800",
     margin: "0 0 0.75rem",
     color: "#155E63",
     textAlign: "center",
     lineHeight: 1.3,
-    maxWidth: "90%",                 // ✅ prevents overflow
+    maxWidth: "95%",                 // ✅ prevents overflow
     marginInline: "auto",   
   }}
 >
