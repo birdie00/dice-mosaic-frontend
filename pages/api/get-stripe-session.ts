@@ -27,7 +27,11 @@ if (!pdfUrl) {
     console.log('📦 Stripe session metadata:', metadata);
 
     // 🔧 Call record-purchase and get the code
-    const recordRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/record-purchase`, {
+    const baseUrl =
+  process.env.NEXT_PUBLIC_BASE_URL || 'https://dice-mosaic-frontend.vercel.app';
+
+const recordRes = await fetch(`${baseUrl}/api/record-purchase`, {
+
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
