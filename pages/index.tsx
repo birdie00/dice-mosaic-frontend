@@ -133,7 +133,7 @@ export default function Home() {
     </>
   ) : (
     <div style={styles.navLinks}>
-      <Link href="/create" style={{ color: "#fff" }}>Create</Link>
+      <Link href="/store" style={{ color: "#fff" }}>Create</Link>
       <Link href="/commissions" style={{ color: "#fff" }}>Commissions</Link>
       <Link href="/store" style={{ color: "#fff" }}>Store</Link>
     </div>
@@ -174,7 +174,7 @@ export default function Home() {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
             zIndex: 1,
           }}
         />
@@ -202,6 +202,19 @@ export default function Home() {
               marginBottom: "1.25rem",
             }}
           />
+          <h2
+  style={{
+    fontSize: "2rem",
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "center",
+    marginBottom: "1rem",
+    fontFamily: "'Righteous', sans-serif",
+  }}
+>
+  Create. Assemble. Display.
+</h2>
+
           <button
             onClick={() => router.push("/create")}
             style={{
@@ -218,68 +231,175 @@ export default function Home() {
           </button>
         </div>
       </header>
-  
+
+{/* 🔁 Image Reveal Section with Overlayed Top-Centered Heading */}
+<div style={{ padding: "0", backgroundColor: "#FDF7F1", position: "relative" }}>
+  <div
+    style={{
+      position: "relative",
+      maxWidth: "600px",
+      margin: "0 auto",
+      height: "auto",
+    }}
+  >
+    {/* Top-Centered Heading */}
+    <h2
+      style={{
+        position: "absolute",
+        top: "1rem",
+        left: "50%",
+        transform: "translateX(-50%)",
+        fontFamily: "'Bebas Neue', sans-serif",
+        fontSize: "1.5rem", // 🔹 half-size
+        color: "#fff",
+        textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
+        letterSpacing: "1px",
+        zIndex: 2,
+        margin: 0,
+        padding: "0.25rem 0.5rem",
+      }}
+    >
+      See the transformation
+    </h2>
+
+    {/* Slider */}
+    <ReactCompareImage
+      leftImage="/dog_real.png"
+      rightImage="/dog_dice.png"
+      sliderLineColor="#E84C3D"
+    />
+  </div>
+</div>
+
+
+
+
       
+      <section style={{ width: "100%" }}>
+  {[
+    {
+      title: "🧰 DIY Kits",
+      desc: "Create your own dice mosaic using our software and build it yourself at home!",
+      href: "/store",
+      img: "/images/DiceKit.png",
+      cta: "Create Now →",
+      bgColor: "#ECB84A",
+    },
+    {
+      title: "🎨 Commissions",
+      desc: "Want us to build it for you? Commission a professional dice artist.",
+      href: "/commissions",
+      img: "/images/DiceCommission.png",
+      cta: "Request a Quote →",
+      bgColor: "#6A3073",
+    },
+    {
+      title: "🖼️ Prints",
+      desc: "Order custom-printed versions of your mosaic — no dice needed!",
+      href: "/create",
+      img: "/images/DicePrints.png",
+      cta: "View Prints →",
+      bgColor: "#155E63",
+    },
+  ].map((feature, index) => {
+    const isEven = index % 2 === 1;
+    return (
+      <div
+        key={index}
+        style={{
+          display: "flex",
+          flexDirection: isEven ? "row-reverse" : "row",
+          minHeight: "480px",
+          width: "100%",
+          flexWrap: "wrap",
+        }}
+      >
+        {/* Image Block */}
+        <div
+          style={{
+            flex: "1 1 50%",
+            backgroundImage: `url(${feature.img})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            minHeight: "320px",
+          }}
+        />
 
-
-      <section style={styles.sideBySide}>
-        <div style={styles.splitContainer}>
-          {/* Slider - 30% on desktop, 80% on mobile */}
-          <div style={styles.sliderWrapper} className="responsive-slider">
-            <ReactCompareImage
-              leftImage="/dog_real.png"
-              rightImage="/dog_dice.png"
-              sliderPositionPercentage={0.5}
-              sliderLineColor="#EAAA4F"
-            />
-          </div>
-
-          {/* Features - 70% on desktop, full width on mobile */}
-          <div style={styles.features}>
-            <div style={styles.featureCard}>
-              <h3>🧰 DIY Kits</h3>
-              <p>Create your own dice mosaic using our software and build it yourself at home!</p>
-              <Link href="/create">Create Now →</Link>
-            </div>
-            <div style={styles.featureCard}>
-              <h3>🎨 Commissions</h3>
-              <p>Want us to build it for you? Commission a professional dice artist.</p>
-              <Link href="/commissions">Request a Quote →</Link>
-            </div>
-            <div style={styles.featureCard}>
-              <h3>🖼️ Prints</h3>
-              <p>Order custom-printed versions of your mosaic — no dice needed!</p>
-              <Link href="/store">View Prints →</Link>
-            </div>
-          </div>
+        {/* Text Block */}
+        <div
+          style={{
+            flex: "1 1 50%",
+            backgroundColor: feature.bgColor,
+            color: "#FDF7F1",
+            padding: "3rem 2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <h3 style={{ fontSize: "2rem", marginBottom: "1rem", color: "#fff" }}>
+            {feature.title}
+          </h3>
+          <p style={{ fontSize: "1rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+            {feature.desc}
+          </p>
+          <Link
+            href={feature.href}
+            style={{
+              color: "#fff",
+              backgroundColor: "rgba(0,0,0,0.2)",
+              padding: "0.6rem 1.2rem",
+              borderRadius: "8px",
+              textDecoration: "none",
+              fontWeight: "bold",
+              width: "fit-content",
+            }}
+          >
+            {feature.cta}
+          </Link>
         </div>
+        
+      </div>
 
-        {/* Media query for mobile responsiveness */}
-        <style jsx>{`
-          @media (max-width: 768px) {
-            header {
-              height: 55vh !important;
-            }
+    );
+  })}
+</section>
 
-            img[alt='Pipcasso Logo'] {
-              max-width: 70vw !important;
-              margin-bottom: 1rem;
-            }
 
-            button {
-              white-space: nowrap;
-              font-size: 1rem !important;
-              padding: 0.75rem 1.5rem !important;
-            }
 
-            .responsive-slider {
-              width: 80% !important;
-              margin: 0 auto;
-            }
-          }
-        `}</style>
-      </section>
-    
+
+    <section style={{ backgroundColor: "#fdf7f1", padding: "4rem 1rem", textAlign: "center" }}>
+  <h2
+    style={{
+      fontFamily: "'Bebas Neue', sans-serif",
+      fontSize: "2.25rem",
+      marginBottom: "1rem",
+      letterSpacing: "1px",
+      color: "#E84C3D",
+    }}
+  >
+    Contact Us
+  </h2>
+  <p style={{ fontSize: "1rem", color: "#4b5563", maxWidth: "600px", margin: "0 auto 2rem" }}>
+    Have questions about a project, commission, or custom idea? Reach out and our team will get back to you within 1 business day.
+  </p>
+
+  <a
+    href="mailto:commissions@pipcasso.com"
+    style={{
+      backgroundColor: "#E84C3D",
+      color: "#fff",
+      padding: "0.75rem 1.5rem",
+      fontSize: "1rem",
+      borderRadius: "8px",
+      textDecoration: "none",
+      fontWeight: "bold",
+    }}
+  >
+    Email Us
+  </a>
+</section>
+
 
 
       <footer style={styles.footer}>
@@ -428,8 +548,8 @@ const styles: { [key: string]: React.CSSProperties } = {
   footer: {
     padding: "2rem",
     textAlign: "center",
-    backgroundColor: "#f0fdf4",
-    color: "#4b5563",
+    backgroundColor: "#000000",
+    color: "#fff",
     fontSize: "0.9rem",
   },
 };
