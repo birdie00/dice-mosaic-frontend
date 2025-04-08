@@ -244,23 +244,29 @@ export default function Home() {
   >
     {/* Top-Centered Heading */}
     <h2
-      style={{
-        position: "absolute",
-        top: "1rem",
-        left: "50%",
-        transform: "translateX(-50%)",
-        fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: "1.5rem", // 🔹 half-size
-        color: "#fff",
-        textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
-        letterSpacing: "1px",
-        zIndex: 2,
-        margin: 0,
-        padding: "0.25rem 0.5rem",
-      }}
-    >
-      See the transformation
-    </h2>
+  style={{
+    position: "absolute",
+    top: "1rem",
+    left: 0,
+    right: 0,
+    textAlign: "center", // ✅ center the text without transform
+    fontFamily: "'Bebas Neue', sans-serif",
+    fontSize: "1.4rem",
+    color: "#fff",
+    textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
+    letterSpacing: "1px",
+    zIndex: 2,
+    margin: 0,
+    padding: "0.25rem 1rem", // ✅ horizontal breathing room
+    boxSizing: "border-box", // ✅ respect full width
+    whiteSpace: "nowrap", // ✅ prevent line wrapping
+    overflow: "hidden",   // ✅ in case it's too long
+    textOverflow: "ellipsis", // ✅ gracefully truncate if needed
+  }}
+>
+  See the transformation
+</h2>
+
 
     {/* Slider */}
     <ReactCompareImage
