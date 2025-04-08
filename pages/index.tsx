@@ -342,7 +342,18 @@ export default function Home() {
         <h3 style={{ fontSize: "2rem", marginBottom: "1rem", fontFamily: "'Bebas Neue', sans-serif", textTransform: "uppercase" }}>
           {feature.title}
         </h3>
-        <p style={{ fontSize: "1rem", marginBottom: "1.5rem" }}>{feature.desc}</p>
+        <p
+  style={{
+    fontSize: "1rem",
+    lineHeight: "1.6",
+    marginBottom: "2rem",
+    maxWidth: "800px",
+    margin: "0 auto",
+    textAlign: "center",
+  }}
+>
+  At <strong>Pipcasso</strong>, you can turn your favorite photo into a custom dice mosaic. Just upload an image and we’ll generate a downloadable Dice Map — ready to print or build with real dice.
+</p>
         <Link
           href={feature.href}
           style={{
