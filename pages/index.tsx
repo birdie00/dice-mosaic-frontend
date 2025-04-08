@@ -299,7 +299,7 @@ export default function Home() {
     href: "/create",
     img: "/images/DicePrints.png",
     cta: "View Prints →",
-    bgColor: "#15e63",
+    bgColor: "#155e63",
   },
 ].map((feature, index) => {
   const isEven = index % 2 === 1;
@@ -366,14 +366,19 @@ export default function Home() {
 
 <style jsx>{`
   @media (max-width: 768px) {
-    .feature-block {
-      flex-direction: column !important;
-    }
+    .feature-block,
     .feature-block.reverse {
-      flex-direction: column-reverse !important;
+      flex-direction: column !important;
+      min-height: 600px; /* or try 100vh for full-screen feel */
+    }
+
+    .feature-block > div {
+      flex: none !important;
+      width: 100% !important;
     }
   }
 `}</style>
+
 
 
 
