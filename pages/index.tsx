@@ -276,95 +276,104 @@ export default function Home() {
 
       
       <section style={{ width: "100%" }}>
-  {[
-    {
-      title: "🧰 DIY Kits",
-      desc: "Create your own dice mosaic using our software and build it yourself at home!",
-      href: "/store",
-      img: "/images/DiceKit.png",
-      cta: "Create Now →",
-      bgColor: "#ECB84A",
-    },
-    {
-      title: "🎨 Commissions",
-      desc: "Want us to build it for you? Commission a professional dice artist.",
-      href: "/commissions",
-      img: "/images/DiceCommission.png",
-      cta: "Request a Quote →",
-      bgColor: "#6A3073",
-    },
-    {
-      title: "🖼️ Prints",
-      desc: "Order custom-printed versions of your mosaic — no dice needed!",
-      href: "/create",
-      img: "/images/DicePrints.png",
-      cta: "View Prints →",
-      bgColor: "#155E63",
-    },
-  ].map((feature, index) => {
-    const isEven = index % 2 === 1;
-    return (
+      {[
+  {
+    title: "🧰 DIY Kits",
+    desc: "Create your own dice mosaic using our software and build it yourself at home!",
+    href: "/store",
+    img: "/images/DiceKit.png",
+    cta: "Create Now →",
+    bgColor: "#ECB84A",
+  },
+  {
+    title: "🎨 Commissions",
+    desc: "Want us to build it for you? Commission a professional dice artist.",
+    href: "/commissions",
+    img: "/images/DiceCommission.png",
+    cta: "Request a Quote →",
+    bgColor: "#6A3073",
+  },
+  {
+    title: "🖼️ Prints",
+    desc: "Order custom-printed versions of your mosaic — no dice needed!",
+    href: "/create",
+    img: "/images/DicePrints.png",
+    cta: "View Prints →",
+    bgColor: "#15e63",
+  },
+].map((feature, index) => {
+  const isEven = index % 2 === 1;
+
+  return (
+    <div
+      key={index}
+      className={`feature-block ${isEven ? "reverse" : ""}`}
+      style={{
+        display: "flex",
+        flexDirection: isEven ? "row-reverse" : "row",
+        flexWrap: "wrap",
+        minHeight: "400px",
+        backgroundColor: feature.bgColor,
+        color: "#FDF7F1",
+        width: "100%",
+      }}
+    >
+      {/* Image */}
       <div
-        key={index}
         style={{
+          flex: "1 1 50%",
+          backgroundImage: `url(${feature.img})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          minHeight: "300px",
+        }}
+      />
+
+      {/* Text */}
+      <div
+        style={{
+          flex: "1 1 50%",
+          padding: "2rem",
           display: "flex",
-          flexDirection: isEven ? "row-reverse" : "row",
-          minHeight: "480px",
-          width: "100%",
-          flexWrap: "wrap",
+          flexDirection: "column",
+          justifyContent: "center",
         }}
       >
-        {/* Image Block */}
-        <div
+        <h3 style={{ fontSize: "2rem", marginBottom: "1rem", fontFamily: "'Bebas Neue', sans-serif", textTransform: "uppercase" }}>
+          {feature.title}
+        </h3>
+        <p style={{ fontSize: "1rem", marginBottom: "1.5rem" }}>{feature.desc}</p>
+        <Link
+          href={feature.href}
           style={{
-            flex: "1 1 50%",
-            backgroundImage: `url(${feature.img})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            minHeight: "320px",
-          }}
-        />
-
-        {/* Text Block */}
-        <div
-          style={{
-            flex: "1 1 50%",
-            backgroundColor: feature.bgColor,
-            color: "#FDF7F1",
-            padding: "3rem 2rem",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
+            color: "#fff",
+            backgroundColor: "rgba(0, 0, 0, 0.2)",
+            padding: "0.5rem 1rem",
+            borderRadius: "6px",
+            fontWeight: "bold",
+            textDecoration: "none",
+            width: "fit-content",
           }}
         >
-          <h3 style={{ fontSize: "2rem", marginBottom: "1rem", color: "#fff" }}>
-            {feature.title}
-          </h3>
-          <p style={{ fontSize: "1rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-            {feature.desc}
-          </p>
-          <Link
-            href={feature.href}
-            style={{
-              color: "#fff",
-              backgroundColor: "rgba(0,0,0,0.2)",
-              padding: "0.6rem 1.2rem",
-              borderRadius: "8px",
-              textDecoration: "none",
-              fontWeight: "bold",
-              width: "fit-content",
-            }}
-          >
-            {feature.cta}
-          </Link>
-        </div>
-        
+          {feature.cta}
+        </Link>
       </div>
+    </div>
+  );
+})}
 
-    );
-  })}
 </section>
 
+<style jsx>{`
+  @media (max-width: 768px) {
+    .feature-block {
+      flex-direction: column !important;
+    }
+    .feature-block.reverse {
+      flex-direction: column-reverse !important;
+    }
+  }
+`}</style>
 
 
 
