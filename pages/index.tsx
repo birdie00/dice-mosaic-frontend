@@ -230,7 +230,7 @@ export default function Home() {
     letterSpacing: "1px",
   }}
 >
-  Create. Assemble. Display.
+  Start Creating
 </button>
 
         </div>
