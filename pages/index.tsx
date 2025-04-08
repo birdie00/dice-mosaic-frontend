@@ -212,7 +212,7 @@ export default function Home() {
     fontFamily: "'Righteous', sans-serif",
   }}
 >
-  Create. Assemble. Display.
+  Envision. Create. Display.
 </h2>
 
 <button
