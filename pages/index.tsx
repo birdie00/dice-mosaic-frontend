@@ -215,20 +215,24 @@ export default function Home() {
   Create. Assemble. Display.
 </h2>
 
-          <button
-            onClick={() => router.push("/create")}
-            style={{
-              fontSize: "1rem",
-              padding: "0.75rem 1.5rem",
-              backgroundColor: "#E84C3D",
-              color: "#fff",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-            }}
-          >
-            Start Creating
-          </button>
+<button
+  onClick={() => router.push("/create")}
+  style={{
+    fontSize: "1rem",
+    padding: "0.75rem 2rem",
+    backgroundColor: "transparent",
+    color: "#fff",
+    border: "2px solid #fff",
+    borderRadius: "999px", // ✅ pill shape
+    cursor: "pointer",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    letterSpacing: "1px",
+  }}
+>
+  Create. Assemble. Display.
+</button>
+
         </div>
       </header>
 
