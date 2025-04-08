@@ -284,7 +284,7 @@ export default function Home() {
       <section style={{ width: "100%" }}>
       {[
   {
-    title: "🧰 DIY Kits",
+    title: "DIY Kits",
     desc: "Create your own dice mosaic using our software and build it yourself at home!",
     href: "/store",
     img: "/images/DiceKit.png",
@@ -292,7 +292,7 @@ export default function Home() {
     bgColor: "#ECB84A",
   },
   {
-    title: "🎨 Commissions",
+    title: "Commissions",
     desc: "Want us to build it for you? Commission a professional dice artist.",
     href: "/commissions",
     img: "/images/DiceCommission.png",
@@ -300,7 +300,7 @@ export default function Home() {
     bgColor: "#6A3073",
   },
   {
-    title: "🖼️ Prints",
+    title: "Prints",
     desc: "Order custom-printed versions of your mosaic — no dice needed!",
     href: "/create",
     img: "/images/DicePrints.png",
