@@ -8,10 +8,8 @@ import React from "react";
 
 interface MosaicOption {
   style_id: number;
-  grid: number[][];         // 🔹 used for preview only (optional)
-  fullGrid: number[][];     // ✅ store the original unresized full-resolution grid
+  grid: number[][];
 }
-
 
 
 type AspectRatioOption = "square" | "portrait" | "landscape";
@@ -65,12 +63,6 @@ export default function CreatePage() {
     preloadDiceImages();
   }, []);
 
-  const generatePDF = async () => {
-    if (selectedStyleId === null) return;
- 
-    const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
-    if (!selected) return;
-    console.log("Grid dimensions being sent:", selected.grid[0].length, "x", selected.grid.length);
 
 
 
@@ -117,11 +109,7 @@ export default function CreatePage() {
     } else if (option === "landscape") {
       ratio = 3 / 2;
       newGrid = [120, 80];
-    } else {
-      ratio = 1;
-      newGrid = [100, 100];
     }
-    
 
 
 
@@ -200,14 +188,20 @@ export default function CreatePage() {
 
 
 
-    const styledOptions = data.styles.map((style: any) => ({
-      style_id: style.style_id,
-      fullGrid: style.grid,     // ✅ original full-res grid
-      grid: style.grid,         // 👈 only use this if you're resizing for preview
-    }));
-    
-    setMosaicOptions(styledOptions);
-    
+    const data = await res.json();
+    setMosaicOptions(data.styles);
+    setLoading(false);
+  };
+
+
+
+
+  const generatePDF = async () => {
+    if (selectedStyleId === null) return;
+ 
+    const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
+    if (!selected) return;
+ 
     try {
       setLoading(true);
       const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
@@ -216,7 +210,7 @@ export default function CreatePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          grid_data: selected.fullGrid,
+          grid_data: selected.grid,
           style_id: selectedStyleId,
           project_name: projectName, // ✅ INCLUDE project name here
         }),
@@ -1063,7 +1057,7 @@ export default function CreatePage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            grid_data: selected.fullGrid,
+            grid_data: selected.grid,
             style_id: selectedStyleId,
             project_name: projectName,
           }),
