@@ -193,6 +193,7 @@ export default function CreatePage() {
     const selected = mosaicOptions[selectedIndex];
     const gridToSend = selected.grid.map((row) => [...row]); // deep clone for safety
   
+    // ✅ This is the correct place to log
     console.log("Generating PDF with grid size:", {
       rows: gridToSend.length,
       cols: gridToSend[0]?.length,
@@ -220,6 +221,7 @@ export default function CreatePage() {
       setLoading(false);
     }
   };
+  
   
 
 
@@ -1088,8 +1090,13 @@ export default function CreatePage() {
         const data = await res.json();
         console.log("Stripe session response:", data);
         if (data.url) {
-          window.location.href = data.url;
-        } else {
+          console.log("Stripe redirect URL:", data.url);
+          console.log("Waiting 10 seconds before redirecting to Stripe...");
+          setTimeout(() => {
+            window.location.href = data.url;
+          }, 10000); // 10,000 milliseconds = 10 seconds
+        }
+         else {
           alert("Failed to redirect to payment.");
         }
       } catch (err) {
