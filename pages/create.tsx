@@ -109,7 +109,11 @@ export default function CreatePage() {
     } else if (option === "landscape") {
       ratio = 3 / 2;
       newGrid = [120, 80];
+    } else {
+      ratio = 1;
+      newGrid = [100, 100];
     }
+    
 
 
 
