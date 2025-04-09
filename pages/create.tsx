@@ -65,6 +65,12 @@ export default function CreatePage() {
     preloadDiceImages();
   }, []);
 
+  const generatePDF = async () => {
+    if (selectedStyleId === null) return;
+ 
+    const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
+    if (!selected) return;
+    console.log("Grid dimensions being sent:", selected.grid[0].length, "x", selected.grid.length);
 
 
 
@@ -202,17 +208,6 @@ export default function CreatePage() {
     
     setMosaicOptions(styledOptions);
     
-
-
-
-
-  const generatePDF = async () => {
-    if (selectedStyleId === null) return;
- 
-    const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
-    if (!selected) return;
-    console.log("Grid dimensions being sent:", selected.grid[0].length, "x", selected.grid.length);
-
     try {
       setLoading(true);
       const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
