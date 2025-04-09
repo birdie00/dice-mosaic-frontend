@@ -205,7 +205,8 @@ export default function CreatePage() {
  
     const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
     if (!selected) return;
- 
+    console.log("Grid dimensions being sent:", selected.grid[0].length, "x", selected.grid.length);
+
     try {
       setLoading(true);
       const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
