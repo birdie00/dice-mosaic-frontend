@@ -94,14 +94,8 @@ export default function CreatePage() {
     const cropper = cropperRef.current?.cropper;
     if (!cropper) return;
 
-
-
-
     let ratio = 1;
     let newGrid: [number, number] = [100, 100];
-
-
-
 
     if (option === "portrait") {
       ratio = 2 / 3;
@@ -110,9 +104,6 @@ export default function CreatePage() {
       ratio = 3 / 2;
       newGrid = [120, 80];
     }
-
-
-
 
     cropper.setAspectRatio(ratio);
     setGridSize(newGrid);
@@ -171,22 +162,22 @@ export default function CreatePage() {
 
   const generateMosaics = async () => {
     if (!croppedImage) return;
+    console.log("Current gridSize state:", gridSize); // 👈 log current state
     const formData = new FormData();
     formData.append("file", croppedImage, "cropped.png");
     formData.append("grid_width", gridSize[0].toString());
     formData.append("grid_height", gridSize[1].toString());
 
-
-
-
+    console.log("Sending to /analyze:", {
+      grid_width: gridSize[0],
+      grid_height: gridSize[1],
+    });
+    
     setLoading(true);
     const res = await fetch(`${BACKEND_URL}/analyze`, {
       method: "POST",
       body: formData,
     });
-
-
-
 
     const data = await res.json();
     setMosaicOptions(data.styles);
