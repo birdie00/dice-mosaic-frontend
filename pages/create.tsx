@@ -1048,12 +1048,17 @@ export default function CreatePage() {
           setLoading(false);
           return;
         }
-       
+        const gridToSend = selected.grid.map((row) => [...row]);
+        console.log("Sending to /generate-pdf:", {
+          rows: gridToSend.length,
+          cols: gridToSend[0]?.length,
+        });
+        
         const pdfRes = await fetch(`${BACKEND_URL}/generate-pdf`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            grid_data: selected.grid,
+            grid_data: gridToSend
             style_id: selectedStyleId,
             project_name: projectName,
           }),
