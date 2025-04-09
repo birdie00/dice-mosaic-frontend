@@ -1058,7 +1058,7 @@ export default function CreatePage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            grid_data: gridToSend
+            grid_data: gridToSend,
             style_id: selectedStyleId,
             project_name: projectName,
           }),
