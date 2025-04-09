@@ -8,8 +8,10 @@ import React from "react";
 
 interface MosaicOption {
   style_id: number;
-  grid: number[][];
+  grid: number[][];         // 🔹 used for preview only (optional)
+  fullGrid: number[][];     // ✅ store the original unresized full-resolution grid
 }
+
 
 
 type AspectRatioOption = "square" | "portrait" | "landscape";
@@ -192,10 +194,14 @@ export default function CreatePage() {
 
 
 
-    const data = await res.json();
-    setMosaicOptions(data.styles);
-    setLoading(false);
-  };
+    const styledOptions = data.styles.map((style: any) => ({
+      style_id: style.style_id,
+      fullGrid: style.grid,     // ✅ original full-res grid
+      grid: style.grid,         // 👈 only use this if you're resizing for preview
+    }));
+    
+    setMosaicOptions(styledOptions);
+    
 
 
 
@@ -215,7 +221,7 @@ export default function CreatePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          grid_data: selected.grid,
+          grid_data: selected.fullGrid,
           style_id: selectedStyleId,
           project_name: projectName, // ✅ INCLUDE project name here
         }),
@@ -1062,7 +1068,7 @@ export default function CreatePage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            grid_data: selected.grid,
+            grid_data: selected.fullGrid,
             style_id: selectedStyleId,
             project_name: projectName,
           }),
