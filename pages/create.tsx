@@ -1093,13 +1093,12 @@ export default function CreatePage() {
 
 
         const data = await res.json();
+
         console.log("Stripe session response:", data);
         if (data.url) {
           console.log("Stripe redirect URL:", data.url);
-          console.log("Waiting 10 seconds before redirecting to Stripe...");
-          setTimeout(() => {
-            window.location.href = data.url;
-          }, 10000); // 10,000 milliseconds = 10 seconds
+          window.location.href = data.url;
+
         }
          else {
           alert("Failed to redirect to payment.");
