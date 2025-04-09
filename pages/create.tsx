@@ -193,15 +193,20 @@ export default function CreatePage() {
     setLoading(false);
   };
 
-
-
-
   const generatePDF = async () => {
     if (selectedStyleId === null) return;
- 
-    const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
-    if (!selected) return;
- 
+  
+    const selectedIndex = mosaicOptions.findIndex((o) => o.style_id === selectedStyleId);
+    if (selectedIndex === -1) return;
+  
+    const selected = mosaicOptions[selectedIndex];
+    const gridToSend = selected.grid.map((row) => [...row]); // deep clone for safety
+  
+    console.log("Generating PDF with grid size:", {
+      rows: gridToSend.length,
+      cols: gridToSend[0]?.length,
+    });
+  
     try {
       setLoading(true);
       const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
@@ -210,12 +215,12 @@ export default function CreatePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          grid_data: selected.grid,
+          grid_data: gridToSend,
           style_id: selectedStyleId,
-          project_name: projectName, // ✅ INCLUDE project name here
+          project_name: projectName,
         }),
       });
- 
+  
       const data = await res.json();
       setPdfUrl(`${BACKEND_URL}${data.dice_map_url}`);
     } catch (error) {
@@ -224,9 +229,7 @@ export default function CreatePage() {
       setLoading(false);
     }
   };
- 
-
-
+  
 
 
   const clampDiceValue = (val: any): number => {
