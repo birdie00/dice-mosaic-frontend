@@ -1131,45 +1131,90 @@ export default function CreatePage() {
           gap: "2rem",
         }}
       >
-        {/* Digital Downloads */}
-        <div
-          style={{
-            backgroundColor: "#fff",
-            borderRadius: "12px",
-            padding: "1.5rem",
-            boxShadow: "0 0 12px rgba(0,0,0,0.05)",
-          }}
-        >
-          <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Digital Downloads</h3>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <li style={{ marginBottom: "1.2rem" }}>
-              <strong>Basic Image</strong><br />
-              <span>Free</span><br />
-              <button className="btn">Download</button>
-            </li>
-            <li style={{ marginBottom: "1.2rem" }}>
-              <strong>High-Res Image</strong><br />
-              <span>$14.99</span><br />
-              <button className="btn" onClick={() => handleStripeCheckout('highres')}>
-                Buy & Download
-              </button>
-            </li>
-            <li style={{ marginBottom: "1.2rem" }}>
-              <strong>Dice Map PDF</strong><br />
-              <span>$19.99</span><br />
-              <button className="btn" onClick={() => handleStripeCheckout('pdf')}>
-                Buy & Download
-              </button>
-            </li>
-            <li>
-              <strong>Bundle (Image + Map)</strong><br />
-              <span>$29.95</span><br />
-              <button className="btn" onClick={() => handleStripeCheckout('bundle')}>
-                Buy Bundle
-              </button>
-            </li>
-          </ul>
+{/* Digital Downloads */}
+<div
+  style={{
+    backgroundColor: "#fff",
+    borderRadius: "12px",
+    padding: "1.5rem",
+    boxShadow: "0 0 12px rgba(0,0,0,0.05)",
+  }}
+>
+  <h3 style={{ color: "#1C4C54", marginBottom: "1.5rem", fontSize: "1.2rem", fontWeight: 700 }}>
+    Digital Downloads
+  </h3>
+
+  {[
+    {
+      key: "lowres",
+      title: "Basic Image",
+      subtitle: "~2000 x 2000 px",
+      price: "$4.99",
+      buttonText: "Add to Cart",
+    },
+    {
+      key: "highres",
+      title: "High Quality Image",
+      subtitle: "~10300 x 10300 px",
+      price: "$14.99",
+      buttonText: "Add to Cart",
+    },
+    {
+      key: "pdf",
+      title: "Dice Map PDF",
+      subtitle: "",
+      price: "$19.99",
+      buttonText: "Add to Cart",
+    },
+    {
+      key: "bundle",
+      title: "Digital Bundle",
+      subtitle: "High-Res + Dice Map",
+      price: "$29.95",
+      buttonText: "Add to Cart",
+    },
+  ].map((item) => (
+    <div
+      key={item.key}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderTop: "1px solid #eee",
+        padding: "1rem 0",
+      }}
+    >
+      {/* Product Info */}
+      <div>
+        <div style={{ fontWeight: 600 }}>
+          {item.title}{" "}
+          <span title="Digital download. No physical dice included." style={{ cursor: "help" }}>
+            ℹ️
+          </span>
         </div>
+        {item.subtitle && (
+          <div style={{ fontStyle: "italic", fontSize: "0.85rem", color: "#555" }}>
+            {item.subtitle}
+          </div>
+        )}
+      </div>
+
+      {/* Price + Button */}
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+        <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{item.price}</div>
+        <button
+          className="btn"
+          onClick={() => handleStripeCheckout(item.key)}
+          style={{ whiteSpace: "nowrap" }}
+        >
+          🛒 {item.buttonText}
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
+
+
 
         {/* Physical Print */}
         <div
