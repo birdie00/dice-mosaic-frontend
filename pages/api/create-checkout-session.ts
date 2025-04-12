@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-const { productType, size, email, projectName, pdfUrl } = req.body;
+const { productType, size, quantity = 1, email, projectName, pdfUrl } = req.body;
 
   // ✅ Your real price IDs from Stripe
   const priceMap: Record<string, string | Record<string, string>> = {
