@@ -74,3 +74,4 @@ try {
   console.error("Stripe session error:", err);
   return res.status(500).json({ error: "Stripe session creation failed." });
 }
+}
