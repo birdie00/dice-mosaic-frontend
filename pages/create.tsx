@@ -1031,92 +1031,82 @@ export default function CreatePage() {
       maxWidth: "1200px",
       margin: "0 auto",
     }}>
-
-
-{/* Preview (Left side on desktop, top on mobile) */}
-<div style={{
-  flex: "1 1 350px",
-  backgroundColor: "#fff",
-  borderRadius: "12px",
-  padding: "1rem",
-  boxShadow: "0 0 12px rgba(0,0,0,0.05)",
-}}>
-  <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Preview</h3>
-
-  <div style={{
-    width: "100%",
-    position: "relative",
-    overflow: "hidden",
-  }}>
-    {/* Auto-scale container */}
-    <div style={{
-      width: "100%",
-      aspectRatio: `${
-        mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1
-      } / ${
-        mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid.length || 1
-      }`,
-      transform: "scale(1)",
-      transformOrigin: "top left",
-    }}>
+      {/* ✅ Preview */}
       <div style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${
-          mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1
-        }, 1fr)`,
-        width: "100%",
-        height: "100%",
-        gap: 0,
-        lineHeight: 0,
+        flex: "1 1 350px",
+        backgroundColor: "#fff",
+        borderRadius: "12px",
+        padding: "1rem",
+        boxShadow: "0 0 12px rgba(0,0,0,0.05)",
       }}>
-        {mosaicOptions
-          .find((option) => option.style_id === selectedStyleId)
-          ?.grid.flatMap((row, y) =>
-            row.map((val, x) => (
-              <img
-                key={`${y}-${x}`}
-                src={`/dice/dice_${val}.png`}
-                alt={`dice ${val}`}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                }}
-              />
-            ))
-          )}
-      </div>
+        <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Preview</h3>
 
-      {/* Watermark */}
-      <div style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        pointerEvents: "none",
-        zIndex: 1,
-      }}>
-        <span style={{
-          fontSize: "5rem",
-          fontWeight: "bold",
-          color: "rgba(255, 255, 255, 0.15)",
-          transform: "rotate(-25deg)",
-          userSelect: "none",
+        <div style={{
+          width: "100%",
+          position: "relative",
+          aspectRatio: `${
+            mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1
+          } / ${
+            mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid.length || 1
+          }`,
+          overflow: "hidden",
+          borderRadius: "8px",
         }}>
-          pipcasso.com
-        </span>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${
+              mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1
+            }, 1fr)`,
+            width: "100%",
+            height: "100%",
+            lineHeight: 0,
+          }}>
+            {mosaicOptions
+              .find((option) => option.style_id === selectedStyleId)
+              ?.grid.flatMap((row, y) =>
+                row.map((val, x) => (
+                  <img
+                    key={`${y}-${x}`}
+                    src={`/dice/dice_${val}.png`}
+                    alt={`dice ${val}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                ))
+              )}
+          </div>
+
+          {/* Watermark */}
+          <div style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            pointerEvents: "none",
+            zIndex: 1,
+          }}>
+            <span style={{
+              fontSize: "5rem",
+              fontWeight: "bold",
+              color: "rgba(255, 255, 255, 0.15)",
+              transform: "rotate(-25deg)",
+              userSelect: "none",
+            }}>
+              pipcasso.com
+            </span>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
 
-
-      {/* Right Column (Digital + Physical Options) */}
+      {/* ✅ Right Column: Digital + Physical */}
       <div style={{
         flex: "1 1 350px",
         display: "flex",
@@ -1132,30 +1122,30 @@ export default function CreatePage() {
         }}>
           <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Digital Downloads</h3>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <li style={{ marginBottom: "1rem" }}>
+            <li style={{ marginBottom: "1.2rem" }}>
               <strong>Basic Image</strong><br />
-              Free<br />
+              <span>Free</span><br />
               <button className="btn">Download</button>
             </li>
-            <li style={{ marginBottom: "1rem" }}>
+            <li style={{ marginBottom: "1.2rem" }}>
               <strong>High-Res Image</strong><br />
-              $14.99<br />
+              <span>$14.99</span><br />
               <button className="btn" onClick={() => handleStripeCheckout('highres')}>Buy & Download</button>
             </li>
-            <li style={{ marginBottom: "1rem" }}>
+            <li style={{ marginBottom: "1.2rem" }}>
               <strong>Dice Map PDF</strong><br />
-              $19.99<br />
+              <span>$19.99</span><br />
               <button className="btn" onClick={() => handleStripeCheckout('pdf')}>Buy & Download</button>
             </li>
             <li>
               <strong>Bundle (Image + Map)</strong><br />
-              $29.95<br />
+              <span>$29.95</span><br />
               <button className="btn" onClick={() => handleStripeCheckout('bundle')}>Buy Bundle</button>
             </li>
           </ul>
         </div>
 
-        {/* Physical Prints */}
+        {/* Physical Print */}
         <div style={{
           backgroundColor: "#fff",
           borderRadius: "12px",
@@ -1163,7 +1153,6 @@ export default function CreatePage() {
           boxShadow: "0 0 12px rgba(0,0,0,0.05)"
         }}>
           <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Physical Print</h3>
-
           <label style={{ fontWeight: 600 }}>Select Size:</label>
           <select
             value={selectedPrintSize}
@@ -1176,9 +1165,9 @@ export default function CreatePage() {
               border: "1px solid #ccc",
             }}
           >
-            <option value="small">Small (16 x 16 in)</option>
-            <option value="medium">Medium (24 x 24 in)</option>
-            <option value="large">Large (32 x 32 in)</option>
+            <option value="small">Small (16 × 16 in)</option>
+            <option value="medium">Medium (24 × 24 in)</option>
+            <option value="large">Large (32 × 32 in)</option>
           </select>
 
           <label style={{ fontWeight: 600 }}>Quantity:</label>
@@ -1203,6 +1192,7 @@ export default function CreatePage() {
       </div>
     </div>
 
+    {/* Back Button */}
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
       <button
         onClick={() => setStep(4)}
@@ -1238,6 +1228,7 @@ export default function CreatePage() {
     `}</style>
   </section>
 )}
+
 
 {step === 6 && pdfUrl && (
   <section style={{ padding: "2rem 0", textAlign: "center" }}>
