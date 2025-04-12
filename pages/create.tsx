@@ -1023,108 +1023,123 @@ export default function CreatePage() {
       5. Download & Purchase Options
     </h2>
 
-    <div style={{
-      display: "flex",
-      flexWrap: "wrap",
-      justifyContent: "center",
-      gap: "2rem",
-      maxWidth: "1200px",
-      margin: "0 auto",
-    }}>
-   
-{/* ✅ Responsive, content-fitting preview card */}
-<div style={{
-  flex: "1 1 auto",
-  backgroundColor: "#fff",
-  borderRadius: "12px",
-  padding: "1rem",
-  boxShadow: "0 0 12px rgba(0,0,0,0.05)",
-  alignSelf: "flex-start", // 👈 shrink to fit content
-  width: "100%",
-  maxWidth: "600px",
-}}>
-  <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Preview</h3>
+    {/* ✅ Responsive two-column layout */}
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        gap: "2rem",
+        maxWidth: "1200px",
+        margin: "0 auto",
+      }}
+    >
+      {/* 🟩 Left: Preview */}
+      <div style={{ flex: "1 1 400px", maxWidth: "600px" }}>
+        <div
+          style={{
+            backgroundColor: "#fff",
+            borderRadius: "12px",
+            padding: "1rem",
+            boxShadow: "0 0 12px rgba(0,0,0,0.05)",
+          }}
+        >
+          <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Preview</h3>
 
-  <div style={{
-    position: "relative",
-    width: "100%",
-    aspectRatio: `${
-      mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1
-    } / ${
-      mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid.length || 1
-    }`,
-    overflow: "hidden",
-    borderRadius: "8px",
-  }}>
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: `repeat(${
-        mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1
-      }, 1fr)`,
-      width: "100%",
-      height: "100%",
-      gap: 0,
-      lineHeight: 0,
-    }}>
-      {mosaicOptions
-        .find((option) => option.style_id === selectedStyleId)
-        ?.grid.flatMap((row, y) =>
-          row.map((val, x) => (
-            <img
-              key={`${y}-${x}`}
-              src={`/dice/dice_${val}.png`}
-              alt={`dice ${val}`}
+          <div
+            style={{
+              width: "100%",
+              position: "relative",
+              aspectRatio: `${
+                mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1
+              } / ${
+                mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid.length || 1
+              }`,
+              overflow: "hidden",
+              borderRadius: "8px",
+            }}
+          >
+            <div
               style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(${
+                  mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1
+                }, 1fr)`,
                 width: "100%",
                 height: "100%",
-                objectFit: "cover",
-                display: "block",
+                lineHeight: 0,
               }}
-            />
-          ))
-        )}
-    </div>
+            >
+              {mosaicOptions
+                .find((option) => option.style_id === selectedStyleId)
+                ?.grid.flatMap((row, y) =>
+                  row.map((val, x) => (
+                    <img
+                      key={`${y}-${x}`}
+                      src={`/dice/dice_${val}.png`}
+                      alt={`dice ${val}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                  ))
+                )}
+            </div>
 
-    {/* Watermark */}
-    <div style={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      pointerEvents: "none",
-      zIndex: 1,
-    }}>
-      <span style={{
-        fontSize: "5rem",
-        fontWeight: "bold",
-        color: "rgba(255, 255, 255, 0.15)",
-        transform: "rotate(-25deg)",
-        userSelect: "none",
-      }}>
-        pipcasso.com
-      </span>
-    </div>
-  </div>
-</div>
+            {/* Watermark */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                pointerEvents: "none",
+                zIndex: 1,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "5rem",
+                  fontWeight: "bold",
+                  color: "rgba(255, 255, 255, 0.15)",
+                  transform: "rotate(-25deg)",
+                  userSelect: "none",
+                }}
+              >
+                pipcasso.com
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      {/* ✅ Right Column: Digital + Physical */}
-      <div style={{
-        flex: "1 1 350px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "2rem",
-      }}>
+      {/* 🟦 Right: Digital + Print */}
+      <div
+        style={{
+          flex: "1 1 400px",
+          maxWidth: "600px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "2rem",
+        }}
+      >
         {/* Digital Downloads */}
-        <div style={{
-          backgroundColor: "#fff",
-          borderRadius: "12px",
-          padding: "1.5rem",
-          boxShadow: "0 0 12px rgba(0,0,0,0.05)"
-        }}>
+        <div
+          style={{
+            backgroundColor: "#fff",
+            borderRadius: "12px",
+            padding: "1.5rem",
+            boxShadow: "0 0 12px rgba(0,0,0,0.05)",
+          }}
+        >
           <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Digital Downloads</h3>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             <li style={{ marginBottom: "1.2rem" }}>
@@ -1135,28 +1150,36 @@ export default function CreatePage() {
             <li style={{ marginBottom: "1.2rem" }}>
               <strong>High-Res Image</strong><br />
               <span>$14.99</span><br />
-              <button className="btn" onClick={() => handleStripeCheckout('highres')}>Buy & Download</button>
+              <button className="btn" onClick={() => handleStripeCheckout('highres')}>
+                Buy & Download
+              </button>
             </li>
             <li style={{ marginBottom: "1.2rem" }}>
               <strong>Dice Map PDF</strong><br />
               <span>$19.99</span><br />
-              <button className="btn" onClick={() => handleStripeCheckout('pdf')}>Buy & Download</button>
+              <button className="btn" onClick={() => handleStripeCheckout('pdf')}>
+                Buy & Download
+              </button>
             </li>
             <li>
               <strong>Bundle (Image + Map)</strong><br />
               <span>$29.95</span><br />
-              <button className="btn" onClick={() => handleStripeCheckout('bundle')}>Buy Bundle</button>
+              <button className="btn" onClick={() => handleStripeCheckout('bundle')}>
+                Buy Bundle
+              </button>
             </li>
           </ul>
         </div>
 
         {/* Physical Print */}
-        <div style={{
-          backgroundColor: "#fff",
-          borderRadius: "12px",
-          padding: "1.5rem",
-          boxShadow: "0 0 12px rgba(0,0,0,0.05)"
-        }}>
+        <div
+          style={{
+            backgroundColor: "#fff",
+            borderRadius: "12px",
+            padding: "1.5rem",
+            boxShadow: "0 0 12px rgba(0,0,0,0.05)",
+          }}
+        >
           <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Physical Print</h3>
           <label style={{ fontWeight: 600 }}>Select Size:</label>
           <select
@@ -1186,18 +1209,21 @@ export default function CreatePage() {
               padding: "0.5rem",
               marginBottom: "1rem",
               borderRadius: "8px",
-              border: "1px solid #ccc"
+              border: "1px solid #ccc",
             }}
           />
 
-          <button className="btn" onClick={() => handleStripeCheckout("print", selectedPrintSize, printQuantity)}>
+          <button
+            className="btn"
+            onClick={() => handleStripeCheckout("print", selectedPrintSize, printQuantity)}
+          >
             Add to Cart – {getPriceForSize(selectedPrintSize)}
           </button>
         </div>
       </div>
     </div>
 
-    {/* Back Button */}
+    {/* Back button */}
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
       <button
         onClick={() => setStep(4)}
@@ -1214,6 +1240,7 @@ export default function CreatePage() {
       </button>
     </div>
 
+    {/* Button style */}
     <style jsx>{`
       .btn {
         padding: 0.5rem 1rem;
@@ -1233,46 +1260,6 @@ export default function CreatePage() {
     `}</style>
   </section>
 )}
-
-
-{step === 6 && pdfUrl && (
-  <section style={{ padding: "2rem 0", textAlign: "center" }}>
-    <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>
-      🎉 All Set! Download Your Dice Map
-    </h2>
-    <p>Thank you for using Pipcasso! You can now download your Dice Map PDF.</p>
-    <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-      <button style={{
-        padding: "0.75rem 1.5rem",
-        fontSize: "1rem",
-        backgroundColor: "#E84C3D",
-        color: "#fff",
-        border: "none",
-        borderRadius: "6px",
-        cursor: "pointer",
-        marginTop: "1rem"
-      }}>
-        Download Dice Map PDF
-      </button>
-    </a>
-    <div style={{ marginTop: "1.5rem" }}>
-      <button
-        onClick={() => setStep(5)}
-        style={{
-          padding: "0.6rem 1.2rem",
-          fontSize: "1rem",
-          backgroundColor: "#aaa",
-          color: "#fff",
-          border: "none",
-          borderRadius: "6px"
-        }}
-      >
-        ⬅ Back
-      </button>
-    </div>
-  </section>
-)}
-
 
 
 
