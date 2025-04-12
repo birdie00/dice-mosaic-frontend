@@ -57,8 +57,18 @@ try {
         quantity: Math.max(1, parseInt(quantity)),
       },
     ],
-    ...
+    success_url: `${req.headers.origin}/create?success=true`,
+    cancel_url: `${req.headers.origin}/create?canceled=true`,
+    metadata: {
+      productType,
+      size,
+      quantity,
+      email,
+      projectName,
+      pdfUrl,
+    },
   });
+
 
 
       success_url: `${req.headers.origin}/create?success=true`,
