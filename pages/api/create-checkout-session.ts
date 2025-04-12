@@ -1,66 +1,83 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 
-// Initialize Stripe
+// Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-03-31.basil", // ✅ match your installed version
+  apiVersion: "2022-11-15",
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { projectName, pdfUrl, email } = req.body;
+const { productType, size, email, projectName, pdfUrl } = req.body;
 
-  if (!projectName || !pdfUrl || !email) {
-    return res.status(400).json({ error: "Missing required fields" });
+  // ✅ Your real price IDs from Stripe
+  const priceMap: Record<string, string | Record<string, string>> = {
+    highres: "price_1RD2wN2fwLaC6Z6dK9ENSJ4s",
+    lowres: "price_1RD2wr2fwLaC6Z6dInNMdCrA",
+    pdf: "price_1RD2xW2fwLaC6Z6dbxHYbwKC",
+    bundle: "price_1RD3532fwLaC6Z6d7g5U4D24",
+    print: {
+      small: "price_1RD3Bp2fwLaC6Z6d69IThiiL",
+      medium: "price_1RD3Bp2fwLaC6Z6dnYfjXG6Y",
+      large: "price_1RD3Bp2fwLaC6Z6doY27koVI",
+    },
+  };
+
+  let priceId: string | undefined;
+
+  if (productType === "print") {
+    if (!size || typeof size !== "string") {
+      return res.status(400).json({ error: "Missing or invalid print size." });
+    }
+
+    priceId = (priceMap.print as Record<string, string>)[size];
+  } else {
+    priceId = priceMap[productType] as string;
   }
 
-  // Determine base domain depending on environment
-  const domain =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : "https://dice-mosaic-frontend.vercel.app/"; // 🔁 update with your live domain if different
+  if (!priceId) {
+    return res.status(400).json({ error: "Invalid product type or size." });
+  }
 
-  try {
-    // Log the values being passed to Stripe
-    console.log("📦 Creating Stripe session with metadata:", {
-      email,
-      projectName,
-      pdfUrl,
-    });
-
-    // Create the Stripe session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      customer_email: email,
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            unit_amount: 2500,
-            product_data: {
-              name: `Dice Map - ${projectName}`,
-              images: ["https://pipcasso.com/images/HeaderLogo.png"], // ✅ fallback image
-            },
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `${domain}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${domain}/create?cancelled=true`,
-      metadata: {
-    email,         // ✅ NOW INCLUDED!
-    pdfUrl,
+try {
+  console.log("Creating Stripe Checkout session with:", {
+    productType,
+    size,
+    quantity,
+    email,
     projectName,
+    pdfUrl,
+  });
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    line_items: [
+      {
+        price: priceId,
+        quantity: Math.max(1, parseInt(quantity)),
+      },
+    ],
+    ...
+  });
+
+
+      success_url: `${req.headers.origin}/create?success=true`,
+      cancel_url: `${req.headers.origin}/create?canceled=true`,
+      metadata: {
+        email,
+        projectName,
+        productType,
+        ...(size && { size }),
+        ...(pdfUrl && { pdfUrl }),
       },
     });
 
-    res.status(200).json({ url: session.url });
-  } catch (error) {
-    console.error("Stripe session creation failed:", error);
-    res.status(500).json({ error: "Stripe session creation failed" });
+    return res.status(200).json({ url: session.url });
+  } catch (err) {
+    console.error("Stripe session error:", err);
+    return res.status(500).json({ error: "Stripe session creation failed." });
   }
 }

@@ -35,6 +35,20 @@ export default function CreatePage() {
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
   const [buyHighRes, setBuyHighRes] = useState(false);
   const [orderPrint, setOrderPrint] = useState(false);
+  const [printQuantity, setPrintQuantity] = useState(1);
+  const [selectedPrintSize, setSelectedPrintSize] = useState("medium");
+  const getPriceForSize = (size: string): string => {
+    switch (size) {
+      case "small":
+        return "$49.99";
+      case "medium":
+        return "$79.99";
+      case "large":
+        return "$99.99";
+      default:
+        return "$—";
+    }
+  };
   
 
   // ✅ Correct ref typing for react-cropper instance
@@ -239,6 +253,40 @@ export default function CreatePage() {
     }
   };
     
+  const handleStripeCheckout = async (
+    productType: string,
+    size?: string,
+    quantity: number = 1
+  ) => {
+    try {
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productType,
+          size,
+          quantity, // ✅ Add this line
+          email,
+          projectName,
+          pdfUrl,
+        }),
+      });
+  
+      const data = await res.json();
+  
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Stripe session creation failed.");
+      }
+    } catch (error) {
+      console.error("Stripe Checkout error:", error);
+      alert("There was a problem starting the checkout.");
+    }
+  };
+  
   
 
 
@@ -983,27 +1031,28 @@ export default function CreatePage() {
       }}>
         <h3 style={{ marginBottom: "1rem", color: "#1C4C54" }}>Digital Downloads</h3>
         <ul style={{ listStyle: "none", padding: 0 }}>
-          <li>
-            <strong>Basic Image</strong><br />
-            Free<br />
-            <button className="btn">Download</button>
-          </li>
-          <li>
-            <strong>High-Res Image</strong><br />
-            £19.95<br />
-            <button className="btn" onClick={() => handleStripeCheckout('highres')}>Buy & Download</button>
-          </li>
-          <li>
-            <strong>Dice Map PDF</strong><br />
-            £24.95<br />
-            <button className="btn" onClick={() => handleStripeCheckout('pdf')}>Buy & Download</button>
-          </li>
-          <li>
-            <strong>Bundle (Image + Map)</strong><br />
-            £29.95<br />
-            <button className="btn" onClick={() => handleStripeCheckout('bundle')}>Buy Bundle</button>
-          </li>
-        </ul>
+  <li>
+    <strong>Basic Image</strong><br />
+    Free<br />
+    <button className="btn">Download</button>
+  </li>
+  <li>
+    <strong>High-Res Image</strong><br />
+    $14.99<br />
+    <button className="btn" onClick={() => handleStripeCheckout('highres')}>Buy & Download</button>
+  </li>
+  <li>
+    <strong>Dice Map PDF</strong><br />
+    $19.99<br />
+    <button className="btn" onClick={() => handleStripeCheckout('pdf')}>Buy & Download</button>
+  </li>
+  <li>
+    <strong>Pips and Plans (High-Res Image + Dice Map)</strong><br />
+    $24.99<br />
+    <button className="btn" onClick={() => handleStripeCheckout('bundle')}>Buy Bundle</button>
+  </li>
+</ul>
+
       </div>
 
       {/* Physical Prints */}
@@ -1016,14 +1065,32 @@ export default function CreatePage() {
       }}>
         <h3 style={{ marginBottom: "1rem", color: "#1C4C54" }}>Physical Print</h3>
         <label>Select Size:</label><br />
-        <select style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }}>
-          <option>Small</option>
-          <option>Medium</option>
-          <option>Large</option>
-        </select>
+        <select
+  value={selectedPrintSize}
+  onChange={(e) => setSelectedPrintSize(e.target.value)}
+  style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }}
+>
+  <option value="small">Small</option>
+  <option value="medium">Medium</option>
+  <option value="large">Large</option>
+</select>
+
         <label>Quantity:</label><br />
-        <input type="number" defaultValue={1} min={1} style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }} />
-        <button className="btn" onClick={() => handleStripeCheckout('print')}>Add to Cart - £67.95</button>
+        <input
+  type="number"
+  value={printQuantity}
+  min={1}
+  onChange={(e) => setPrintQuantity(Number(e.target.value))}
+  style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }}
+/>
+<button
+  className="btn"
+  onClick={() => handleStripeCheckout("print", selectedPrintSize, printQuantity)}
+>
+  Add to Cart – {getPriceForSize(selectedPrintSize)}
+</button>
+
+
       </div>
     </div>
 
