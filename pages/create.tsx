@@ -1031,62 +1031,83 @@ export default function CreatePage() {
       maxWidth: "1200px",
       margin: "0 auto",
     }}>
-      {/* Preview (Left side on desktop, top on mobile) */}
-      <div style={{
-        flex: "1 1 350px",
-        backgroundColor: "#fff",
-        borderRadius: "12px",
-        padding: "1rem",
-        boxShadow: "0 0 12px rgba(0,0,0,0.05)",
-        position: "relative"
+{/* Preview (Left side on desktop, top on mobile) */}
+<div style={{
+  flex: "1 1 350px",
+  backgroundColor: "#fff",
+  borderRadius: "12px",
+  padding: "1rem",
+  boxShadow: "0 0 12px rgba(0,0,0,0.05)",
+  position: "relative",
+  maxHeight: "600px",
+  overflow: "auto",
+}}>
+  <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Preview</h3>
+
+  <div style={{
+    position: "relative",
+    width: "100%",
+    aspectRatio: `${
+      mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1
+    } / ${
+      mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid.length || 1
+    }`,
+    overflow: "hidden",
+  }}>
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: `repeat(${
+        mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1
+      }, 1fr)`,
+      gap: 0,
+      width: "100%",
+      lineHeight: 0,
+    }}>
+      {mosaicOptions
+        .find((option) => option.style_id === selectedStyleId)
+        ?.grid.flatMap((row, y) =>
+          row.map((val, x) => (
+            <img
+              key={`${y}-${x}`}
+              src={`/dice/dice_${val}.png`}
+              alt={`dice ${val}`}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+          ))
+        )}
+    </div>
+
+    {/* ✅ Watermark Overlay */}
+    <div style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      pointerEvents: "none",
+      zIndex: 1,
+    }}>
+      <span style={{
+        fontSize: "5rem",
+        fontWeight: "bold",
+        color: "rgba(255, 255, 255, 0.15)",
+        transform: "rotate(-25deg)",
+        userSelect: "none",
       }}>
-        <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Preview</h3>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1}, 1fr)`,
-          width: "100%",
-          lineHeight: 0,
-        }}>
-          {mosaicOptions.find((option) => option.style_id === selectedStyleId)?.grid.flatMap((row, y) =>
-            row.map((val, x) => (
-              <img
-                key={`${y}-${x}`}
-                src={`/dice/dice_${val}.png`}
-                alt={`dice ${val}`}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                }}
-              />
-            ))
-          )}
-        </div>
-        {/* Watermark Overlay */}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          pointerEvents: "none",
-          zIndex: 1,
-        }}>
-          <span style={{
-            fontSize: "5rem",
-            fontWeight: "bold",
-            color: "rgba(255, 255, 255, 0.15)",
-            transform: "rotate(-25deg)",
-            userSelect: "none",
-          }}>
-            pipcasso.com
-          </span>
-        </div>
-      </div>
+        pipcasso.com
+      </span>
+    </div>
+  </div>
+</div>
+
 
       {/* Right Column (Digital + Physical Options) */}
       <div style={{
