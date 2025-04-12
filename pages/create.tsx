@@ -68,17 +68,16 @@ export default function CreatePage() {
 
 
 
-  // ✅ Preload dice images
-  useEffect(() => {
-    const preloadDiceImages = () => {
-      for (let i = 0; i <= 6; i++) {
-        const img = new Image();
-        img.src = `/dice/dice_${i}.png`;
-      }
-    };
-    preloadDiceImages();
-  }, []);
-
+// ✅ Preload dice images
+useEffect(() => {
+  const preloadDiceImages = () => {
+    for (let i = 0; i <= 6; i++) {
+      const img = new Image();
+      img.src = `/dice/dice_${i}.png`;  // ✅ backticks and quotes
+    }
+  };
+  preloadDiceImages();
+}, []);
 
 
 
