@@ -19,7 +19,7 @@ export default function CreatePage() {
   const router = useRouter();
 
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<number>(1);
   const [projectName, setProjectName] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -33,7 +33,9 @@ export default function CreatePage() {
   const [gridSize, setGridSize] = useState<[number, number]>([100, 100]);
   const [showGeneratingMessage, setShowGeneratingMessage] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
-
+  const [buyHighRes, setBuyHighRes] = useState(false);
+  const [orderPrint, setOrderPrint] = useState(false);
+  
 
   // ✅ Correct ref typing for react-cropper instance
   const cropperRef = useRef<HTMLImageElement & { cropper: CropperJS }>(null);
@@ -185,15 +187,20 @@ export default function CreatePage() {
   };
 
   const generatePDF = async () => {
-    if (selectedStyleId === null) return;
+    if (selectedStyleId === null || !projectName.trim()) {
+      alert("Please select a mosaic style and enter a project name.");
+      return;
+    }
   
     const selectedIndex = mosaicOptions.findIndex((o) => o.style_id === selectedStyleId);
-    if (selectedIndex === -1) return;
+    if (selectedIndex === -1) {
+      alert("Selected mosaic style not found.");
+      return;
+    }
   
     const selected = mosaicOptions[selectedIndex];
-    const gridToSend = selected.grid.map((row) => [...row]); // deep clone for safety
+    const gridToSend = selected.grid.map((row) => [...row]); // deep clone
   
-    // ✅ This is the correct place to log
     console.log("Generating PDF with grid size:", {
       rows: gridToSend.length,
       cols: gridToSend[0]?.length,
@@ -201,6 +208,7 @@ export default function CreatePage() {
   
     try {
       setLoading(true);
+  
       const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
         method: "POST",
         headers: {
@@ -213,15 +221,24 @@ export default function CreatePage() {
         }),
       });
   
+      if (!res.ok) {
+        throw new Error(`Server responded with status ${res.status}`);
+      }
+  
       const data = await res.json();
+      if (!data.dice_map_url) {
+        throw new Error("Missing dice_map_url in response.");
+      }
+  
       setPdfUrl(`${BACKEND_URL}${data.dice_map_url}`);
     } catch (error) {
       console.error("Error generating PDF:", error);
+      alert("There was an error generating your PDF. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
+    
   
 
 
@@ -828,353 +845,257 @@ export default function CreatePage() {
   </section>
 )}
 
+{step === 4 && mosaicOptions.length > 0 && (
+  <section style={{ padding: "2rem 0" }}>
+    <h2 style={{ fontSize: "1.5rem", textAlign: "center", marginBottom: "1.5rem" }}>
+      4. Select a Mosaic Style
+    </h2>
 
+    <div style={{
+      backgroundColor: "#fef2f2",
+      border: "1px solid #dc2626",
+      padding: "1rem 1.5rem",
+      borderRadius: "12px",
+      marginBottom: "1.5rem",
+      maxWidth: "800px",
+      marginInline: "auto",
+      textAlign: "center",
+      color: "#065f46",
+      fontSize: "1rem",
+      lineHeight: 1.6,
+      boxShadow: "0 2px 6px rgba(0,0,0,0.04)"
+    }}>
+      Click on the image to zoom in. Choose which option looks best and we will convert it into a high resolution print and Dice Map PDF!
+    </div>
 
-
-
-
-
-
- 
-        {step === 4 && mosaicOptions.length > 0 && (
-          <section style={{ padding: "2rem 0" }}>
-            <h2 style={{ fontSize: "1.5rem", textAlign: "center", marginBottom: "1.5rem" }}>4. Select a Mosaic Style</h2>
-            <div
-  style={{
-    backgroundColor: "#fef2f2", // light red background
-    border: "1px solid #dc2626", // dark red border
-    padding: "1rem 1.5rem",
-    borderRadius: "12px",
-    marginBottom: "1.5rem",
-    maxWidth: "800px",
-    marginInline: "auto",
-    textAlign: "center",
-    color: "#065f46", // ✅ dark green text (same as heading)
-    fontSize: "1rem",
-    lineHeight: 1.6,
-    boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-  }}
->
-  Click on the image to zoom in. Choose which option looks best and we will convert it into a high resolution print and Dice Map PDF!
-</div>
-
-
-
-
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "center",
-                gap: "2rem",
-              }}
-            >
-              {mosaicOptions.map((option) => (
-                <div
-                key={option.style_id}
-                style={{
-                  flex: "0 0 300px",
-                  padding: "1rem",
-                  background: "#fafafa",
-                  borderRadius: "12px",
-                  boxShadow: "0 0 8px rgba(0,0,0,0.08)",
-                  textAlign: "center",
-                  border: selectedStyleId === option.style_id ? "2px solid #E84C3D" : "2px solid transparent",
-                  transition: "border 0.2s ease-in-out",
-                }}
-              >
-             
-              <div
-  onClick={() => setExpandedImage(option.style_id)}
-  style={{
-    position: "relative",
-    cursor: "zoom-in",
-    borderRadius: "8px",
-    overflow: "hidden",
-    transition: "box-shadow 0.2s ease-in-out",
-  }}
-  onMouseEnter={(e) => {
-    const overlay = e.currentTarget.querySelector(".zoom-overlay") as HTMLDivElement;
-    if (overlay) overlay.style.opacity = "1";
-  }}
-  onMouseLeave={(e) => {
-    const overlay = e.currentTarget.querySelector(".zoom-overlay") as HTMLDivElement;
-    if (overlay) overlay.style.opacity = "0";
-  }}
->
-  {/* 🎲 Mosaic Grid */}
-  <div
-    style={{
-      position: "relative", // stays at base layer
-      zIndex: 1,
-      display: "grid",
-      gridTemplateColumns: `repeat(${option.grid[0].length}, 1fr)`,
-      aspectRatio: `${option.grid[0].length} / ${option.grid.length}`,
-      width: "100%",
-      gap: 0,
-      lineHeight: 0,
-      willChange: "transform",
-    }}
-  >
-    {option.grid.map((row, y) =>
-      row.map((val, x) => (
-        <img
-          key={`${y}-${x}`}
-          loading="lazy"
-          src={`/dice/dice_${clampDiceValue(val)}.png`}
-          alt={`dice ${val}`}
+    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "2rem" }}>
+      {mosaicOptions.map((option) => (
+        <div
+          key={option.style_id}
+          onClick={() => setSelectedStyleId(option.style_id)}
           style={{
-            width: "100%",
-            height: "100%",
-            display: "block",
-            objectFit: "cover",
-            imageRendering: "auto",
-            margin: 0,
-            padding: 0,
-            boxSizing: "border-box",
+            flex: "0 0 300px",
+            padding: "1rem",
+            background: "#fafafa",
+            borderRadius: "12px",
+            boxShadow: "0 0 8px rgba(0,0,0,0.08)",
+            textAlign: "center",
+            border: selectedStyleId === option.style_id ? "2px solid #E84C3D" : "2px solid transparent",
+            cursor: "pointer",
+            transition: "border 0.2s ease-in-out"
           }}
-        />
-      ))
-    )}
-  </div>
-
-
-  {/* ✅ Watermark Overlay */}
-  <div
-    style={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      pointerEvents: "none",
-      zIndex: 2, // higher than grid
-    }}
-  >
-    <span
+        >
+          {/* ✅ Mosaic Dice Preview Grid */}
+    <div
       style={{
-        fontSize: "2rem",
-        fontWeight: "bold",
-        color: "rgba(255, 255, 255, 0.2)",
-        transform: "rotate(-25deg)",
-        userSelect: "none",
+        position: "relative",
+        display: "grid",
+        gridTemplateColumns: `repeat(${option.grid[0].length}, 1fr)`,
+        aspectRatio: `${option.grid[0].length} / ${option.grid.length}`,
+        width: "100%",
+        gap: 0,
+        lineHeight: 0,
       }}
     >
-      pipcasso.com
-    </span>
-  </div>
-
-
-  {/* 🔍 Zoom Overlay Icon */}
-  <div
-    className="zoom-overlay"
-    style={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      backgroundColor: "rgba(0,0,0,0.3)",
-      opacity: 0,
-      transition: "opacity 0.3s ease-in-out",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      pointerEvents: "none",
-      zIndex: 3, // always on top
-    }}
-  >
-    <img
-      src="/icons/expand.svg"
-      alt="Zoom"
-      style={{
-        width: "48px",
-        height: "48px",
-        opacity: 0.9,
-        backgroundColor: "rgba(0,0,0,0.4)",
-        borderRadius: "50%",
-        padding: "8px",
-      }}
-    />
-  </div>
-</div>
-
-
-
-
-
-
-                  <button
-                    onClick={() => setSelectedStyleId(option.style_id)}
-                    style={{
-                      marginTop: "0.75rem",
-                      padding: "0.4rem 0.8rem",
-                      fontSize: "0.85rem",
-                      borderRadius: "4px",
-                      background: selectedStyleId === option.style_id ? "#E84C3D" : "#333",
-                      color: "#fff",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Option {option.style_id}
-                  </button>
-                </div>
-              ))}
-            </div>
- 
-            <div style={{ marginTop: "2rem", textAlign: "center" }}>
-  <button
-    onClick={async () => {
-      if (!selectedStyleId) return;
-
-
-      const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
-      if (!selected) return;
-
-
-      setLoading(true);
-      try {
-
-
-        // Step 1: Generate the PDF
-
-
-        if (!email || !email.includes("@")) {
-          alert("Please enter a valid email address.");
-          setLoading(false);
-          return;
-        }
-        const gridToSend = selected.grid.map((row) => [...row]);
-        console.log("Sending to /generate-pdf:", {
-          rows: gridToSend.length,
-          cols: gridToSend[0]?.length,
-        });
-        
-        const pdfRes = await fetch(`${BACKEND_URL}/generate-pdf`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            grid_data: gridToSend,
-            style_id: selectedStyleId,
-            project_name: projectName,
-          }),
-        });
-
-
-        const pdfData = await pdfRes.json();
-
-
-        if (!pdfData.dice_map_url) {
-          alert("PDF generation failed.");
-          setLoading(false);
-          return;
-        }
-
-
-        const generatedUrl = `${BACKEND_URL}${pdfData.dice_map_url}`;
-        setPdfUrl(generatedUrl); // Save for use in Step 5
-
-
-        // Step 2: Create Stripe Checkout Session
-        const res = await fetch("/api/create-checkout-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            projectName,
-            pdfUrl: generatedUrl,
-            email, // ✅ Add this!
-          }),
-        });
-       
-
-
-        const data = await res.json();
-
-        console.log("Stripe session response:", data);
-        if (data.url) {
-          console.log("Stripe redirect URL:", data.url);
-          window.location.href = data.url;
-
-        }
-         else {
-          alert("Failed to redirect to payment.");
-        }
-      } catch (err) {
-        console.error("Error during checkout:", err);
-        alert("Something went wrong. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    }}
-    disabled={selectedStyleId === null}
-    style={{
-      padding: "0.75rem 1.5rem",
-      fontSize: "1rem",
-      background: selectedStyleId === null ? "#aaa" : "#E84C3D",
-      color: "#fff",
-      border: "none",
-      borderRadius: "6px",
-      cursor: selectedStyleId === null ? "not-allowed" : "pointer",
-      marginRight: "1rem",
-    }}
-  >
-    Generate Dice Map PDF
-  </button>
-
-
-  <button
-    onClick={() => setStep(3)}
-    style={{
-      padding: "0.6rem 1.2rem",
-      fontSize: "1rem",
-      backgroundColor: "#aaa",
-      color: "#fff",
-      border: "none",
-      borderRadius: "6px",
-    }}
-  >
-    ⬅ Back
-  </button>
-</div>
-
-
-          </section>
-        )}
- 
- {step === 5 && pdfUrl && (
-        <section style={{ padding: "2rem 0", textAlign: "center" }}>
-          <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>
-            5. Download Your Dice Map
-          </h2>
-          <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-            <button
-              style={{
-                padding: "0.75rem 1.5rem",
-                fontSize: "1rem",
-                backgroundColor: "#E84C3D",
-                color: "#fff",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer",
-              }}
-            >
-              Download Dice Map PDF
-            </button>
-          </a>
-          <div style={{ marginTop: "1.5rem" }}>
-            <button
-              onClick={() => setStep(4)}
-              style={{ padding: "0.6rem 1.2rem", fontSize: "1rem" }}
-            >
-              ⬅ Back
-            </button>
-          </div>
-        </section>
+      {option.grid.map((row, y) =>
+        row.map((val, x) => (
+          <img
+            key={`${y}-${x}`}
+            src={`/dice/dice_${clampDiceValue(val)}.png`}
+            alt={`dice ${val}`}
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "block",
+              objectFit: "cover",
+              imageRendering: "auto",
+            }}
+          />
+        ))
       )}
+    </div>
+
+    <strong style={{ display: "block", marginTop: "0.5rem" }}>
+      Style #{option.style_id}
+    </strong>
+  </div>
+))}
+    </div>
+
+    <div style={{ textAlign: "center", marginTop: "2rem" }}>
+      <button
+        onClick={async () => {
+          await generatePDF();
+          setStep(5);
+        }}
+        disabled={selectedStyleId === null}
+        style={{
+          padding: "0.75rem 1.5rem",
+          fontSize: "1rem",
+          backgroundColor: selectedStyleId === null ? "#ccc" : "#E84C3D",
+          color: "#fff",
+          border: "none",
+          borderRadius: "6px",
+          cursor: selectedStyleId === null ? "not-allowed" : "pointer",
+          marginRight: "1rem"
+        }}
+      >
+        Next
+      </button>
+      <button
+        onClick={() => setStep(3)}
+        style={{
+          padding: "0.6rem 1.2rem",
+          fontSize: "1rem",
+          backgroundColor: "#aaa",
+          color: "#fff",
+          border: "none",
+          borderRadius: "6px"
+        }}
+      >
+        ⬅ Back
+      </button>
+    </div>
+  </section>
+)}
+
+{step === 5 && (
+  <section style={{ padding: "2rem 0" }}>
+    <h2 style={{ fontSize: "1.5rem", textAlign: "center", marginBottom: "1.5rem" }}>
+      5. Download & Purchase Options
+    </h2>
+
+    <div style={{
+      display: "flex",
+      flexWrap: "wrap",
+      justifyContent: "center",
+      gap: "2rem",
+      maxWidth: "1000px",
+      margin: "0 auto"
+    }}>
+      {/* Digital Downloads */}
+      <div style={{
+        flex: "1 1 300px",
+        backgroundColor: "#fff",
+        padding: "1.5rem",
+        borderRadius: "12px",
+        boxShadow: "0 0 12px rgba(0,0,0,0.05)"
+      }}>
+        <h3 style={{ marginBottom: "1rem", color: "#1C4C54" }}>Digital Downloads</h3>
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          <li>
+            <strong>Basic Image</strong><br />
+            Free<br />
+            <button className="btn">Download</button>
+          </li>
+          <li>
+            <strong>High-Res Image</strong><br />
+            £19.95<br />
+            <button className="btn" onClick={() => handleStripeCheckout('highres')}>Buy & Download</button>
+          </li>
+          <li>
+            <strong>Dice Map PDF</strong><br />
+            £24.95<br />
+            <button className="btn" onClick={() => handleStripeCheckout('pdf')}>Buy & Download</button>
+          </li>
+          <li>
+            <strong>Bundle (Image + Map)</strong><br />
+            £29.95<br />
+            <button className="btn" onClick={() => handleStripeCheckout('bundle')}>Buy Bundle</button>
+          </li>
+        </ul>
+      </div>
+
+      {/* Physical Prints */}
+      <div style={{
+        flex: "1 1 300px",
+        backgroundColor: "#fff",
+        padding: "1.5rem",
+        borderRadius: "12px",
+        boxShadow: "0 0 12px rgba(0,0,0,0.05)"
+      }}>
+        <h3 style={{ marginBottom: "1rem", color: "#1C4C54" }}>Physical Print</h3>
+        <label>Select Size:</label><br />
+        <select style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }}>
+          <option>Small</option>
+          <option>Medium</option>
+          <option>Large</option>
+        </select>
+        <label>Quantity:</label><br />
+        <input type="number" defaultValue={1} min={1} style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }} />
+        <button className="btn" onClick={() => handleStripeCheckout('print')}>Add to Cart - £67.95</button>
+      </div>
+    </div>
+
+    <div style={{ textAlign: "center", marginTop: "2rem" }}>
+      <button
+        onClick={() => setStep(4)}
+        style={{ padding: "0.6rem 1.2rem", marginRight: "1rem", backgroundColor: "#aaa", color: "#fff", border: "none", borderRadius: "6px" }}
+      >
+        ⬅ Back
+      </button>
+      <button
+        onClick={() => setStep(6)}
+        style={{ padding: "0.6rem 1.2rem", backgroundColor: "#E84C3D", color: "#fff", border: "none", borderRadius: "6px" }}
+      >
+        Next
+      </button>
+    </div>
+
+    <style jsx>{`
+      .btn {
+        padding: 0.5rem 1rem;
+        background-color: #E84C3D;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+    `}</style>
+  </section>
+)}
+
+{step === 6 && pdfUrl && (
+  <section style={{ padding: "2rem 0", textAlign: "center" }}>
+    <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>
+      🎉 All Set! Download Your Dice Map
+    </h2>
+    <p>Thank you for using Pipcasso! You can now download your Dice Map PDF.</p>
+    <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+      <button style={{
+        padding: "0.75rem 1.5rem",
+        fontSize: "1rem",
+        backgroundColor: "#E84C3D",
+        color: "#fff",
+        border: "none",
+        borderRadius: "6px",
+        cursor: "pointer",
+        marginTop: "1rem"
+      }}>
+        Download Dice Map PDF
+      </button>
+    </a>
+    <div style={{ marginTop: "1.5rem" }}>
+      <button
+        onClick={() => setStep(5)}
+        style={{
+          padding: "0.6rem 1.2rem",
+          fontSize: "1rem",
+          backgroundColor: "#aaa",
+          color: "#fff",
+          border: "none",
+          borderRadius: "6px"
+        }}
+      >
+        ⬅ Back
+      </button>
+    </div>
+  </section>
+)}
+
+
 
 
       {/* ✅ Zoomed-In Mosaic with Watermark */}
