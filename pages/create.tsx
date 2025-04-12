@@ -214,7 +214,12 @@ export default function CreatePage() {
   
     const selected = mosaicOptions[selectedIndex];
     const gridToSend = selected.grid.map((row) => [...row]); // deep clone
-  
+    console.log("Sending to /generate-pdf:", {
+      grid_data: gridToSend,
+      style_id: selectedStyleId,
+      project_name: projectName,
+    });
+    
     console.log("Generating PDF with grid size:", {
       rows: gridToSend.length,
       cols: gridToSend[0]?.length,
@@ -238,8 +243,13 @@ export default function CreatePage() {
       if (!res.ok) {
         throw new Error(`Server responded with status ${res.status}`);
       }
-  
+
+      console.log("PDF generation response status:", res.status);
+
       const data = await res.json();
+
+      console.log("PDF generation response body:", data);
+
       if (!data.dice_map_url) {
         throw new Error("Missing dice_map_url in response.");
       }
