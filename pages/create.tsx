@@ -1017,9 +1017,9 @@ export default function CreatePage() {
   </section>
 )}
 
-{step === 5 && (
-  <section style={{ padding: "2rem 0" }}>
-    <h2 style={{ fontSize: "1.5rem", textAlign: "center", marginBottom: "1.5rem" }}>
+{step === 5 && selectedStyleId !== null && (
+  <section style={{ padding: "2rem 1rem" }}>
+    <h2 style={{ fontSize: "1.5rem", textAlign: "center", marginBottom: "2rem" }}>
       5. Download & Purchase Options
     </h2>
 
@@ -1028,94 +1028,166 @@ export default function CreatePage() {
       flexWrap: "wrap",
       justifyContent: "center",
       gap: "2rem",
-      maxWidth: "1000px",
-      margin: "0 auto"
+      maxWidth: "1200px",
+      margin: "0 auto",
     }}>
-      {/* Digital Downloads */}
+      {/* Preview (Left side on desktop, top on mobile) */}
       <div style={{
-        flex: "1 1 300px",
+        flex: "1 1 350px",
         backgroundColor: "#fff",
-        padding: "1.5rem",
         borderRadius: "12px",
-        boxShadow: "0 0 12px rgba(0,0,0,0.05)"
+        padding: "1rem",
+        boxShadow: "0 0 12px rgba(0,0,0,0.05)",
+        position: "relative"
       }}>
-        <h3 style={{ marginBottom: "1rem", color: "#1C4C54" }}>Digital Downloads</h3>
-        <ul style={{ listStyle: "none", padding: 0 }}>
-  <li>
-    <strong>Basic Image</strong><br />
-    Free<br />
-    <button className="btn">Download</button>
-  </li>
-  <li>
-    <strong>High-Res Image</strong><br />
-    $14.99<br />
-    <button className="btn" onClick={() => handleStripeCheckout('highres')}>Buy & Download</button>
-  </li>
-  <li>
-    <strong>Dice Map PDF</strong><br />
-    $19.99<br />
-    <button className="btn" onClick={() => handleStripeCheckout('pdf')}>Buy & Download</button>
-  </li>
-  <li>
-    <strong>Pips and Plans (High-Res Image + Dice Map)</strong><br />
-    $24.99<br />
-    <button className="btn" onClick={() => handleStripeCheckout('bundle')}>Buy Bundle</button>
-  </li>
-</ul>
-
+        <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Preview</h3>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${mosaicOptions.find((o) => o.style_id === selectedStyleId)?.grid[0]?.length || 1}, 1fr)`,
+          width: "100%",
+          lineHeight: 0,
+        }}>
+          {mosaicOptions.find((option) => option.style_id === selectedStyleId)?.grid.flatMap((row, y) =>
+            row.map((val, x) => (
+              <img
+                key={`${y}-${x}`}
+                src={`/dice/dice_${val}.png`}
+                alt={`dice ${val}`}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
+            ))
+          )}
+        </div>
+        {/* Watermark Overlay */}
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          pointerEvents: "none",
+          zIndex: 1,
+        }}>
+          <span style={{
+            fontSize: "5rem",
+            fontWeight: "bold",
+            color: "rgba(255, 255, 255, 0.15)",
+            transform: "rotate(-25deg)",
+            userSelect: "none",
+          }}>
+            pipcasso.com
+          </span>
+        </div>
       </div>
 
-      {/* Physical Prints */}
+      {/* Right Column (Digital + Physical Options) */}
       <div style={{
-        flex: "1 1 300px",
-        backgroundColor: "#fff",
-        padding: "1.5rem",
-        borderRadius: "12px",
-        boxShadow: "0 0 12px rgba(0,0,0,0.05)"
+        flex: "1 1 350px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "2rem",
       }}>
-        <h3 style={{ marginBottom: "1rem", color: "#1C4C54" }}>Physical Print</h3>
-        <label>Select Size:</label><br />
-        <select
-  value={selectedPrintSize}
-  onChange={(e) => setSelectedPrintSize(e.target.value)}
-  style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }}
->
-  <option value="small">Small</option>
-  <option value="medium">Medium</option>
-  <option value="large">Large</option>
-</select>
+        {/* Digital Downloads */}
+        <div style={{
+          backgroundColor: "#fff",
+          borderRadius: "12px",
+          padding: "1.5rem",
+          boxShadow: "0 0 12px rgba(0,0,0,0.05)"
+        }}>
+          <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Digital Downloads</h3>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            <li style={{ marginBottom: "1rem" }}>
+              <strong>Basic Image</strong><br />
+              Free<br />
+              <button className="btn">Download</button>
+            </li>
+            <li style={{ marginBottom: "1rem" }}>
+              <strong>High-Res Image</strong><br />
+              $14.99<br />
+              <button className="btn" onClick={() => handleStripeCheckout('highres')}>Buy & Download</button>
+            </li>
+            <li style={{ marginBottom: "1rem" }}>
+              <strong>Dice Map PDF</strong><br />
+              $19.99<br />
+              <button className="btn" onClick={() => handleStripeCheckout('pdf')}>Buy & Download</button>
+            </li>
+            <li>
+              <strong>Bundle (Image + Map)</strong><br />
+              $29.95<br />
+              <button className="btn" onClick={() => handleStripeCheckout('bundle')}>Buy Bundle</button>
+            </li>
+          </ul>
+        </div>
 
-        <label>Quantity:</label><br />
-        <input
-  type="number"
-  value={printQuantity}
-  min={1}
-  onChange={(e) => setPrintQuantity(Number(e.target.value))}
-  style={{ width: "100%", padding: "0.5rem", marginBottom: "1rem" }}
-/>
-<button
-  className="btn"
-  onClick={() => handleStripeCheckout("print", selectedPrintSize, printQuantity)}
->
-  Add to Cart – {getPriceForSize(selectedPrintSize)}
-</button>
+        {/* Physical Prints */}
+        <div style={{
+          backgroundColor: "#fff",
+          borderRadius: "12px",
+          padding: "1.5rem",
+          boxShadow: "0 0 12px rgba(0,0,0,0.05)"
+        }}>
+          <h3 style={{ color: "#1C4C54", marginBottom: "1rem" }}>Physical Print</h3>
 
+          <label style={{ fontWeight: 600 }}>Select Size:</label>
+          <select
+            value={selectedPrintSize}
+            onChange={(e) => setSelectedPrintSize(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.5rem",
+              marginBottom: "1rem",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+            }}
+          >
+            <option value="small">Small (16 x 16 in)</option>
+            <option value="medium">Medium (24 x 24 in)</option>
+            <option value="large">Large (32 x 32 in)</option>
+          </select>
 
+          <label style={{ fontWeight: 600 }}>Quantity:</label>
+          <input
+            type="number"
+            value={printQuantity}
+            min={1}
+            onChange={(e) => setPrintQuantity(Number(e.target.value))}
+            style={{
+              width: "100%",
+              padding: "0.5rem",
+              marginBottom: "1rem",
+              borderRadius: "8px",
+              border: "1px solid #ccc"
+            }}
+          />
+
+          <button className="btn" onClick={() => handleStripeCheckout("print", selectedPrintSize, printQuantity)}>
+            Add to Cart – {getPriceForSize(selectedPrintSize)}
+          </button>
+        </div>
       </div>
     </div>
 
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
       <button
         onClick={() => setStep(4)}
-        style={{ padding: "0.6rem 1.2rem", marginRight: "1rem", backgroundColor: "#aaa", color: "#fff", border: "none", borderRadius: "6px" }}
+        style={{
+          padding: "0.6rem 1.2rem",
+          fontSize: "1rem",
+          backgroundColor: "#aaa",
+          color: "#fff",
+          border: "none",
+          borderRadius: "6px",
+        }}
       >
         ⬅ Back
-      </button>
-      <button
-        onClick={() => setStep(6)}
-        style={{ padding: "0.6rem 1.2rem", backgroundColor: "#E84C3D", color: "#fff", border: "none", borderRadius: "6px" }}
-      >
-        Next
       </button>
     </div>
 
@@ -1128,7 +1200,12 @@ export default function CreatePage() {
         border-radius: 6px;
         font-weight: 600;
         cursor: pointer;
-        margin-top: 0.5rem;
+      }
+
+      @media (max-width: 768px) {
+        .btn {
+          width: 100%;
+        }
       }
     `}</style>
   </section>
