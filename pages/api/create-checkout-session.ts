@@ -69,22 +69,8 @@ try {
     },
   });
 
-
-
-      success_url: `${req.headers.origin}/create?success=true`,
-      cancel_url: `${req.headers.origin}/create?canceled=true`,
-      metadata: {
-        email,
-        projectName,
-        productType,
-        ...(size && { size }),
-        ...(pdfUrl && { pdfUrl }),
-      },
-    });
-
-    return res.status(200).json({ url: session.url });
-  } catch (err) {
-    console.error("Stripe session error:", err);
-    return res.status(500).json({ error: "Stripe session creation failed." });
-  }
+  return res.status(200).json({ url: session.url });
+} catch (err) {
+  console.error("Stripe session error:", err);
+  return res.status(500).json({ error: "Stripe session creation failed." });
 }
