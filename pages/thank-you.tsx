@@ -99,31 +99,77 @@ export default function ThankYouPage() {
       </a>
     )}
 
-    {productType === "lowres" && lowResUrl && (
-      <a href={lowResUrl} download>
-        <button style={downloadButtonStyle}>
-          🖼 Download Your Basic Image
-        </button>
-      </a>
-    )}
+{productType === "lowres" && lowResUrl && (
+  <button
+    style={downloadButtonStyle}
+    onClick={async () => {
+      try {
+        const res = await fetch(lowResUrl);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "pipcasso-lowres.png";
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert("Failed to download image. Please try again.");
+        console.error(err);
+      }
+    }}
+  >
+    🖼 Download Your Basic Image
+  </button>
+)}
 
-    {productType === "highres" && highResUrl && (
-      <a href={highResUrl} download>
-        <button style={downloadButtonStyle}>
-          🖼 Download Your High-Res Image
-        </button>
-      </a>
-    )}
 
-    {productType === "bundle" && (
-      <>
-        {highResUrl && (
-          <a href={highResUrl} download>
-            <button style={downloadButtonStyle}>
-              🖼 Download High-Res Image
-            </button>
-          </a>
-        )}
+{productType === "highres" && highResUrl && (
+  <button
+    style={downloadButtonStyle}
+    onClick={async () => {
+      try {
+        const res = await fetch(highResUrl);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "pipcasso-highres.png";
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert("Failed to download image. Please try again.");
+        console.error(err);
+      }
+    }}
+  >
+    🖼 Download Your High-Res Image
+  </button>
+)}
+
+
+{highResUrl && (
+  <button
+    style={downloadButtonStyle}
+    onClick={async () => {
+      try {
+        const res = await fetch(highResUrl);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "pipcasso-highres.png";
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert("Failed to download high-res image. Please try again.");
+        console.error(err);
+      }
+    }}
+  >
+    🖼 Download High-Res Image
+  </button>
+)}
+
         {pdfUrl && (
           <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
             <button style={downloadButtonStyle}>
