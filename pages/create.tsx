@@ -31,6 +31,8 @@ export default function CreatePage() {
   const [selectedStyleId, setSelectedStyleId] = useState<number | null>(null);
   const [aspectRatio, setAspectRatio] = useState<AspectRatioOption>("square");
   const [gridSize, setGridSize] = useState<[number, number]>([100, 100]);
+  const [lowResImageUrl, setLowResImageUrl] = useState<string | null>(null);
+  const [highResImageUrl, setHighResImageUrl] = useState<string | null>(null);
   const [showGeneratingMessage, setShowGeneratingMessage] = useState(false);
   const [expandedImage, setExpandedImage] = useState<number | null>(null);
   const [buyHighRes, setBuyHighRes] = useState(false);
@@ -263,6 +265,27 @@ export default function CreatePage() {
     }
   };
     
+  const generateImage = async (resolution: "low" | "high") => {
+    const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
+    if (!selected) return null;
+  
+    const res = await fetch(`${BACKEND_URL}/generate-image`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        grid_data: selected.grid,
+        style_id: selectedStyleId,
+        project_name: projectName,
+        resolution,
+        mode: "dice",
+      }),
+    });
+  
+    const data = await res.json();
+    return `${BACKEND_URL}${data.image_url}`;
+  };
+  
+
   const handleStripeCheckout = async (
     productType: string,
     size?: string,
@@ -277,11 +300,13 @@ export default function CreatePage() {
         body: JSON.stringify({
           productType,
           size,
-          quantity, // ✅ Add this line
+          quantity,
           email,
           projectName,
           pdfUrl,
-        }),
+          lowResImageUrl,
+          highResImageUrl,
+        }),        
       });
   
       const data = await res.json();
@@ -983,9 +1008,22 @@ export default function CreatePage() {
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
       <button
         onClick={async () => {
+          if (selectedStyleId === null) return;
+        
+          setLoading(true);
+        
+          const imageLow = await generateImage("low");
+          const imageHigh = await generateImage("high");
+        
+          setLowResImageUrl(imageLow);
+          setHighResImageUrl(imageHigh);
+        
           await generatePDF();
+        
+          setLoading(false);
           setStep(5);
         }}
+        
         disabled={selectedStyleId === null}
         style={{
           padding: "0.75rem 1.5rem",
