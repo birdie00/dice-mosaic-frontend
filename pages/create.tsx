@@ -1016,7 +1016,9 @@ export default function CreatePage() {
         
           const imageLow = await generateImage("low");
           const imageHigh = await generateImage("high");
-        
+          console.log("➡️ LowRes Image URL:", imageLow);
+          console.log("➡️ HighRes Image URL:", imageHigh);
+          
           setLowResImageUrl(imageLow);
           setHighResImageUrl(imageHigh);
         
