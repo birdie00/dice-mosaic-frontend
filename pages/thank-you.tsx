@@ -62,7 +62,7 @@ export default function ThankYouPage() {
   return (
     <div
       style={{
-        backgroundColor: "#3B1B47", // dark purple background from logo
+        backgroundColor: "#3B1B47",
         minHeight: "100vh",
         padding: "2rem",
         display: "flex",
@@ -72,7 +72,7 @@ export default function ThankYouPage() {
     >
       <div
         style={{
-          backgroundColor: "#FDF7F1", // cream card background
+          backgroundColor: "#FDF7F1",
           borderRadius: "16px",
           padding: "3rem",
           maxWidth: "600px",
@@ -84,144 +84,145 @@ export default function ThankYouPage() {
         <h1 style={{ fontSize: "2rem", color: "#E84C3D", marginBottom: "1rem" }}>
           Thank You for Your Purchase!
         </h1>
-
+  
         {loading ? (
-  <p style={{ fontSize: "1.1rem", color: "#444" }}>
-    Loading your download...
-  </p>
-) : (
-  <>
-    {productType === "pdf" && pdfUrl && (
-      <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-        <button style={downloadButtonStyle}>
-          📥 Download Your Dice Map PDF
-        </button>
-      </a>
-    )}
-
-{productType === "lowres" && lowResUrl && (
-  <button
-    style={downloadButtonStyle}
-    onClick={async () => {
-      try {
-        const res = await fetch(lowResUrl);
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "pipcasso-lowres.png";
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        alert("Failed to download image. Please try again.");
-        console.error(err);
-      }
-    }}
-  >
-    🖼 Download Your Basic Image
-  </button>
-)}
-
-
-{productType === "highres" && highResUrl && (
-  <button
-    style={downloadButtonStyle}
-    onClick={async () => {
-      try {
-        const res = await fetch(highResUrl);
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "pipcasso-highres.png";
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        alert("Failed to download image. Please try again.");
-        console.error(err);
-      }
-    }}
-  >
-    🖼 Download Your High-Res Image
-  </button>
-)}
-
-
-{highResUrl && (
-  <button
-    style={downloadButtonStyle}
-    onClick={async () => {
-      try {
-        const res = await fetch(highResUrl);
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "pipcasso-highres.png";
-        a.click();
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        alert("Failed to download high-res image. Please try again.");
-        console.error(err);
-      }
-    }}
-  >
-    🖼 Download High-Res Image
-  </button>
-)}
-
-        {pdfUrl && (
-          <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-            <button style={downloadButtonStyle}>
-              📥 Download Dice Map PDF
+          <p style={{ fontSize: "1.1rem", color: "#444" }}>
+            Loading your download...
+          </p>
+        ) : (
+          <>
+            {productType === "pdf" && pdfUrl && (
+              <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                <button style={downloadButtonStyle}>
+                  📥 Download Your Dice Map PDF
+                </button>
+              </a>
+            )}
+  
+            {productType === "lowres" && lowResUrl && (
+              <button
+                style={downloadButtonStyle}
+                onClick={async () => {
+                  try {
+                    const res = await fetch(lowResUrl);
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "pipcasso-lowres.png";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  } catch (err) {
+                    alert("Failed to download image. Please try again.");
+                    console.error(err);
+                  }
+                }}
+              >
+                🖼 Download Your Basic Image
+              </button>
+            )}
+  
+            {productType === "highres" && highResUrl && (
+              <button
+                style={downloadButtonStyle}
+                onClick={async () => {
+                  try {
+                    const res = await fetch(highResUrl);
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "pipcasso-highres.png";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  } catch (err) {
+                    alert("Failed to download image. Please try again.");
+                    console.error(err);
+                  }
+                }}
+              >
+                🖼 Download Your High-Res Image
+              </button>
+            )}
+  
+            {productType === "bundle" && (
+              <>
+                {highResUrl && (
+                  <button
+                    style={downloadButtonStyle}
+                    onClick={async () => {
+                      try {
+                        const res = await fetch(highResUrl);
+                        const blob = await res.blob();
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "pipcasso-highres.png";
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      } catch (err) {
+                        alert("Failed to download high-res image. Please try again.");
+                        console.error(err);
+                      }
+                    }}
+                  >
+                    🖼 Download High-Res Image
+                  </button>
+                )}
+                {pdfUrl && (
+                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                    <button style={downloadButtonStyle}>
+                      📥 Download Dice Map PDF
+                    </button>
+                  </a>
+                )}
+              </>
+            )}
+  
+            {!pdfUrl && !lowResUrl && !highResUrl && (
+              <p style={{ fontSize: "1.1rem", color: "#b91c1c" }}>
+                We couldn't find your download. Please contact support.
+              </p>
+            )}
+          </>
+        )}
+  
+        {code && (
+          <div style={{ marginTop: "2rem", color: "#3B1B47", fontSize: "1rem" }}>
+            <p>
+              🎟️ <strong>Your Access Code:</strong> <code>{code}</code>
+            </p>
+            <p>
+              You can use this code at{" "}
+              <a
+                href="/redeem"
+                style={{
+                  color: "#E84C3D",
+                  fontWeight: "bold",
+                  textDecoration: "underline",
+                }}
+              >
+                pipcasso.com/redeem
+              </a>{" "}
+              to re-download your map anytime.
+            </p>
+          </div>
+        )}
+  
+        <div style={{ marginTop: "2.5rem" }}>
+          <a href="/create">
+            <button
+              style={{
+                ...downloadButtonStyle,
+                backgroundColor: "#1C4C54",
+                marginTop: "0.5rem",
+              }}
+            >
+              🎨 Start Another Mosaic
             </button>
           </a>
-        )}
-      </>
-    )}
-
-    {!pdfUrl && !lowResUrl && !highResUrl && (
-      <p style={{ fontSize: "1.1rem", color: "#b91c1c" }}>
-        We couldn't find your download. Please contact support.
-      </p>
-    )}
-  </>
-)}
-
-
-            {code && (
-              <div style={{ marginTop: "2rem", color: "#3B1B47", fontSize: "1rem" }}>
-                <p>
-                  🎟️ <strong>Your Access Code:</strong> <code>{code}</code>
-                </p>
-                <p>
-                  You can use this code at{" "}
-                  <a
-                    href="/redeem"
-                    style={{ color: "#E84C3D", fontWeight: "bold", textDecoration: "underline" }}
-                  >
-                    pipcasso.com/redeem
-                  </a>{" "}
-                  to re-download your map anytime.
-                </p>
-              </div>
-            )}
-        <div style={{ marginTop: "2.5rem" }}>
-  <a href="/create">
-    <button
-      style={{
-        ...downloadButtonStyle,
-        backgroundColor: "#1C4C54",
-        marginTop: "0.5rem",
-      }}
-    >
-      🎨 Start Another Mosaic
-    </button>
-  </a>
-</div>
-
-</div> 
-</div>
-
-);
+        </div>
+      </div>
+    </div>
+  );  
 }
