@@ -282,8 +282,10 @@ export default function CreatePage() {
     });
   
     const data = await res.json();
+    console.log("🎨 generateImage response:", data); // 👈 ADD THIS
     return `${BACKEND_URL}${data.image_url}`;
   };
+  
   
 
   const handleStripeCheckout = async (
