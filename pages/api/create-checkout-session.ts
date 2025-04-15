@@ -34,12 +34,52 @@ const {
 
   let priceId: string | undefined;
 
-  if (productType === "print") {
-    if (!size || typeof size !== "string") {
-      return res.status(400).json({ error: "Missing or invalid print size." });
-    }
+ if (productType === "print") {
+  const sizePrices: Record<string, number> = {
+    small: 4999,
+    medium: 7999,
+    large: 9999,
+  };
 
-    priceId = (priceMap.print as Record<string, string>)[size];
+  const unitPrice = sizePrices[size];
+
+  if (!unitPrice) {
+    return res.status(400).json({ error: "Invalid print size." });
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: `Physical Print (${size})`,
+            description: projectName ? `Project: ${projectName}` : undefined,
+          },
+          unit_amount: unitPrice,
+        },
+        quantity: Math.max(1, parseInt(quantity)),
+      },
+    ],
+    success_url: `${req.headers.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${req.headers.origin}/create?step=5&canceled=true`,
+    metadata: {
+      productType,
+      size,
+      quantity,
+      email,
+      projectName,
+      pdfUrl,
+      lowResImageUrl,
+      highResImageUrl,
+    },
+  });
+
+  return res.status(200).json({ url: session.url });
+}
+
   } else {
     priceId = priceMap[productType] as string;
   }
