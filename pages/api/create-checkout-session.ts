@@ -57,8 +57,8 @@ try {
         quantity: Math.max(1, parseInt(quantity)),
       },
     ],
-    success_url: `${req.headers.origin}/create?success=true`,
-    cancel_url: `${req.headers.origin}/create?canceled=true`,
+success_url: `${req.headers.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+cancel_url: `${req.headers.origin}/create?step=5&canceled=true`,
     metadata: {
       productType,
       size,
