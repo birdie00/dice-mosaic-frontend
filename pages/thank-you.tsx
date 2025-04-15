@@ -142,6 +142,7 @@ export default function ThankYouPage() {
   </>
 )}
 
+
             {code && (
               <div style={{ marginTop: "2rem", color: "#3B1B47", fontSize: "1rem" }}>
                 <p>
