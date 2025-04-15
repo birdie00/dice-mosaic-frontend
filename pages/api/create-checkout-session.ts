@@ -8,7 +8,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-const { productType, size, quantity = 1, email, projectName, pdfUrl } = req.body;
+const {
+  productType,
+  size,
+  quantity,
+  email,
+  projectName,
+  pdfUrl,
+  lowResImageUrl,
+  highResImageUrl,
+} = req.body;
 
   // ✅ Your real price IDs from Stripe
   const priceMap: Record<string, string | Record<string, string>> = {
@@ -59,14 +68,16 @@ try {
     ],
 success_url: `${req.headers.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
 cancel_url: `${req.headers.origin}/create?step=5&canceled=true`,
-    metadata: {
-      productType,
-      size,
-      quantity,
-      email,
-      projectName,
-      pdfUrl,
-    },
+   metadata: {
+  productType,
+  size,
+  quantity,
+  email,
+  projectName,
+  pdfUrl,
+  lowResImageUrl,
+  highResImageUrl,
+},
   });
 
   return res.status(200).json({ url: session.url });
