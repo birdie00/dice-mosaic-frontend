@@ -1015,13 +1015,13 @@ export default function CreatePage() {
           setLoading(true);
           try {
             const imageLow = await generateImage("low");
-            //const imageHigh = await generateImage("high");
+            const imageHigh = await generateImage("high");
         
             console.log("➡️ LowRes Image URL:", imageLow);
-            //console.log("➡️ HighRes Image URL:", imageHigh);
+            console.log("➡️ HighRes Image URL:", imageHigh);
         
             setLowResImageUrl(imageLow);
-            //setHighResImageUrl(imageHigh);
+            setHighResImageUrl(imageHigh);
         
             await generatePDF();
         
