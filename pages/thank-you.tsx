@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import confetti from "canvas-confetti";
 
 export default function ThankYouPage() {
   const router = useRouter();
@@ -31,13 +30,6 @@ export default function ThankYouPage() {
           setLowResUrl(data.metadata.lowResImageUrl || null);
           setHighResUrl(data.metadata.highResImageUrl || null);
           setCode(data.code || null);
-
-          // 🎉 Confetti celebration
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 },
-          });
         } else {
           setPdfUrl(null);
         }
