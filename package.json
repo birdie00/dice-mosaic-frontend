@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
+    "canvas-confetti": "^1.9.3",
     "cropperjs": "^1.5.13",
     "nanoid": "^5.1.5",
     "next": "15.2.4",
