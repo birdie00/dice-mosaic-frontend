@@ -160,9 +160,6 @@ export default function ThankYouPage() {
                 </p>
               </div>
             )}
-          <p style={{ fontSize: "1.1rem", color: "#b91c1c" }}>
-            We couldn't find your Dice Map. Please contact support with your order details.
-          </p>
         <div style={{ marginTop: "2.5rem" }}>
   <a href="/create">
     <button
@@ -177,9 +174,8 @@ export default function ThankYouPage() {
   </a>
 </div>
 
-</div> {/* closes cream card */}
-</div> {/* closes full-page container */}
+</div> 
+</div>
 
-
-  );
+);
 }
