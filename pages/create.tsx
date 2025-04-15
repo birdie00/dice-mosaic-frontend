@@ -1013,20 +1013,28 @@ export default function CreatePage() {
           if (selectedStyleId === null) return;
         
           setLoading(true);
+          try {
+            const imageLow = await generateImage("low");
+            const imageHigh = await generateImage("high");
         
-          const imageLow = await generateImage("low");
-          const imageHigh = await generateImage("high");
-          console.log("➡️ LowRes Image URL:", imageLow);
-          console.log("➡️ HighRes Image URL:", imageHigh);
-          
-          setLowResImageUrl(imageLow);
-          setHighResImageUrl(imageHigh);
+            console.log("➡️ LowRes Image URL:", imageLow);
+            console.log("➡️ HighRes Image URL:", imageHigh);
         
-          await generatePDF();
+            setLowResImageUrl(imageLow);
+            setHighResImageUrl(imageHigh);
         
-          setLoading(false);
-          setStep(5);
+            await generatePDF();
+        
+            console.log("✅ All done, going to step 5");
+            setStep(5);
+          } catch (err) {
+            console.error("❌ Error in Step 4 → 5 logic:", err);
+            alert("Something went wrong generating your image or PDF.");
+          } finally {
+            setLoading(false);
+          }
         }}
+        
         
         disabled={selectedStyleId === null}
         style={{
