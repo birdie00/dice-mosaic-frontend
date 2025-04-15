@@ -80,9 +80,6 @@ const {
   return res.status(200).json({ url: session.url });
 }
 
-  } else {
-    priceId = priceMap[productType] as string;
-  }
 
   if (!priceId) {
     return res.status(400).json({ error: "Invalid product type or size." });
