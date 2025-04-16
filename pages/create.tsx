@@ -1264,12 +1264,23 @@ export default function CreatePage() {
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
         <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{item.price}</div>
         <button
-          className="btn"
-          onClick={() => handleStripeCheckout(item.key)}
-          style={{ whiteSpace: "nowrap" }}
-        >
-          🛒 {item.buttonText}
-        </button>
+  className="btn"
+  onClick={() => {
+    console.log("🧪 digital vars", {
+      productType: item.key,
+      email,
+      projectName,
+      pdfUrl,
+      lowResImageUrl,
+      highResImageUrl,
+    });
+
+    handleStripeCheckout(item.key);
+  }}
+>
+  🛒 {item.buttonText}
+</button>
+
       </div>
     </div>
   ))}
