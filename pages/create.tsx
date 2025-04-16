@@ -306,28 +306,7 @@ export default function CreatePage() {
         lowResImageUrl,
         highResImageUrl,
       });
-      
-      const handleStripeCheckout = async (
-        productType: string,
-        size?: string,
-        quantity: number = 1,
-        styleId?: number,
-        grid?: number[][]
-      ) => {
-        try {
-          console.log("🛒 Stripe checkout payload:", {
-            productType,
-            size,
-            quantity,
-            email,
-            projectName,
-            pdfUrl,
-            lowResImageUrl,
-            highResImageUrl,
-            styleId,
-            grid,
-          });
-      
+        
           const res = await fetch("/api/create-checkout-session", {
             method: "POST",
             headers: {
@@ -359,11 +338,6 @@ export default function CreatePage() {
           alert("There was a problem starting the checkout.");
         }
       };
-      
-      
-  
-  
-
 
   const clampDiceValue = (val: any): number => {
     const num = parseInt(val);
