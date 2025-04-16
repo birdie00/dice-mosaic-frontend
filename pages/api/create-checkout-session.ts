@@ -51,7 +51,33 @@ highres: "price_1RD2wN2fwLaC6Z6dK9ENSJ4s",
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
-      line_items: [
+      shipping_address_collection: {
+  allowed_countries: [
+    "US", // United States
+    "CA", // Canada
+    "MX", // Mexico
+    "AU", // Australia
+    "GB", // United Kingdom
+    "DE", // Germany
+    "FR", // France
+    "NL", // Netherlands
+    "SE", // Sweden
+    "NO", // Norway
+    "DK", // Denmark
+    "FI", // Finland
+    "IE", // Ireland
+    "IT", // Italy
+    "ES", // Spain
+    "BE", // Belgium
+    "CH", // Switzerland
+    "AT", // Austria
+    "NZ", // New Zealand
+    "PT", // Portugal
+  ],
+},
+
+
+	line_items: [
         {
           price_data: {
             currency: "usd",
