@@ -84,9 +84,7 @@ metadata: {
   });
 
   return res.status(200).json({ url: session.url });
-}
-
-// Custom handling for highres product
+} else
 if (productType === "highres") {
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -120,8 +118,7 @@ if (productType === "highres") {
   });
 
   return res.status(200).json({ url: session.url });
-}
-
+} else {
 
   if (!priceId) {
     return res.status(400).json({ error: "Invalid product type or size." });
@@ -160,6 +157,7 @@ cancel_url: `${req.headers.origin}/create?step=5&canceled=true`,
   });
 
   return res.status(200).json({ url: session.url });
+}
 } catch (err) {
   console.error("Stripe session error:", err);
   return res.status(500).json({ error: "Stripe session creation failed." });
