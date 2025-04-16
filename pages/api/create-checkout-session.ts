@@ -23,6 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const priceMap: Record<string, string | Record<string, string>> = {
     lowres: "price_1RD2wr2fwLaC6Z6dInNMdCrA",
+highres: "price_1RD2wN2fwLaC6Z6dK9ENSJ4s",
     pdf: "price_1RD2xW2fwLaC6Z6dbxHYbwKC",
     bundle: "price_1RD3532fwLaC6Z6d7g5U4D24",
     print: {
@@ -80,42 +81,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ url: session.url });
   }
 
-  // 🧠 High-Res Image
-  if (productType === "highres") {
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "High Quality Mosaic Image",
-            },
-            unit_amount: 1499,
-          },
-          quantity: quantity || 1,
-        },
-      ],
-      success_url: `${req.headers.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin}/create?step=5&canceled=true`,
-      metadata: {
-        productType,
-        size,
-        quantity,
-        email,
-        projectName,
-        pdfUrl,
-        lowResImageUrl,
-        highResImageUrl,
-        styleId: styleId?.toString() || "",
-        grid: JSON.stringify(grid || []),
-      },
-    });
-
-    return res.status(200).json({ url: session.url });
-  }
-
+ 
   // 🧾 All Other Products (pdf, lowres, bundle)
   const priceId = priceMap[productType] as string;
 
