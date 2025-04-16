@@ -38,9 +38,8 @@ highres: "price_1RD2wN2fwLaC6Z6dK9ENSJ4s",
   // 🖼 Physical Print
   if (productType === "print") {
     const sizePrices: Record<string, number> = {
-      small: 4999,
-      medium: 7999,
-      large: 9999,
+      small: 5999,
+      large: 8999,
     };
 
     const unitPrice = sizePrices[size];
