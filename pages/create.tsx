@@ -1529,4 +1529,3 @@ export default function CreatePage() {
 </Layout>
   );
 }
-
