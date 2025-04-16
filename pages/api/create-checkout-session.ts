@@ -74,8 +74,7 @@ highres: "price_1RD2wN2fwLaC6Z6dK9ENSJ4s",
     "PT", // Portugal
   ],
 },
-
-
+	customer_email: email,
 	line_items: [
         {
           price_data: {
