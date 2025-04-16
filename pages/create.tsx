@@ -294,6 +294,17 @@ export default function CreatePage() {
     quantity: number = 1
   ) => {
     try {
+      console.log("🛒 Stripe checkout payload:", {
+        productType,
+        size,
+        quantity,
+        email,
+        projectName,
+        pdfUrl,
+        lowResImageUrl,
+        highResImageUrl,
+      });
+      
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: {
