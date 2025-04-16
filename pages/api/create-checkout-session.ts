@@ -17,7 +17,10 @@ const {
   pdfUrl,
   lowResImageUrl,
   highResImageUrl,
+  styleId,
+  grid,
 } = req.body;
+
 
   // ✅ Your real price IDs from Stripe
   const priceMap: Record<string, string | Record<string, string>> = {
