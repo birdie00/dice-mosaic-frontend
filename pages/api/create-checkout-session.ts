@@ -65,16 +65,15 @@ const {
     ],
     success_url: `${req.headers.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${req.headers.origin}/create?step=5&canceled=true`,
-    metadata: {
-      productType,
-      size,
-      quantity,
-      email,
-      projectName,
-      pdfUrl,
-      lowResImageUrl,
-      highResImageUrl,
-    },
+metadata: {
+  productType,
+  size,
+  quantity,
+  email,
+  projectName,
+  styleId: selectedStyleId?.toString() || "",
+  grid: JSON.stringify(mosaicOptions.find(o => o.style_id === selectedStyleId)?.grid || []),
+},
   });
 
   return res.status(200).json({ url: session.url });

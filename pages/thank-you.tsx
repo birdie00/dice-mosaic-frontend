@@ -6,6 +6,8 @@ export default function ThankYouPage() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [lowResUrl, setLowResUrl] = useState<string | null>(null);
   const [highResUrl, setHighResUrl] = useState<string | null>(null);
+  const [highResDownloadUrl, setHighResDownloadUrl] = useState<string | null>(null);
+  const [generatingHighRes, setGeneratingHighRes] = useState(false);
   const [productType, setProductType] = useState<string | null>(null);
   const [code, setCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +31,35 @@ export default function ThankYouPage() {
           setPdfUrl(data.metadata.pdfUrl || null);
           setLowResUrl(data.metadata.lowResImageUrl || null);
           setHighResUrl(data.metadata.highResImageUrl || null);
+          // 🧠 If this is a highres order, but no highResImageUrl was passed
+if (
+  data?.metadata?.productType === "highres" &&
+  data.metadata.grid &&
+  data.metadata.styleId &&
+  data.metadata.projectName &&
+  !data.metadata.highResImageUrl
+) {
+  setGeneratingHighRes(true);
+
+  const generate = async () => {
+    const res = await fetch("/api/generate-highres", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        grid: JSON.parse(data.metadata.grid),
+        styleId: data.metadata.styleId,
+        projectName: data.metadata.projectName,
+      }),
+    });
+
+    const result = await res.json();
+    setHighResDownloadUrl(result.imageUrl);
+    setGeneratingHighRes(false);
+  };
+
+  generate();
+}
+
           setCode(data.code || null);
         } else {
           setPdfUrl(null);
@@ -144,6 +175,20 @@ export default function ThankYouPage() {
                 🖼 Download Your High-Res Image
               </button>
             )}
+            {productType === "highres" && generatingHighRes && (
+  <p style={{ fontSize: "1.1rem", color: "#444" }}>
+    🛠 Generating your high-res image... please wait
+  </p>
+)}
+
+{productType === "highres" && highResDownloadUrl && (
+  <a href={highResDownloadUrl} download>
+    <button style={downloadButtonStyle}>
+      🖼 Download Your High-Res Image
+    </button>
+  </a>
+)}
+
   
             {productType === "bundle" && (
               <>
