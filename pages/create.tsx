@@ -291,9 +291,11 @@ export default function CreatePage() {
   const handleStripeCheckout = async (
     productType: string,
     size?: string,
-    quantity: number = 1
+    quantity: number = 1,
+    styleId?: number,
+    grid?: number[][]
   ) => {
-    try {
+      try {
       console.log("🛒 Stripe checkout payload:", {
         productType,
         size,
@@ -305,35 +307,59 @@ export default function CreatePage() {
         highResImageUrl,
       });
       
-      const res = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productType,
-          size,
-          quantity,
-          email,
-          projectName,
-          pdfUrl,
-          lowResImageUrl,
-          highResImageUrl,
-        }),        
-      });
-  
-      const data = await res.json();
-  
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert("Stripe session creation failed.");
-      }
-    } catch (error) {
-      console.error("Stripe Checkout error:", error);
-      alert("There was a problem starting the checkout.");
-    }
-  };
+      const handleStripeCheckout = async (
+        productType: string,
+        size?: string,
+        quantity: number = 1,
+        styleId?: number,
+        grid?: number[][]
+      ) => {
+        try {
+          console.log("🛒 Stripe checkout payload:", {
+            productType,
+            size,
+            quantity,
+            email,
+            projectName,
+            pdfUrl,
+            lowResImageUrl,
+            highResImageUrl,
+            styleId,
+            grid,
+          });
+      
+          const res = await fetch("/api/create-checkout-session", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              productType,
+              size,
+              quantity,
+              email,
+              projectName,
+              pdfUrl,
+              lowResImageUrl,
+              highResImageUrl,
+              styleId,
+              grid,
+            }),
+          });
+      
+          const data = await res.json();
+      
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            alert("Stripe session creation failed.");
+          }
+        } catch (error) {
+          console.error("Stripe Checkout error:", error);
+          alert("There was a problem starting the checkout.");
+        }
+      };
+      
   
   
 
@@ -1263,23 +1289,23 @@ export default function CreatePage() {
       {/* Price + Button */}
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
         <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{item.price}</div>
+
         <button
   className="btn"
   onClick={() => {
-    console.log("🧪 digital vars", {
-      productType: item.key,
-      email,
-      projectName,
-      pdfUrl,
-      lowResImageUrl,
-      highResImageUrl,
-    });
-
-    handleStripeCheckout(item.key);
+    const selected = mosaicOptions.find(o => o.style_id === selectedStyleId);
+    handleStripeCheckout(
+      item.key,
+      undefined, // size
+      1, // quantity
+      selectedStyleId || undefined,
+      selected?.grid || []
+    );
   }}
 >
   🛒 {item.buttonText}
 </button>
+
 
       </div>
     </div>

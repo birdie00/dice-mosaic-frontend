@@ -71,9 +71,13 @@ metadata: {
   quantity,
   email,
   projectName,
-  styleId: selectedStyleId?.toString() || "",
-  grid: JSON.stringify(mosaicOptions.find(o => o.style_id === selectedStyleId)?.grid || []),
+  pdfUrl,
+  lowResImageUrl,
+  highResImageUrl,
+  styleId: styleId?.toString() || "",
+  grid: JSON.stringify(grid || []),
 },
+
   });
 
   return res.status(200).json({ url: session.url });
