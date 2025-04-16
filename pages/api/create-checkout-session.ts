@@ -121,8 +121,7 @@ if (productType === "highres") {
 
   return res.status(200).json({ url: session.url });
 }
-// ✅ Stop here if highres
-return;
+
 
   if (!priceId) {
     return res.status(400).json({ error: "Invalid product type or size." });
