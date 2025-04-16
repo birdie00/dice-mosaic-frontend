@@ -86,6 +86,43 @@ metadata: {
   return res.status(200).json({ url: session.url });
 }
 
+// Custom handling for highres product
+if (productType === "highres") {
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: "High Quality Mosaic Image",
+          },
+          unit_amount: 1499, // $14.99
+        },
+        quantity: quantity || 1,
+      },
+    ],
+    success_url: `${req.headers.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${req.headers.origin}/create?step=5&canceled=true`,
+    metadata: {
+      productType,
+      size,
+      quantity,
+      email,
+      projectName,
+      pdfUrl,
+      lowResImageUrl,
+      highResImageUrl,
+      styleId: styleId?.toString() || "",
+      grid: JSON.stringify(grid || []),
+    },
+  });
+
+  return res.status(200).json({ url: session.url });
+}
+// ✅ Stop here if highres
+return;
 
   if (!priceId) {
     return res.status(400).json({ error: "Invalid product type or size." });
