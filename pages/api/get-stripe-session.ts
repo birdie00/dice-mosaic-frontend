@@ -1,4 +1,3 @@
-// /pages/api/get-stripe-session.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 import { recordPurchase } from '@/lib/recordPurchase';
@@ -14,7 +13,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const session = await stripe.checkout.sessions.retrieve(session_id);
+	const session = await stripe.checkout.sessions.retrieve(session_id, {
+ 	 expand: ["customer_details"],
+	});
     console.log("🧾 Full Stripe session:", session);
 
     const metadata = session.metadata || {};
