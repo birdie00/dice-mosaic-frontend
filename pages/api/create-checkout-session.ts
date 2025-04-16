@@ -19,6 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     highResImageUrl,
     styleId,
     grid,
+	printAspectRatio,
+
   } = req.body;
 
   const priceMap: Record<string, string | Record<string, string>> = {
@@ -75,6 +77,8 @@ highres: "price_1RD2wN2fwLaC6Z6dK9ENSJ4s",
         highResImageUrl,
         styleId: styleId?.toString() || "",
         grid: JSON.stringify(grid || []),
+	printAspectRatio: printAspectRatio || "portrait",
+
       },
     });
 

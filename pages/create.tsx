@@ -42,11 +42,9 @@ export default function CreatePage() {
   const getPriceForSize = (size: string): string => {
     switch (size) {
       case "small":
-        return "$49.99";
-      case "medium":
-        return "$79.99";
+        return "$59.99";
       case "large":
-        return "$99.99";
+        return "$89.99";
       default:
         return "$—";
     }
@@ -323,6 +321,7 @@ export default function CreatePage() {
               highResImageUrl,
               styleId,
               grid,
+              printAspectRatio: aspectRatio, // <- Add this
             }),
           });
       
@@ -1311,9 +1310,8 @@ export default function CreatePage() {
               border: "1px solid #ccc",
             }}
           >
-            <option value="small">Small (16 × 16 in)</option>
-            <option value="medium">Medium (24 × 24 in)</option>
-            <option value="large">Large (32 × 32 in)</option>
+            <option value="small">Small (12 × 12 in)</option>
+            <option value="large">Large (16 × 24 in)</option>
           </select>
 
           <label style={{ fontWeight: 600 }}>Quantity:</label>
