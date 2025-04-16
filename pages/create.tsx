@@ -38,7 +38,7 @@ export default function CreatePage() {
   const [buyHighRes, setBuyHighRes] = useState(false);
   const [orderPrint, setOrderPrint] = useState(false);
   const [printQuantity, setPrintQuantity] = useState(1);
-  const [selectedPrintSize, setSelectedPrintSize] = useState("medium");
+  const [selectedPrintSize, setSelectedPrintSize] = useState("small");
   const getPriceForSize = (size: string): string => {
     switch (size) {
       case "small":
@@ -1310,8 +1310,8 @@ export default function CreatePage() {
               border: "1px solid #ccc",
             }}
           >
-            <option value="small">Small (12 × 12 in)</option>
-            <option value="large">Large (16 × 24 in)</option>
+            <option value="small">Small (12 × 12 in OR 8 x 12 in)</option>
+            <option value="large">Large (20 x 20 in OR 16 × 24 in)</option>
           </select>
 
           <label style={{ fontWeight: 600 }}>Quantity:</label>
