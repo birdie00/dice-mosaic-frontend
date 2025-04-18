@@ -13,9 +13,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-	const session = await stripe.checkout.sessions.retrieve(session_id, {
- 	 expand: ["customer_details"],
-	});
+const session = await stripe.checkout.sessions.retrieve(session_id as string, {
+  expand: ["customer_details", "shipping"],
+});
     console.log("🧾 Full Stripe session:", session);
 
     const metadata = session.metadata || {};

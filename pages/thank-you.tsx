@@ -87,22 +87,22 @@ if (
 ) {
   setGeneratingHighRes(true);
 
-  const generate = async () => {
-    const res = await fetch("/api/generate-highres", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        grid: JSON.parse(data.metadata.grid),
-        styleId: data.metadata.styleId,
-        projectName: data.metadata.projectName,
-      }),
-    });
-  
-    const result = await res.json();
-    setHighResDownloadUrl(result.imageUrl);
-    setGeneratingHighRes(false);
-  };
-  
+const generate = async () => {
+  const res = await fetch("/api/generate-highres", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      grid: JSON.parse(data.metadata.grid),
+      styleId: data.metadata.styleId,
+      projectName: data.metadata.projectName,
+    }),
+  });
+
+  const result = await res.json();
+  setHighResDownloadUrl(result.imageUrl);
+  setGeneratingHighRes(false);
+};
+
 
   generate();
 }

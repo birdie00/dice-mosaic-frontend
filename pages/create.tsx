@@ -1329,12 +1329,22 @@ export default function CreatePage() {
             }}
           />
 
-          <button
-            className="btn"
-            onClick={() => handleStripeCheckout("print", selectedPrintSize, printQuantity)}
-          >
-            Add to Cart – {getPriceForSize(selectedPrintSize)}
-          </button>
+<button
+  className="btn"
+  onClick={() => {
+    const selected = mosaicOptions.find(o => o.style_id === selectedStyleId);
+    handleStripeCheckout(
+      "print",
+      selectedPrintSize,
+      printQuantity,
+      selectedStyleId || undefined,
+      selected?.grid || []
+    );
+  }}
+>
+  Add to Cart – {getPriceForSize(selectedPrintSize)}
+</button>
+
         </div>
       </div>
     </div>
