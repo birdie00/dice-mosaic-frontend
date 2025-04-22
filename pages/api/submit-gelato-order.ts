@@ -8,17 +8,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { name, email, address, imageUrl, productUid } = req.body;
+    const { session } = req.body;
 
-    console.log("📥 Received Gelato order request:", req.body);
-
-    // 🔐 Validate required fields
-    if (!name || !email || !imageUrl || !productUid) {
-      return res.status(400).json({ error: "Missing required fields" });
+    if (!session) {
+      return res.status(400).json({ error: "Missing Stripe session" });
     }
 
+    const address = session.shipping_details?.address;
+    const name = session.shipping_details?.name || session.customer_details?.name;
+    const email = session.customer_details?.email;
+    const imageUrl = session.metadata?.highResImageUrl;
+    const productUid = req.body.productUid || "MISSING_PRODUCT_UID"; // You may already map this earlier
+
+    console.log("📥 Parsed Gelato Order Data:", { name, email, address, imageUrl, productUid });
+
     if (!address || !address.line1) {
-      return res.status(400).json({ error: "Missing or invalid address from Stripe" });
+      return res.status(400).json({ error: "Invalid address from session" });
+    }
+
+    if (!imageUrl || !productUid) {
+      return res.status(400).json({ error: "Missing imageUrl or productUid" });
     }
 
     const gelatoOrder = {
@@ -28,8 +37,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         address_country_code: address.country,
         address_postal_code: address.postal_code,
         address_state: address.state,
-        first_name: name.split(" ")[0] || "Customer",
-        last_name: name.split(" ").slice(1).join(" ") || "-",
+        first_name: name?.split(" ")[0] || "Customer",
+        last_name: name?.split(" ").slice(1).join(" ") || "-",
         email,
       },
       items: [
@@ -40,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
     };
 
-    console.log("📦 Gelato order payload:", JSON.stringify(gelatoOrder, null, 2));
+    console.log("📦 Sending to Gelato:", JSON.stringify(gelatoOrder, null, 2));
 
     const response = await fetch("https://api.gelato.com/v2/orders", {
       method: "POST",
@@ -54,14 +63,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const result = await response.json();
 
     if (!response.ok) {
-      console.error("❌ Gelato API error:", result);
-      return res.status(500).json({ error: "Failed to submit order to Gelato", details: result });
+      console.error("❌ Gelato Error:", result);
+      return res.status(500).json({ error: "Failed to create Gelato order", details: result });
     }
 
-    console.log("✅ Gelato order successfully submitted:", result);
+    console.log("✅ Gelato Order Success:", result);
     return res.status(200).json({ success: true, gelatoOrderId: result.id });
-  } catch (error: any) {
-    console.error("❌ Unexpected error in submit-gelato-order:", error);
-    return res.status(500).json({ error: "Internal Server Error", details: error.message });
+  } catch (err: any) {
+    console.error("❌ Unexpected error in submit-gelato-order:", err.message);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
