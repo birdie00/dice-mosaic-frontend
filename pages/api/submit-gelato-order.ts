@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.GELATO_API_KEY}`,
+	Authorization: `Bearer ${process.env.GELATO_API_KEY?.split(":")[1]}`,
       },
       body: JSON.stringify(gelatoOrder),
     });
