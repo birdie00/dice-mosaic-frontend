@@ -1,27 +1,29 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-03-31.basil",
+});
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const {
-    productType,
-    size,
-    quantity,
-    email,
-    projectName,
-    pdfUrl,
-    lowResImageUrl,
-    highResImageUrl,
-    styleId,
-    grid,
-	printAspectRatio,
-
-  } = req.body;
+  try {
+    const {
+      productType,
+      size,
+      quantity,
+      email,
+      projectName,
+      pdfUrl,
+      lowResImageUrl,
+      highResImageUrl,
+      styleId,
+      grid,
+      printAspectRatio,
+    } = req.body;
 
   const priceMap: Record<string, string | Record<string, string>> = {
     lowres: "price_1RD2wr2fwLaC6Z6dInNMdCrA",
@@ -118,31 +120,34 @@ highres: "price_1RD2wN2fwLaC6Z6dK9ENSJ4s",
   }
 
   try {
-    const session = await stripe.checkout.sessions.create({
+   const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      payment_method_types: ["card"],
       line_items: [
         {
-          price: priceId,
-          quantity: Math.max(1, parseInt(quantity)),
+          price_data: {
+            currency: "usd",
+            unit_amount: 5999, // update based on productType if needed
+            product_data: {
+              name: `Dice Mosaic: ${projectName}`,
+            },
+          },
+          quantity,
         },
       ],
-      success_url: `${req.headers.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin}/create?step=5&canceled=true`,
       metadata: {
-        productType,
-        size,
-        quantity,
-        email,
         projectName,
-        pdfUrl,
-        lowResImageUrl,
-        highResImageUrl,
+        styleId,
+        printAspectRatio,
       },
+      customer_email: email,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/create?success=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/create?canceled=true`,
     });
 
-    return res.status(200).json({ url: session.url });
-  } catch (err) {
-    console.error("Stripe session error:", err);
-    return res.status(500).json({ error: "Stripe session creation failed." });
+    res.status(200).json({ url: session.url });
+  } catch (err: any) {
+    console.error("❌ Stripe session creation failed:", err.message);
+    res.status(500).json({ error: err.message });
   }
 }
