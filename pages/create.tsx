@@ -1211,28 +1211,28 @@ export default function CreatePage() {
       title: "Basic Image",
       subtitle: "~2000 x 2000 px",
       price: "$4.99",
-      buttonText: "Add to Cart",
+      buttonText: "Buy Now",
     },
     {
       key: "highres",
       title: "High Quality Image",
       subtitle: "~10300 x 10300 px",
       price: "$14.99",
-      buttonText: "Add to Cart",
+      buttonText: "Buy Now",
     },
     {
       key: "pdf",
       title: "Dice Map PDF",
       subtitle: "",
       price: "$19.99",
-      buttonText: "Add to Cart",
+      buttonText: "Buy Now",
     },
     {
       key: "bundle",
       title: "Digital Bundle",
       subtitle: "High-Res + Dice Map",
       price: "$29.95",
-      buttonText: "Add to Cart",
+      buttonText: "Buy Now",
     },
   ].map((item) => (
     <div
@@ -1342,7 +1342,7 @@ export default function CreatePage() {
     );
   }}
 >
-  Add to Cart – {getPriceForSize(selectedPrintSize)}
+  Buy Now – {getPriceForSize(selectedPrintSize)}
 </button>
 
         </div>
