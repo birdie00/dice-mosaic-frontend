@@ -49,14 +49,26 @@ const gelatoBearerToken = gelatoApiKey.includes(":")
   ? gelatoApiKey.split(":")[1]
   : gelatoApiKey;
 
-    const gelatoRes = await fetch("https://api.gelato.com/v2/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-    Authorization: `Bearer ${gelatoBearerToken}`, // ✅ Now correct
-      },
-      body: JSON.stringify(gelatoOrder),
-    });
+// ✅ Securely extract just the secret token from the API key
+const fullApiKey = process.env.GELATO_API_KEY;
+
+if (!fullApiKey) {
+  throw new Error("GELATO_API_KEY is not defined");
+}
+
+const gelatoBearerToken = fullApiKey.includes(":")
+  ? fullApiKey.split(":")[1]
+  : fullApiKey;
+
+// ✅ Send correct Authorization header
+const gelatoRes = await fetch("https://api.gelato.com/v2/orders", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${gelatoBearerToken}`,
+  },
+  body: JSON.stringify(gelatoOrder),
+});
 
     const result = await gelatoRes.json();
 
