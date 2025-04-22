@@ -56,6 +56,8 @@ const gelatoBearerToken = fullApiKey.includes(":")
   ? fullApiKey.split(":")[1]
   : fullApiKey;
 
+console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
+
 // ✅ Send correct Authorization header
 const gelatoRes = await fetch("https://api.gelato.com/v2/orders", {
   method: "POST",
