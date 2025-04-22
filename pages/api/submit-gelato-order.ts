@@ -47,6 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 // ✅ Securely extract just the secret token from the API key
 const fullApiKey = process.env.GELATO_SECRET;
+console.log("🔍 Loaded GELATO_SECRET:", fullApiKey);
 
 if (!fullApiKey) {
   throw new Error("GELATO_SECRET is not defined");
