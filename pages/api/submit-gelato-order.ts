@@ -44,12 +44,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       ],
     };
+const gelatoApiKey = process.env.GELATO_API_KEY!;
+const gelatoBearerToken = gelatoApiKey.includes(":")
+  ? gelatoApiKey.split(":")[1]
+  : gelatoApiKey;
 
     const gelatoRes = await fetch("https://api.gelato.com/v2/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-	Authorization: `Bearer ${process.env.GELATO_API_KEY?.split(":")[1]}`,
+    Authorization: `Bearer ${gelatoBearerToken}`, // ✅ Now correct
       },
       body: JSON.stringify(gelatoOrder),
     });
