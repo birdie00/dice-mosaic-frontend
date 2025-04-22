@@ -59,15 +59,13 @@ const gelatoBearerToken = fullApiKey.includes(":")
 
 console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
 
-// ✅ Send correct Authorization header
-const gelatoRes = await fetch("https://api.gelatoapis.com/v2/orders
-", {
+const gelatoRes = await fetch("https://api.gelatoapis.com/v2/orders", {
   method: "POST",
-headers: {
-  "Content-Type": "application/json",
-  "X-API-Key": gelatoBearerToken,
-},
-body: JSON.stringify(gelatoOrder),
+  headers: {
+    "Content-Type": "application/json",
+    "X-API-Key": gelatoBearerToken,
+  },
+  body: JSON.stringify(gelatoOrder),
 });
 
     const result = await gelatoRes.json();
