@@ -44,10 +44,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       ],
     };
-const gelatoApiKey = process.env.GELATO_API_KEY!;
-const gelatoBearerToken = gelatoApiKey.includes(":")
-  ? gelatoApiKey.split(":")[1]
-  : gelatoApiKey;
 
 // ✅ Securely extract just the secret token from the API key
 const fullApiKey = process.env.GELATO_API_KEY;
