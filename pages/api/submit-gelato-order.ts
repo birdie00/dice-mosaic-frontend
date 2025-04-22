@@ -11,23 +11,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { session } = req.body;
 
     if (!session) {
-      return res.status(400).json({ error: "Missing Stripe session" });
+      return res.status(400).json({ error: "Missing Stripe session in request body" });
     }
 
-    const address = session.shipping_details?.address;
     const name = session.shipping_details?.name || session.customer_details?.name;
     const email = session.customer_details?.email;
+    const address = session.shipping_details?.address;
     const imageUrl = session.metadata?.highResImageUrl;
-    const productUid = req.body.productUid || "MISSING_PRODUCT_UID"; // You may already map this earlier
+    const productUid = getProductUidFromMetadata(session.metadata); // defined below
 
-    console.log("📥 Parsed Gelato Order Data:", { name, email, address, imageUrl, productUid });
+    console.log("📥 Submitting Gelato order with:", { name, email, address, imageUrl, productUid });
 
-    if (!address || !address.line1) {
-      return res.status(400).json({ error: "Invalid address from session" });
-    }
-
-    if (!imageUrl || !productUid) {
-      return res.status(400).json({ error: "Missing imageUrl or productUid" });
+    if (!name || !email || !address || !address.line1 || !imageUrl || !productUid) {
+      return res.status(400).json({ error: "Missing required order info" });
     }
 
     const gelatoOrder = {
@@ -37,8 +33,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         address_country_code: address.country,
         address_postal_code: address.postal_code,
         address_state: address.state,
-        first_name: name?.split(" ")[0] || "Customer",
-        last_name: name?.split(" ").slice(1).join(" ") || "-",
+        first_name: name.split(" ")[0],
+        last_name: name.split(" ").slice(1).join(" ") || "-",
         email,
       },
       items: [
@@ -49,9 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
     };
 
-    console.log("📦 Sending to Gelato:", JSON.stringify(gelatoOrder, null, 2));
-
-    const response = await fetch("https://api.gelato.com/v2/orders", {
+    const gelatoRes = await fetch("https://api.gelato.com/v2/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,17 +54,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       body: JSON.stringify(gelatoOrder),
     });
 
-    const result = await response.json();
+    const result = await gelatoRes.json();
 
-    if (!response.ok) {
-      console.error("❌ Gelato Error:", result);
-      return res.status(500).json({ error: "Failed to create Gelato order", details: result });
+    if (!gelatoRes.ok) {
+      console.error("❌ Gelato API error:", result);
+      return res.status(500).json({ error: "Failed to create order", details: result });
     }
 
-    console.log("✅ Gelato Order Success:", result);
+    console.log("✅ Order placed successfully:", result);
     return res.status(200).json({ success: true, gelatoOrderId: result.id });
   } catch (err: any) {
     console.error("❌ Unexpected error in submit-gelato-order:", err.message);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Unexpected error", details: err.message });
   }
+}
+
+// 🧠 You can also use this function to determine the product ID
+function getProductUidFromMetadata(metadata: any): string | null {
+  const aspect = metadata?.printAspectRatio || "portrait";
+  const size = metadata?.size || "small";
+
+  const gelatoProductMap: Record<string, Record<string, string>> = {
+    portrait: {
+      small: "framed_poster_mounted_210x297mm-8x12-inch_black_wood_w12xt22-mm_plexiglass_a4-8x12-inch_200-gsm-80lb-coated-silk_4-0_ver",
+      large: "framed_poster_mounted_400x600-mm-16x24-inch_black_wood_w12xt22-mm_plexiglass_400x600-mm-16x24-inch_200-gsm-80lb-coated-silk_4-0_ver",
+    },
+    square: {
+      small: "framed_poster_mounted_300x300-mm-12x12-inch_black_wood_w12xt22-mm_plexiglass_300x300-mm-12x12-inch_200-gsm-80lb-coated-silk_4-0_ver",
+      large: "framed_poster_mounted_500x500-mm-20x20-inch_black_wood_w12xt22-mm_plexiglass_500x500-mm-20x20-inch_200-gsm-80lb-coated-silk_4-0_ver",
+    },
+    landscape: {
+      small: "framed_poster_mounted_210x297mm-8x12-inch_black_wood_w12xt22-mm_plexiglass_a4-8x12-inch_200-gsm-80lb-coated-silk_4-0_hor",
+      large: "framed_poster_mounted_400x600-mm-16x24-inch_black_wood_w12xt22-mm_plexiglass_400x600-mm-16x24-inch_200-gsm-80lb-coated-silk_4-0_hor",
+    },
+  };
+
+  return gelatoProductMap[aspect]?.[size] || null;
 }
