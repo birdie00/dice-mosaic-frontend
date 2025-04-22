@@ -41,12 +41,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       const gelatoRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/submit-gelato-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ session }),
-      });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ session }),
+});
+
 
       if (!gelatoRes.ok) {
         console.error("❌ Gelato order submission failed:", await gelatoRes.text());
