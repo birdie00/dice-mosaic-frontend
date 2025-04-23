@@ -61,7 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
 
-    const gelatoRes = await fetch("https://api.gelatoapis.com/v2/orders", {
+const gelatoRes = await fetch("https://api.gelato.com/v2/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
