@@ -61,7 +61,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
 
-   // Second error handling: catch network or other issues
 try {
   const gelatoRes = await fetch("https://order.gelatoapis.com/v2/orders", {
     method: "POST",
@@ -93,6 +92,7 @@ try {
     return res.status(500).json({ error: "Unexpected error", details: "An unknown error occurred." });
   }
 }
+
 
 
     }
