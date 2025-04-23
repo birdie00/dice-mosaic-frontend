@@ -74,7 +74,7 @@ try {
 
 console.log("🌐 Sending order to:", "https://api.gelatoapis.com/v2/orders");
 
-// ✅ Securely extract just the secret token from the API key
+// Ensure that gelatoBearerToken is declared first
 const fullApiKey = process.env.GELATO_SECRET;
 console.log("🔍 Loaded GELATO_SECRET:", fullApiKey);
 
@@ -88,28 +88,28 @@ const gelatoBearerToken = fullApiKey.includes(":")
 
 console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
 
-const gelatoRes = await fetch("https://api.gelatoapis.com/v2/orders", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "X-API-Key": gelatoBearerToken,
-  },
-  body: JSON.stringify(gelatoOrder),
-});
+// Simple GET request to test Gelato API connectivity
+try {
+  const response = await fetch("https://api.gelatoapis.com/v2/products", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": gelatoBearerToken, // Correctly use the gelatoBearerToken here
+    },
+  });
 
-    const result = await gelatoRes.json();
+  // Check the status of the response
+  console.log("Gelato API response status:", response.status);
 
-    if (!gelatoRes.ok) {
-      console.error("❌ Gelato API error:", result);
-      return res.status(500).json({ error: "Failed to create order", details: result });
-    }
+  // Parse and log the JSON response
+  const result = await response.json();
+  console.log("Gelato API response:", result);
 
-    console.log("✅ Order placed successfully:", result);
-    return res.status(200).json({ success: true, gelatoOrderId: result.id });
-  } catch (err: any) {
-    console.error("❌ Unexpected error in submit-gelato-order:", err.message);
-    return res.status(500).json({ error: "Unexpected error", details: err.message });
-  }
+  // Return a success response just for testing
+  return res.status(200).json({ success: true, result });
+} catch (err) {
+  console.error("❌ Error fetching Gelato products:", err);
+  return res.status(500).json({ error: "Error fetching products", details: err.message });
 }
 
 // 🧠 You can also use this function to determine the product ID
