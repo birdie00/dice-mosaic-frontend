@@ -62,14 +62,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
 
 try {
-  const gelatoRes = await fetch("https://order.gelatoapis.com/v2/orders", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-API-Key": gelatoBearerToken,
-    },
-    body: JSON.stringify(gelatoOrder),
-  });
+ const gelatoRes = await fetch("https://order.gelatoapis.com/v2/orders", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${gelatoBearerToken}`,  // Use Bearer instead of X-API-Key
+  },
+  body: JSON.stringify(gelatoOrder),
+});
+
 
   // First error handling: check the fetch response
   if (!gelatoRes.ok) {
