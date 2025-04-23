@@ -2,6 +2,8 @@
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
+console.log("📍 THIS IS THE LATEST submit-gelato-order.ts");
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -44,6 +46,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       ],
     };
+
+console.log("🌐 Sending order to:", "https://api.gelatoapis.com/v2/orders");
+console.log("🔑 Authorization header:", `Bearer ${gelatoBearerToken}`);
 
 // ✅ Securely extract just the secret token from the API key
 const fullApiKey = process.env.GELATO_SECRET;
