@@ -48,7 +48,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     };
 
 console.log("🌐 Sending order to:", "https://api.gelatoapis.com/v2/orders");
-console.log("🔑 Authorization header:", `Bearer ${gelatoBearerToken}`);
 
 // ✅ Securely extract just the secret token from the API key
 const fullApiKey = process.env.GELATO_SECRET;
