@@ -61,32 +61,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
 
-    try {
-      const gelatoRes = await fetch("https://order.gelatoapis.com/v2/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-Key": gelatoBearerToken,
-        },
-        body: JSON.stringify(gelatoOrder),
-      });
+   // Second error handling: catch network or other issues
+try {
+  const gelatoRes = await fetch("https://order.gelatoapis.com/v2/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": gelatoBearerToken,
+    },
+    body: JSON.stringify(gelatoOrder),
+  });
 
-      // First error handling: check the fetch response
-      if (!gelatoRes.ok) {
-        const result = await gelatoRes.json();
-        console.error("❌ Gelato API error:", result);
-        return res.status(500).json({ error: "Failed to create order", details: result });
-      }
+  // First error handling: check the fetch response
+  if (!gelatoRes.ok) {
+    const result = await gelatoRes.json();
+    console.error("❌ Gelato API error:", result);
+    return res.status(500).json({ error: "Failed to create order", details: result });
+  }
 
-      // If the fetch was successful, log the result
-      const result = await gelatoRes.json();
-      console.log("✅ Order placed successfully:", result);
-      return res.status(200).json({ success: true, gelatoOrderId: result.id });
+  const result = await gelatoRes.json();
+  console.log("✅ Order placed successfully:", result);
+  return res.status(200).json({ success: true, gelatoOrderId: result.id });
 
-    } catch (err) {
-      // Second error handling: catch network or other issues
-      console.error("❌ Fetch error:", err);
-      return res.status(500).json({ error: "Failed to create order", details: err.message });
+} catch (err: unknown) {
+  // Handle the error if it's an instance of Error
+  if (err instanceof Error) {
+    console.error("❌ Fetch error:", err);
+    return res.status(500).json({ error: "Failed to create order", details: err.message });
+  } else {
+    console.error("❌ Unexpected error:", err);
+    return res.status(500).json({ error: "Unexpected error", details: "An unknown error occurred." });
+  }
+}
+
+
     }
 
   } catch (err: unknown) {
