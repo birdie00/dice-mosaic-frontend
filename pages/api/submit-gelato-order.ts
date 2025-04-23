@@ -76,20 +76,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new Error("GELATO_SECRET is not defined");
     }
 
-    const gelatoBearerToken = fullApiKey.includes(":")
-      ? fullApiKey.split(":")[1]
-      : fullApiKey;
+    const gelatoBearerToken = process.env.GELATO_SECRET;
+console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
 
-    console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
+const gelatoRes = await fetch("https://order.gelatoapis.com/v4/orders", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-API-KEY": gelatoBearerToken,  // This is the secret key from Vercel's env variable
+  },
+  body: JSON.stringify(gelatoOrder),
+});
 
-    const gelatoRes = await fetch("https://order.gelatoapis.com/v4/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": gelatoBearerToken, 
-      },
-      body: JSON.stringify(gelatoOrder),
-    });
 
     if (!gelatoRes.ok) {
       const result = await gelatoRes.json();
