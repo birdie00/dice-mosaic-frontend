@@ -9,30 +9,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-try {
-  // Simple GET request to test Gelato API connectivity
-  const response = await fetch("https://api.gelatoapis.com/v2/products", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-API-Key": gelatoBearerToken, // Use the same bearer token
-    },
-  });
-
-  // Check the status of the response
-  console.log("Gelato API response status:", response.status);
-
-  // Parse and log the JSON response
-  const result = await response.json();
-  console.log("Gelato API response:", result);
-
-  // Return a success response just for testing
-  return res.status(200).json({ success: true, result });
-} catch (err) {
-  console.error("❌ Error fetching Gelato products:", err);
-  return res.status(500).json({ error: "Error fetching products", details: err.message });
-}
-
 
   try {
     const { session } = req.body;
