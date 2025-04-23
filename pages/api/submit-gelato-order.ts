@@ -68,17 +68,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     };
 
     console.log("🌐 Sending order to:", "https://order.gelatoapis.com/v4/orders");
+const fullApiKey = process.env.GELATO_SECRET;
+console.log("🔍 Loaded GELATO_SECRET:", fullApiKey);
 
-    const fullApiKey = process.env.GELATO_SECRET;
-    console.log("🔍 Loaded GELATO_SECRET:", fullApiKey);
+// Ensure that the API key is available
+if (!fullApiKey) {
+  throw new Error("GELATO_SECRET is not defined");
+}
 
-    if (!fullApiKey) {
-      throw new Error("GELATO_SECRET is not defined");
-    }
+// Extract the secret key from the full API key (after the colon)
+const gelatoBearerToken = fullApiKey.includes(":") ? fullApiKey.split(":")[1] : fullApiKey;
 
-    const gelatoBearerToken = process.env.GELATO_SECRET;
+// Check that the token is not undefined
+if (!gelatoBearerToken) {
+  throw new Error("Gelato API key (secret part) is missing or undefined.");
+}
+
 console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
 
+// Send the request to Gelato API
 const gelatoRes = await fetch("https://order.gelatoapis.com/v4/orders", {
   method: "POST",
   headers: {
