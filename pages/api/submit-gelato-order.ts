@@ -94,9 +94,6 @@ try {
 }
 
 
-
-    }
-
   } catch (err: unknown) {
     // Catch any unknown errors
     if (err instanceof Error) {
