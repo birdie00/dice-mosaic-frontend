@@ -45,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
     };
 
-    console.log("🌐 Sending order to:", "https://api.gelatoapis.com/v2/orders");
+    console.log("🌐 Sending order to:", "https://order.gelatoapis.com/v2/orders");
 
     // ✅ Securely extract just the secret token from the API key
     const fullApiKey = process.env.GELATO_SECRET;
@@ -61,27 +61,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
 
-const gelatoRes = await fetch("https://order.gelatoapis.com/v2/orders", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "X-API-Key": gelatoBearerToken,
-  },
-  body: JSON.stringify(gelatoOrder),
-});
+    try {
+      const gelatoRes = await fetch("https://order.gelatoapis.com/v2/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": gelatoBearerToken,
+        },
+        body: JSON.stringify(gelatoOrder),
+      });
 
+      // First error handling: check the fetch response
+      if (!gelatoRes.ok) {
+        const result = await gelatoRes.json();
+        console.error("❌ Gelato API error:", result);
+        return res.status(500).json({ error: "Failed to create order", details: result });
+      }
 
-    const result = await gelatoRes.json();
+      // If the fetch was successful, log the result
+      const result = await gelatoRes.json();
+      console.log("✅ Order placed successfully:", result);
+      return res.status(200).json({ success: true, gelatoOrderId: result.id });
 
-    if (!gelatoRes.ok) {
-      console.error("❌ Gelato API error:", result);
-      return res.status(500).json({ error: "Failed to create order", details: result });
+    } catch (err) {
+      // Second error handling: catch network or other issues
+      console.error("❌ Fetch error:", err);
+      return res.status(500).json({ error: "Failed to create order", details: err.message });
     }
 
-    console.log("✅ Order placed successfully:", result);
-    return res.status(200).json({ success: true, gelatoOrderId: result.id });
   } catch (err: unknown) {
-    // Cast the error to an actual Error object
+    // Catch any unknown errors
     if (err instanceof Error) {
       console.error("❌ Error fetching Gelato products:", err);
       return res.status(500).json({ error: "Error fetching products", details: err.message });
