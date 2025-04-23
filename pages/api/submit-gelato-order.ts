@@ -1,5 +1,3 @@
-// pages/api/submit-gelato-order.ts
-
 import type { NextApiRequest, NextApiResponse } from "next";
 
 console.log("📍 THIS IS THE LATEST submit-gelato-order.ts");
@@ -8,7 +6,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
-
 
   try {
     const { session } = req.body;
@@ -48,44 +45,50 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
     };
 
-console.log("🌐 Sending order to:", "https://api.gelatoapis.com/v2/orders");
+    console.log("🌐 Sending order to:", "https://api.gelatoapis.com/v2/orders");
 
-// Ensure that gelatoBearerToken is declared first
-const fullApiKey = process.env.GELATO_SECRET;
-console.log("🔍 Loaded GELATO_SECRET:", fullApiKey);
+    // ✅ Securely extract just the secret token from the API key
+    const fullApiKey = process.env.GELATO_SECRET;
+    console.log("🔍 Loaded GELATO_SECRET:", fullApiKey);
 
-if (!fullApiKey) {
-  throw new Error("GELATO_SECRET is not defined");
-}
+    if (!fullApiKey) {
+      throw new Error("GELATO_SECRET is not defined");
+    }
 
-const gelatoBearerToken = fullApiKey.includes(":")
-  ? fullApiKey.split(":")[1]
-  : fullApiKey;
+    const gelatoBearerToken = fullApiKey.includes(":")
+      ? fullApiKey.split(":")[1]
+      : fullApiKey;
 
-console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
+    console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
 
-// Simple GET request to test Gelato API connectivity
-try {
-  const response = await fetch("https://api.gelatoapis.com/v2/products", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-API-Key": gelatoBearerToken, // Correctly use the gelatoBearerToken here
-    },
-  });
+    const gelatoRes = await fetch("https://api.gelatoapis.com/v2/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": gelatoBearerToken,
+      },
+      body: JSON.stringify(gelatoOrder),
+    });
 
-  // Check the status of the response
-  console.log("Gelato API response status:", response.status);
+    const result = await gelatoRes.json();
 
-  // Parse and log the JSON response
-  const result = await response.json();
-  console.log("Gelato API response:", result);
+    if (!gelatoRes.ok) {
+      console.error("❌ Gelato API error:", result);
+      return res.status(500).json({ error: "Failed to create order", details: result });
+    }
 
-  // Return a success response just for testing
-  return res.status(200).json({ success: true, result });
-} catch (err) {
-  console.error("❌ Error fetching Gelato products:", err);
-  return res.status(500).json({ error: "Error fetching products", details: err.message });
+    console.log("✅ Order placed successfully:", result);
+    return res.status(200).json({ success: true, gelatoOrderId: result.id });
+  } catch (err: unknown) {
+    // Cast the error to an actual Error object
+    if (err instanceof Error) {
+      console.error("❌ Error fetching Gelato products:", err);
+      return res.status(500).json({ error: "Error fetching products", details: err.message });
+    } else {
+      console.error("❌ Unexpected error:", err);
+      return res.status(500).json({ error: "Unexpected error", details: "An unknown error occurred." });
+    }
+  }
 }
 
 // 🧠 You can also use this function to determine the product ID
