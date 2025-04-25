@@ -704,7 +704,7 @@ export default function CreatePage() {
     boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
   }}
 >
-  Choose the aspect ratio that best matches your image. HINT: Select a smaller area for greater detail.
+Choose the aspect ratio that best fits your image. Tip: Cropping a smaller section can give you sharper detail in the final mosaic.
 </div>
 
 
@@ -724,7 +724,7 @@ export default function CreatePage() {
         style={{ width: "100%", height: 400 }}
         aspectRatio={1}
         viewMode={1}
-        guides={false}
+        guides={true}
         dragMode="crop"
         autoCrop={true}
         checkOrientation={false}
