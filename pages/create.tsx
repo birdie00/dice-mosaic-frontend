@@ -1282,20 +1282,20 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
               price: "$9.99",
               buttonText: "Buy Now",
             },
-            {
-              key: "pdf",
-              title: "Dice Map PDF",
-              subtitle: "Dice Map to build a DIY Dice Portrait",
-              price: "$19.99",
-              buttonText: "Buy Now",
-            },
-            {
-              key: "bundle",
-              title: "Digital Bundle",
-              subtitle: "High-Resolution Image + Dice Map",
-              price: "$24.95",
-              buttonText: "Buy Now",
-            },
+           // {
+           //   key: "pdf",
+           //   title: "Dice Map PDF",
+           //   subtitle: "Dice Map to build a DIY Dice Portrait",
+           //   price: "$19.99",
+           //   buttonText: "Buy Now",
+          //  },
+          //  {
+          //    key: "bundle",
+          //    title: "Digital Bundle",
+          //    subtitle: "High-Resolution Image + Dice Map",
+         //     price: "$24.95",
+          //    buttonText: "Buy Now",
+         //   },
           ].map((item) => (
             <div
               key={item.key}
