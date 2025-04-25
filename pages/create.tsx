@@ -1237,7 +1237,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     {
       key: "pdf",
       title: "Dice Map PDF",
-      subtitle: "",
+      subtitle: "Paint by Number Style Map to DIY a Dice Portrait",
       price: "$19.99",
       buttonText: "Buy Now",
     },
@@ -1261,12 +1261,6 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     >
       {/* Product Info */}
       <div>
-        <div style={{ fontWeight: 600 }}>
-          {item.title}{" "}
-          <span title="Digital download. No physical dice included." style={{ cursor: "help" }}>
-            ℹ️
-          </span>
-        </div>
         {item.subtitle && (
           <div style={{ fontStyle: "italic", fontSize: "0.85rem", color: "#555" }}>
             {item.subtitle}
