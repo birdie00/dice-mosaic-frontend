@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import { supabase } from '@/lib/supabase';
-import { sendThankYouEmail } from '@/utils/sendThankYouEmail'; // ✅ Corre
+import sendThankYouEmail from '@/utils/sendThankYouEmail';
 
 export async function recordPurchase({
   email,
