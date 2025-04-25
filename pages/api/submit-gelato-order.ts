@@ -1,6 +1,7 @@
+// pages/api/submit-gelato-order.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 
-console.log("📍 submit-gelato-order.ts loaded");
+console.log("📍 THIS IS THE V3 version of submit-gelato-order.ts");
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -20,28 +21,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const imageUrl = session.metadata?.highResImageUrl;
     const productUid = getProductUidFromMetadata(session.metadata);
 
-    console.log("📥 Submitting Gelato order with:", { name, email, address, imageUrl, productUid });
+    console.log("📥 Submitting Gelato v3 order with:", { name, email, address, imageUrl, productUid });
 
     if (!name || !email || !address || !address.line1 || !imageUrl || !productUid) {
       return res.status(400).json({ error: "Missing required order info" });
     }
 
-    const gelatoOrder = {
-      orderType: "order",
+    const orderPayload = {
       orderReferenceId: session.id,
-      customerReferenceId: session.customer_email,
+      customerReferenceId: email,
       currency: "USD",
       items: [
         {
-          itemReferenceId: "item_001",
-          productUid,
-          quantity: 1,
+          itemReferenceId: "dice-poster",
+          productUid: productUid,
           files: [
             {
               type: "default",
               url: imageUrl,
             },
           ],
+          quantity: 1,
         },
       ],
       shippingAddress: {
@@ -57,46 +57,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     };
 
-    const gelatoApiKey = process.env.GELATO_SECRET;
+    const apiKey = process.env.GELATO_SECRET;
+    if (!apiKey) throw new Error("GELATO_SECRET not found in environment");
 
-    if (!gelatoApiKey) {
-      throw new Error("❌ GELATO_SECRET environment variable is missing");
-    }
+    console.log("🌐 Sending v3 order to: https://api.gelato.com/v3/orders");
 
-    console.log("🔑 Using Gelato API Key:", gelatoApiKey.substring(0, 5) + "*****"); // Only show part for security
-
-    const response = await fetch("https://order.gelatoapis.com/v4/orders", {
+    const gelatoRes = await fetch("https://api.gelato.com/v3/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-API-KEY": gelatoApiKey,
+        "X-API-KEY": apiKey,
       },
-      body: JSON.stringify(gelatoOrder),
+      body: JSON.stringify(orderPayload),
     });
 
-    if (!response.ok) {
-      const errorDetails = await response.json();
-      console.error("❌ Gelato API error:", errorDetails);
-      return res.status(500).json({ error: "Failed to create Gelato order", details: errorDetails });
+    const result = await gelatoRes.json();
+
+    if (!gelatoRes.ok) {
+      console.error("❌ Gelato v3 API error:", result);
+      return res.status(500).json({ error: "Failed to create order", details: result });
     }
 
-    const result = await response.json();
-    console.log("✅ Order placed successfully with Gelato:", result);
-
-    return res.status(200).json({ success: true, gelatoOrderId: result.id });
+    console.log("✅ Gelato v3 order placed:", result);
+    return res.status(200).json({ success: true, orderId: result.id });
 
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.error("❌ Unexpected error:", err.message);
-      return res.status(500).json({ error: "Unexpected error", details: err.message });
-    } else {
-      console.error("❌ Unknown error:", err);
-      return res.status(500).json({ error: "Unknown error occurred" });
+      console.error("❌ Error placing Gelato v3 order:", err);
+      return res.status(500).json({ error: err.message });
     }
+    return res.status(500).json({ error: "Unknown error occurred" });
   }
 }
 
-// 🧠 Helper function
 function getProductUidFromMetadata(metadata: any): string | null {
   const aspect = metadata?.printAspectRatio || "portrait";
   const size = metadata?.size || "small";
