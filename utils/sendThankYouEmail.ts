@@ -2,64 +2,49 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+type EmailProps = {
+  email: string;
+  code: string;
+  pdfUrl: string;
+  projectName: string;
+  stripeData?: any;
+};
+
 export default async function sendThankYouEmail({
   email,
   code,
   pdfUrl,
   projectName,
   stripeData,
-}: {
-  email: string;
-  code: string;
-  pdfUrl?: string;
-  projectName?: string;
-  stripeData?: any;
-}) {
+}: EmailProps) {
   await resend.emails.send({
-    from: "Pipcasso <noreply@pipcasso.com>",
+    from: 'Pipcasso <noreply@resend.dev>', // Replace with your domain later
     to: email,
-    subject: "🎲 Your Pipcasso download is ready!",
+    subject: '🎲 Your Dice Map, Access Code & Receipt',
     html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 2rem; background: #fdfdfd; border-radius: 10px; border: 1px solid #eee;">
-        <img src="https://dice-mosaic-frontend.vercel.app/images/HeaderLogo.png" alt="Pipcasso Logo" style="max-width: 180px; margin-bottom: 1.5rem;" />
+      <div style="font-family: sans-serif; color: #111;">
+        <h2>Thank you for your Pipcasso purchase!</h2>
+        <p><strong>🎨 Project Name:</strong> ${projectName}</p>
 
-        <h2 style="color: #1C4C54;">Thank you for your purchase!</h2>
+        <p><strong>🎟️ Your Access Code:</strong> <code>${code}</code></p>
 
-        <p style="font-size: 1rem; color: #333;">
-          We're genuinely grateful that you've chosen Pipcasso to turn your photo into a one-of-a-kind dice mosaic. Each order helps support our tiny but passionate team — and we couldn't do this without you. 🎨✨
-        </p>
-
-        <p style="font-size: 1rem; color: #333;">
-          Whether you're printing your piece, sharing it with friends, or simply admiring your pixel-perfect portrait — we hope it brings you joy!
-        </p>
-
-        <p style="font-size: 1rem; color: #333;">
-          <strong>Project:</strong> ${projectName || 'Your Pipcasso Art'}<br />
-          <strong>Redemption Code:</strong> <span style="font-size: 1.25rem; letter-spacing: 2px; font-weight: bold; color: #E84C3D;">${code}</span>
-        </p>
-
-        <p style="font-size: 1rem;">
-          To access your downloads at any time, head to:<br />
-          👉 <a href="https://pipcasso.com/redeem" style="color: #1C4C54;">https://pipcasso.com/redeem</a>
-        </p>
-
-        ${pdfUrl ? `
         <p>
-          Your Dice Map PDF is also ready:<br />
-          👉 <a href="${pdfUrl}" style="color: #1C4C54;">Download PDF</a>
+          <a href="${pdfUrl}" style="display: inline-block; background-color: #10b981; color: #fff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+            ⬇️ Download Your Dice Map PDF
+          </a>
         </p>
-        ` : ''}
+
+        <p>You can return anytime to <a href="https://pipcasso.com/redeem">pipcasso.com/redeem</a> and enter your email + code to download your map again.</p>
 
         <hr style="margin: 2rem 0;" />
 
-        <p style="font-size: 0.95rem; color: #555;">
-          If you ever need help, want to share feedback, or just want to say hi, feel free to reply to this email. We'd love to hear from you.
-        </p>
+        <h3>🧾 Your Receipt</h3>
+        <pre style="background: #f9f9f9; padding: 1rem; border-radius: 8px; font-size: 0.9rem; overflow-x: auto;">
+${JSON.stringify(stripeData, null, 2)}
+        </pre>
 
-        <p style="font-size: 0.95rem; color: #555;">Thank you again — your support truly means the world to us.</p>
-
-        <p style="font-size: 0.95rem; color: #1C4C54; font-weight: bold;">– The Pipcasso Team</p>
+        <p>Need help? Just reply to this email. Happy building!<br/>— The Pipcasso Team 🎲</p>
       </div>
-    `
+    `,
   });
 }
