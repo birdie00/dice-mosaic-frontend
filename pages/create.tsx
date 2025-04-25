@@ -964,51 +964,51 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
 
             {/* Watermark Overlay */}
             <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                pointerEvents: "none",
-                zIndex: 1,
-                display: "flex",
-                flexWrap: "wrap",
-                alignContent: "center",
-                justifyContent: "center",
-                gap: "20px",
-                transform: "rotate(-25deg)",
-                opacity: 0.25,
-              }}
-            >
-{Array.from({ length: 10 }).map((_, rowIdx) => (
-  <div
-    key={rowIdx}
-    style={{
-      display: "flex",
-      justifyContent: "center",
-      width: "100%",
-      transform: rowIdx % 2 === 0 ? "translateX(0)" : "translateX(50%)", // 👈 stagger every other row
-    }}
-  >
-    {Array.from({ length: 2 }).map((_, colIdx) => (
-      <div
-        key={colIdx}
-        style={{
-          fontSize: "1.2rem",
-          fontWeight: "bold",
-          color: "#ffffff",
-          userSelect: "none",
-          padding: "0.5rem 1rem",
-        }}
-      >
-        pipcasso.com
-      </div>
-    ))}
-  </div>
-))}
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    pointerEvents: "none",
+    zIndex: 1,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-around",
+    alignItems: "center",
+    transform: "rotate(-25deg)",
+    opacity: 0.18,
+  }}
+>
+  {Array.from({ length: 5 }).map((_, rowIdx) => (
+    <div
+      key={rowIdx}
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        width: "100%",
+        transform: rowIdx % 2 === 0 ? "translateX(0)" : "translateX(40%)",
+      }}
+    >
+      {Array.from({ length: 3 }).map((_, colIdx) => (
+        <div
+          key={colIdx}
+          style={{
+            fontSize: "1.1rem",
+            fontWeight: 500,
+            color: "#ffffff",
+            userSelect: "none",
+            padding: "0.25rem 1rem",
+            whiteSpace: "nowrap",
+          }}
+        >
+          pipcasso.com
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
 
-            </div>
           </div>
 
           {/* Style Title */}
@@ -1163,31 +1163,31 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     pointerEvents: "none",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
     alignItems: "center",
     transform: "rotate(-25deg)",
-    opacity: 0.25,
+    opacity: 0.1, // 👈 much lighter now
   }}
 >
-  {Array.from({ length: 12 }).map((_, rowIdx) => (
+  {Array.from({ length: 4 }).map((_, rowIdx) => (
     <div
       key={rowIdx}
       style={{
         display: "flex",
         justifyContent: "center",
         width: "100%",
-        transform: rowIdx % 2 === 0 ? "translateX(0)" : "translateX(50%)",
+        transform: rowIdx % 2 === 0 ? "translateX(0)" : "translateX(40%)",
       }}
     >
-      {Array.from({ length: 5 }).map((_, colIdx) => (
+      {Array.from({ length: 2 }).map((_, colIdx) => (
         <div
           key={colIdx}
           style={{
-            fontSize: "clamp(1rem, 2vw, 2rem)"
-            fontWeight: "bold",
+            fontSize: "1.8rem", // 👈 slightly smaller
+            fontWeight: 500,
             color: "#ffffff",
             userSelect: "none",
-            padding: "0.5rem 1rem",
+            padding: "0.5rem 2rem", // 👈 wider gaps
             whiteSpace: "nowrap",
           }}
         >
@@ -1197,6 +1197,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     </div>
   ))}
 </div>
+
 
           </div>
         </div>
