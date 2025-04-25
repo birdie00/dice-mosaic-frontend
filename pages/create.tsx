@@ -1084,11 +1084,9 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
       5. Download & Purchase Options
     </h2>
 
-    {/* ✅ Responsive two-column layout */}
     <div
       style={{
         display: "flex",
-        flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "center",
         gap: "2rem",
@@ -1153,148 +1151,159 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
 
             {/* Watermark */}
             <div
-  style={{
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    zIndex: 2,
-    pointerEvents: "none",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    transform: "rotate(-25deg)",
-    opacity: 0.18, // 👈 much lighter now
-  }}
->
-  {Array.from({ length: 4 }).map((_, rowIdx) => (
-    <div
-      key={rowIdx}
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        width: "100%",
-        transform: rowIdx % 2 === 0 ? "translateX(0)" : "translateX(40%)",
-      }}
-    >
-      {Array.from({ length: 2 }).map((_, colIdx) => (
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                zIndex: 2,
+                pointerEvents: "none",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+                transform: "rotate(-25deg)",
+                opacity: 0.18,
+              }}
+            >
+              {Array.from({ length: 4 }).map((_, rowIdx) => (
+                <div
+                  key={rowIdx}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    width: "100%",
+                    transform: rowIdx % 2 === 0 ? "translateX(0)" : "translateX(40%)",
+                  }}
+                >
+                  {Array.from({ length: 2 }).map((_, colIdx) => (
+                    <div
+                      key={colIdx}
+                      style={{
+                        fontSize: "1.8rem",
+                        fontWeight: 500,
+                        color: "#ffffff",
+                        userSelect: "none",
+                        padding: "1rem 3rem",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      pipcasso.com
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 🎲 Dice Stats */}
+          {(() => {
+            const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
+            const stats = selected ? getDiceStats(selected.grid) : null;
+            return (
+              stats && (
+                <div
+                  style={{
+                    backgroundColor: "#fef3c7",
+                    border: "1px solid #fcd34d",
+                    padding: "1rem",
+                    borderRadius: "10px",
+                    marginTop: "1.25rem",
+                    fontSize: "1rem",
+                    lineHeight: 1.5,
+                    textAlign: "center",
+                  }}
+                >
+                  🎲 <strong>Fun Fact:</strong><br />
+                  Your mosaic uses <strong>{stats.total.toLocaleString()}</strong> dice!<br />
+                  Most common number: <strong>{stats.mostCommon}</strong> 🎯<br />
+                  Least common number: <strong>{stats.leastCommon}</strong> 🐭
+                </div>
+              )
+            );
+          })()}
+        </div>
+      </div>
+
+      {/* 🟦 Right: Purchase Options */}
+      <div style={{ flex: "1 1 400px", maxWidth: "600px", display: "flex", flexDirection: "column", gap: "2rem" }}>
+        {/* Digital Downloads */}
         <div
-          key={colIdx}
           style={{
-            fontSize: "1.8rem", // 👈 slightly smaller
-            fontWeight: 500,
-            color: "#ffffff",
-            userSelect: "none",
-            padding: "1rem 3rem", // 👈 wider gaps
-            whiteSpace: "nowrap",
+            backgroundColor: "#fff",
+            borderRadius: "12px",
+            padding: "1.5rem",
+            boxShadow: "0 0 12px rgba(0,0,0,0.05)",
           }}
         >
-          pipcasso.com
+          <h3 style={{ color: "#1C4C54", marginBottom: "1.5rem", fontSize: "1.2rem", fontWeight: 700 }}>
+            Digital Downloads
+          </h3>
+
+          {[
+            {
+              key: "highres",
+              title: "High Quality Image",
+              subtitle: "7500 x 7500 px",
+              price: "$9.99",
+              buttonText: "Buy Now",
+            },
+            {
+              key: "pdf",
+              title: "Dice Map PDF",
+              subtitle: "Dice Map to build a DIY Dice Portrait",
+              price: "$19.99",
+              buttonText: "Buy Now",
+            },
+            {
+              key: "bundle",
+              title: "Digital Bundle",
+              subtitle: "High-Resolution Image + Dice Map",
+              price: "$24.95",
+              buttonText: "Buy Now",
+            },
+          ].map((item) => (
+            <div
+              key={item.key}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderTop: "1px solid #eee",
+                padding: "1rem 0",
+              }}
+            >
+              <div>
+                {item.subtitle && (
+                  <div style={{ fontStyle: "italic", fontSize: "0.85rem", color: "#555" }}>
+                    {item.subtitle}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{item.price}</div>
+
+                <button
+                  className="btn"
+                  onClick={() => {
+                    const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
+                    handleStripeCheckout(
+                      item.key,
+                      undefined,
+                      1,
+                      selectedStyleId || undefined,
+                      selected?.grid || []
+                    );
+                  }}
+                >
+                  🛒 {item.buttonText}
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  ))}
-</div>
-
-
-          </div>
-        </div>
-      </div>
-
-      {/* 🟦 Right: Digital + Print */}
-      <div
-        style={{
-          flex: "1 1 400px",
-          maxWidth: "600px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "2rem",
-        }}
-      >
-{/* Digital Downloads */}
-<div
-  style={{
-    backgroundColor: "#fff",
-    borderRadius: "12px",
-    padding: "1.5rem",
-    boxShadow: "0 0 12px rgba(0,0,0,0.05)",
-  }}
->
-  <h3 style={{ color: "#1C4C54", marginBottom: "1.5rem", fontSize: "1.2rem", fontWeight: 700 }}>
-    Digital Downloads
-  </h3>
-
-  {[
-    {
-      key: "highres",
-      title: "High Quality Image",
-      subtitle: "7500 x 7500 px",
-      price: "$9.99",
-      buttonText: "Buy Now",
-    },
-    {
-      key: "pdf",
-      title: "Dice Map PDF",
-      subtitle: "Dice Map to build a DIY Dice Portrait",
-      price: "$19.99",
-      buttonText: "Buy Now",
-    },
-    {
-      key: "bundle",
-      title: "Digital Bundle",
-      subtitle: "High-Resolution Image + Dice Map",
-      price: "$24.95",
-      buttonText: "Buy Now",
-    },
-  ].map((item) => (
-    <div
-      key={item.key}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        borderTop: "1px solid #eee",
-        padding: "1rem 0",
-      }}
-    >
-      {/* Product Info */}
-      <div>
-        {item.subtitle && (
-          <div style={{ fontStyle: "italic", fontSize: "0.85rem", color: "#555" }}>
-            {item.subtitle}
-          </div>
-        )}
-      </div>
-
-      {/* Price + Button */}
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>{item.price}</div>
-
-        <button
-  className="btn"
-  onClick={() => {
-    const selected = mosaicOptions.find(o => o.style_id === selectedStyleId);
-    handleStripeCheckout(
-      item.key,
-      undefined, // size
-      1, // quantity
-      selectedStyleId || undefined,
-      selected?.grid || []
-    );
-  }}
->
-  🛒 {item.buttonText}
-</button>
-
-
-      </div>
-    </div>
-  ))}
-</div>
-
-
 
         {/* Physical Print */}
         <div
@@ -1318,8 +1327,8 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
               border: "1px solid #ccc",
             }}
           >
-            <option value="small">Small (12 × 12 in OR 8 x 12 in)</option>
-            <option value="large">Large (20 x 20 in OR 16 × 24 in)</option>
+            <option value="small">Small (12 × 12 in OR 8 × 12 in)</option>
+            <option value="large">Large (20 × 20 in OR 16 × 24 in)</option>
           </select>
 
           <label style={{ fontWeight: 600 }}>Quantity:</label>
@@ -1337,27 +1346,25 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
             }}
           />
 
-<button
-  className="btn"
-  onClick={() => {
-    const selected = mosaicOptions.find(o => o.style_id === selectedStyleId);
-    handleStripeCheckout(
-      "print",
-      selectedPrintSize,
-      printQuantity,
-      selectedStyleId || undefined,
-      selected?.grid || []
-    );
-  }}
->
-  Buy Now – {getPriceForSize(selectedPrintSize)}
-</button>
-
+          <button
+            className="btn"
+            onClick={() => {
+              const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
+              handleStripeCheckout(
+                "print",
+                selectedPrintSize,
+                printQuantity,
+                selectedStyleId || undefined,
+                selected?.grid || []
+              );
+            }}
+          >
+            Buy Now – {getPriceForSize(selectedPrintSize)}
+          </button>
         </div>
       </div>
     </div>
 
-    {/* Back button */}
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
       <button
         onClick={() => setStep(4)}
@@ -1374,7 +1381,6 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
       </button>
     </div>
 
-    {/* Button style */}
     <style jsx>{`
       .btn {
         padding: 0.5rem 1rem;
