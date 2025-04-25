@@ -6,19 +6,20 @@ import Layout from "@/components/Layout";
 import React from "react";
 
 function getDiceStats(grid: number[][]) {
-  const counts = [0, 0, 0, 0, 0, 0];
+  const counts = Array(7).fill(0); // values 0–6
   let total = 0;
 
   for (const row of grid) {
     for (const val of row) {
-      const clamped = Math.max(1, Math.min(6, val)); // Clamp between 1 and 6
-      counts[clamped - 1]++;
-      total++;
+      if (val >= 0 && val <= 6) {
+        counts[val]++;
+        total++;
+      }
     }
   }
 
-  const mostCommon = counts.indexOf(Math.max(...counts)) + 1;
-  const leastCommon = counts.indexOf(Math.min(...counts)) + 1;
+  const mostCommon = counts.indexOf(Math.max(...counts));
+  const leastCommon = counts.indexOf(Math.min(...counts));
 
   return {
     total,
@@ -27,7 +28,6 @@ function getDiceStats(grid: number[][]) {
     counts,
   };
 }
-
 
 interface MosaicOption {
   style_id: number;
@@ -1240,9 +1240,9 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
                 >
                   🎲 <strong>Fun Fact:</strong><br />
                   Your mosaic uses <strong>{stats.total.toLocaleString()}</strong> dice!<br />
-                  Most common number: <strong>{stats.mostCommon}</strong> 🎯<br />
-                  Least common number: <strong>{stats.leastCommon}</strong> 🐭
-                </div>
+                  Most common dice face: <strong>{stats.mostCommon}</strong> {stats.mostCommon === 0 ? '🖤' : ''}
+                  Least common dice face: <strong>{stats.leastCommon}</strong> {stats.leastCommon === 6 ? '⚪' : ''}
+                  </div>
               )
             );
           })()}
