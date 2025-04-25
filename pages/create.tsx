@@ -981,19 +981,33 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
                 opacity: 0.25,
               }}
             >
-              {Array.from({ length: 25 }).map((_, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    fontSize: "1.5rem",
-                    fontWeight: "bold",
-                    color: "#ffffff",
-                    userSelect: "none",
-                  }}
-                >
-                  pipcasso.com
-                </div>
-              ))}
+{Array.from({ length: 10 }).map((_, rowIdx) => (
+  <div
+    key={rowIdx}
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      width: "100%",
+      transform: rowIdx % 2 === 0 ? "translateX(0)" : "translateX(50%)", // 👈 stagger every other row
+    }}
+  >
+    {Array.from({ length: 4 }).map((_, colIdx) => (
+      <div
+        key={colIdx}
+        style={{
+          fontSize: "1.5rem",
+          fontWeight: "bold",
+          color: "#ffffff",
+          userSelect: "none",
+          padding: "0.5rem 1rem",
+        }}
+      >
+        pipcasso.com
+      </div>
+    ))}
+  </div>
+))}
+
             </div>
           </div>
 
