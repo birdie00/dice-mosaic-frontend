@@ -1,6 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-console.log("📍 THIS IS THE LATEST submit-gelato-order.ts");
+console.log("📍 submit-gelato-order.ts loaded");
+
+export const config = {
+  api: {
+    bodyParser: false, // Use buffer() if handling Stripe webhooks directly
+  },
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -18,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const email = session.customer_details?.email;
     const address = session.shipping_details?.address;
     const imageUrl = session.metadata?.highResImageUrl;
-    const productUid = getProductUidFromMetadata(session.metadata); // defined below
+    const productUid = getProductUidFromMetadata(session.metadata);
 
     console.log("📥 Submitting Gelato order with:", { name, email, address, imageUrl, productUid });
 
@@ -27,98 +33,76 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const gelatoOrder = {
-      orderType: "order",  // Default value for an order
-      orderReferenceId: session.id,  // Stripe session ID as the order reference
-      customerReferenceId: session.customer_email,  // Use Stripe's customer email as the reference ID
-      currency: "USD",  // The currency of the order (e.g., "USD")
+      orderType: "order",
+      orderReferenceId: session.id,
+      customerReferenceId: session.customer_email,
+      currency: "USD",
       items: [
         {
-          itemReferenceId: "item_001",  // Unique item ID or SKU
-          productUid: session.metadata?.productUid,  // Product UID from Stripe session metadata
-          quantity: 1,  // Quantity of the product
+          itemReferenceId: "item_001",
+          productUid,
+          quantity: 1,
           files: [
             {
-              type: "default",  // Default print type
-              url: session.metadata?.highResImageUrl,  // File URL for printing
-            }
-          ]
-        }
+              type: "default",
+              url: imageUrl,
+            },
+          ],
+        },
       ],
       shippingAddress: {
-        firstName: session.shipping_details?.name.split(" ")[0],
-        lastName: session.shipping_details?.name.split(" ")[1] || "-", 
-        addressLine1: session.shipping_details?.address.line1,
-        addressLine2: session.shipping_details?.address.line2 || "",
-        city: session.shipping_details?.address.city,
-        postCode: session.shipping_details?.address.postal_code,
-        state: session.shipping_details?.address.state,
-        country: session.shipping_details?.address.country,
-        email: session.customer_details?.email, 
+        firstName: name.split(" ")[0],
+        lastName: name.split(" ").slice(1).join(" ") || "-",
+        addressLine1: address.line1,
+        addressLine2: address.line2 || "",
+        city: address.city,
+        postCode: address.postal_code,
+        state: address.state,
+        country: address.country,
+        email,
       },
-      metadata: [
-        {
-          key: "keyIdentifier1",
-          value: "keyValue1"
-        },
-        {
-          key: "keyIdentifier2",
-          value: "keyValue2"
-        }
-      ]
     };
 
-    console.log("🌐 Sending order to:", "https://order.gelatoapis.com/v4/orders");
-const fullApiKey = process.env.GELATO_SECRET;
-console.log("🔍 Loaded GELATO_SECRET:", fullApiKey);
+    const gelatoApiKey = process.env.GELATO_SECRET;
 
-// Ensure that the API key is available
-if (!fullApiKey) {
-  throw new Error("GELATO_SECRET is not defined");
-}
-
-// Extract the secret key from the full API key (after the colon)
-const gelatoBearerToken = fullApiKey.includes(":") ? fullApiKey.split(":")[1] : fullApiKey;
-
-// Check that the token is not undefined
-if (!gelatoBearerToken) {
-  throw new Error("Gelato API key (secret part) is missing or undefined.");
-}
-
-console.log("🛡 Authorization Bearer token being sent:", gelatoBearerToken);
-
-// Send the request to Gelato API
-const gelatoRes = await fetch("https://order.gelatoapis.com/v4/orders", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "X-API-KEY": gelatoBearerToken,  // This is the secret key from Vercel's env variable
-  },
-  body: JSON.stringify(gelatoOrder),
-});
-
-
-    if (!gelatoRes.ok) {
-      const result = await gelatoRes.json();
-      console.error("❌ Gelato API error:", result);
-      return res.status(500).json({ error: "Failed to create order", details: result });
+    if (!gelatoApiKey) {
+      throw new Error("❌ GELATO_SECRET environment variable is missing");
     }
 
-    const result = await gelatoRes.json();
-    console.log("✅ Order placed successfully:", result);
+    console.log("🔑 Using Gelato API Key:", gelatoApiKey.substring(0, 5) + "*****"); // Only show part for security
+
+    const response = await fetch("https://order.gelatoapis.com/v4/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-KEY": gelatoApiKey,
+      },
+      body: JSON.stringify(gelatoOrder),
+    });
+
+    if (!response.ok) {
+      const errorDetails = await response.json();
+      console.error("❌ Gelato API error:", errorDetails);
+      return res.status(500).json({ error: "Failed to create Gelato order", details: errorDetails });
+    }
+
+    const result = await response.json();
+    console.log("✅ Order placed successfully with Gelato:", result);
+
     return res.status(200).json({ success: true, gelatoOrderId: result.id });
 
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.error("❌ Fetch error:", err);
-      return res.status(500).json({ error: "Failed to create order", details: err.message });
+      console.error("❌ Unexpected error:", err.message);
+      return res.status(500).json({ error: "Unexpected error", details: err.message });
     } else {
-      console.error("❌ Unexpected error:", err);
-      return res.status(500).json({ error: "Unexpected error", details: "An unknown error occurred." });
+      console.error("❌ Unknown error:", err);
+      return res.status(500).json({ error: "Unknown error occurred" });
     }
   }
 }
 
-// 🧠 Function to determine the product ID based on metadata
+// 🧠 Helper function
 function getProductUidFromMetadata(metadata: any): string | null {
   const aspect = metadata?.printAspectRatio || "portrait";
   const size = metadata?.size || "small";
