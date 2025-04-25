@@ -1153,31 +1153,51 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
 
             {/* Watermark */}
             <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                pointerEvents: "none",
-                zIndex: 1,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: "5rem",
-                  fontWeight: "bold",
-                  color: "rgba(255, 255, 255, 0.15)",
-                  transform: "rotate(-25deg)",
-                  userSelect: "none",
-                }}
-              >
-                pipcasso.com
-              </span>
-            </div>
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    zIndex: 2,
+    pointerEvents: "none",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    transform: "rotate(-25deg)",
+    opacity: 0.25,
+  }}
+>
+  {Array.from({ length: 12 }).map((_, rowIdx) => (
+    <div
+      key={rowIdx}
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        width: "100%",
+        transform: rowIdx % 2 === 0 ? "translateX(0)" : "translateX(50%)",
+      }}
+    >
+      {Array.from({ length: 5 }).map((_, colIdx) => (
+        <div
+          key={colIdx}
+          style={{
+            fontSize: "2rem",
+            fontWeight: "bold",
+            color: "#ffffff",
+            userSelect: "none",
+            padding: "0.5rem 1rem",
+            whiteSpace: "nowrap",
+          }}
+        >
+          pipcasso.com
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
+
           </div>
         </div>
       </div>
