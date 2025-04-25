@@ -1,8 +1,7 @@
 // lib/recordPurchase.ts
 import { nanoid } from 'nanoid';
 import { supabase } from '@/lib/supabase';
-import sendThankYouEmail from '@/utils/sendThankYouEmail';
-
+import { sendThankYouEmail } from '@/utils/sendThankYouEmail';
 export async function recordPurchase({
   email,
   pdfUrl,
