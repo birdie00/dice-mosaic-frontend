@@ -51,7 +51,6 @@ export default function CreatePage() {
   };
   
 
-  // ✅ Correct ref typing for react-cropper instance
   const cropperRef = useRef<HTMLImageElement & { cropper: CropperJS }>(null);
 
 
@@ -60,13 +59,7 @@ export default function CreatePage() {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-
-
-
   const BACKEND_URL = "https://dice-mosaic-backend.onrender.com";
-
-
-
 
   // ✅ Preload dice images
   useEffect(() => {
@@ -79,15 +72,8 @@ export default function CreatePage() {
     preloadDiceImages();
   }, []);
 
-
-
-
-  // ✅ Check for Stripe success flag
   useEffect(() => {
     const { success } = router.query;
-
-
-
 
     if (
       success === "true" &&
@@ -100,9 +86,6 @@ export default function CreatePage() {
       router.replace("/create", undefined, { shallow: true });
     }
   }, [router.query, selectedStyleId, mosaicOptions, pdfUrl]);
-
-
-
 
   // 🔧 Image crop ratio logic
   const handleAspectRatioChange = (option: AspectRatioOption) => {
@@ -125,9 +108,6 @@ export default function CreatePage() {
     setGridSize(newGrid);
   };
 
-
-
-
   // 🔧 Handle image upload
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -141,26 +121,15 @@ export default function CreatePage() {
     }
   };
 
-
-
-
   // 🔧 Crop the image to canvas
   const cropImage = () => {
     const cropper = cropperRef.current?.cropper;
     if (!cropper) return;
-
-
-
-
     const canvas = cropper.getCroppedCanvas();
     if (!canvas || canvas.width === 0 || canvas.height === 0) {
       alert("Please resize your crop area.");
       return;
     }
-
-
-
-
     canvas.toBlob((blob) => {
       if (blob) {
         setCroppedImage(blob);
@@ -169,25 +138,13 @@ export default function CreatePage() {
     }, "image/png");
   };
 
-
-
-
-
-
-
-
   const generateMosaics = async () => {
     if (!croppedImage) return;
-    console.log("Current gridSize state:", gridSize); // 👈 log current state
     const formData = new FormData();
     formData.append("file", croppedImage, "cropped.png");
     formData.append("grid_width", gridSize[0].toString());
     formData.append("grid_height", gridSize[1].toString());
 
-    console.log("Sending to /analyze:", {
-      grid_width: gridSize[0],
-      grid_height: gridSize[1],
-    });
     
     setLoading(true);
     const res = await fetch(`${BACKEND_URL}/analyze`, {
@@ -214,17 +171,7 @@ export default function CreatePage() {
   
     const selected = mosaicOptions[selectedIndex];
     const gridToSend = selected.grid.map((row) => [...row]); // deep clone
-    console.log("Sending to /generate-pdf:", {
-      grid_data: gridToSend,
-      style_id: selectedStyleId,
-      project_name: projectName,
-    });
-    
-    console.log("Generating PDF with grid size:", {
-      rows: gridToSend.length,
-      cols: gridToSend[0]?.length,
-    });
-  
+
     try {
       setLoading(true);
   
@@ -243,12 +190,7 @@ export default function CreatePage() {
       if (!res.ok) {
         throw new Error(`Server responded with status ${res.status}`);
       }
-
-      console.log("PDF generation response status:", res.status);
-
       const data = await res.json();
-
-      console.log("PDF generation response body:", data);
 
       if (!data.dice_map_url) {
         throw new Error("Missing dice_map_url in response.");
@@ -280,12 +222,9 @@ export default function CreatePage() {
     });
   
     const data = await res.json();
-    console.log("🎨 generateImage response:", data); // 👈 ADD THIS
     return `${BACKEND_URL}${data.image_url}`;
   };
   
-  
-
   const handleStripeCheckout = async (
     productType: string,
     size?: string,
@@ -294,16 +233,6 @@ export default function CreatePage() {
     grid?: number[][]
   ) => {
       try {
-      console.log("🛒 Stripe checkout payload:", {
-        productType,
-        size,
-        quantity,
-        email,
-        projectName,
-        pdfUrl,
-        lowResImageUrl,
-        highResImageUrl,
-      });
         
           const res = await fetch("/api/create-checkout-session", {
             method: "POST",
@@ -411,9 +340,6 @@ export default function CreatePage() {
   </div>
 )}
 
-
-
-
 <div
           style={{
             display: "flex",
@@ -440,7 +366,6 @@ export default function CreatePage() {
               textColor = "#3B1B47"; // deep purple for contrast
             }
 
-
     return (
       <div
   key={index}
@@ -461,16 +386,9 @@ export default function CreatePage() {
     style={{ width: "32px", height: "32px" }}
   />
 </div>
-
-
-
-
     );
   })}
 </div>
-
-
-
 
 {/* ✅ Raised Heading Box snapped to step tracker */}
 <div
@@ -496,7 +414,6 @@ export default function CreatePage() {
   </h1>
 </div>
 
-
         {step === 1 && (
   <section style={{ padding: "2rem 1rem" }}>
 <h2
@@ -517,9 +434,6 @@ export default function CreatePage() {
     <p style={{ fontSize: "1rem", lineHeight: "1.4", marginBottom: "0.5rem", maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
     At Pipcasso, you can turn your favorite photo into a custom dice mosaic. Just upload an image and we will generate a downloadable Dice Portrait or Dice Map - ready to print or build with real dice!
     </p>
-
-
-
 
     <div
   className="upload-card"
@@ -546,9 +460,6 @@ export default function CreatePage() {
         Upload your image here to move to Step 2
       </h3>
 
-
-
-
       {/* Project Name */}
       <label style={{ display: "block", marginBottom: "1.5rem" }}>
         <div style={{ marginBottom: "0.5rem", fontWeight: 600 }}>Project Name</div>
@@ -556,7 +467,7 @@ export default function CreatePage() {
           type="text"
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
-          placeholder="e.g. Happy Dog"
+          placeholder="e.g. My Puppy"
           style={{
             width: "100%",
             padding: "0.65rem 0.9rem",
@@ -585,9 +496,6 @@ export default function CreatePage() {
   />
 </label>
 
-
-
-
       {/* Image Upload */}
       <label style={{ display: "block", marginBottom: "1.5rem" }}>
         <div style={{ marginBottom: "0.5rem", fontWeight: 600 }}>Choose Image</div>
@@ -606,8 +514,6 @@ export default function CreatePage() {
       </label>
 
 
-
-
       {/* Terms and Conditions */}
       <label style={{ display: "flex", alignItems: "flex-start", fontSize: "0.95rem", lineHeight: "1.5", marginBottom: "1.5rem" }}>
         <input
@@ -617,9 +523,7 @@ export default function CreatePage() {
           style={{ marginRight: "0.75rem", marginTop: "0.2rem" }}
         />
         <span>
-          <strong>Terms:</strong> No offensive content, trademarks or copyright material may be used, and only images that you have the rights to use may be submitted.
-          You acknowledge that, if the image is of or includes another person, you have obtained the consent of the subject(s) for their image to be used by Dice Ideas Ltd.
-          to create the resulting dice portrait.
+          <strong>Terms:</strong> By submitting an image, you confirm that you either own the rights to the image or have obtained all necessary permissions to use it. You agree not to upload any content that is offensive, infringes on copyrights, trademarks, or the rights of any third party. If the image contains identifiable individuals, you affirm that you have secured their consent for Pipcasso to create and use the resulting dice mosaic.
         </span>
       </label>
 
@@ -1028,15 +932,11 @@ export default function CreatePage() {
             const imageLow = await generateImage("low");
             const imageHigh = await generateImage("high");
         
-            console.log("➡️ LowRes Image URL:", imageLow);
-            console.log("➡️ HighRes Image URL:", imageHigh);
-        
             setLowResImageUrl(imageLow);
             setHighResImageUrl(imageHigh);
         
             await generatePDF();
         
-            console.log("✅ All done, going to step 5");
             setStep(5);
           } catch (err) {
             console.error("❌ Error in Step 4 → 5 logic:", err);
