@@ -980,7 +980,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     opacity: 0.18,
   }}
 >
-  {Array.from({ length: 5 }).map((_, rowIdx) => (
+  {Array.from({ length: 3 }).map((_, rowIdx) => (
     <div
       key={rowIdx}
       style={{
@@ -998,7 +998,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
             fontWeight: 500,
             color: "#ffffff",
             userSelect: "none",
-            padding: "0.25rem 1rem",
+            padding: "1rem 3rem",
             whiteSpace: "nowrap",
           }}
         >
@@ -1244,7 +1244,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     {
       key: "bundle",
       title: "Digital Bundle",
-      subtitle: "High-Res Image + Dice Map",
+      subtitle: "High-Resolution Image + Dice Map",
       price: "$24.95",
       buttonText: "Buy Now",
     },
