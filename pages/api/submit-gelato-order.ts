@@ -1,7 +1,6 @@
-// pages/api/submit-gelato-order.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 
-console.log("📍 THIS IS THE V3 version of submit-gelato-order.ts");
+console.log("📍 THIS IS THE FINAL V4 submit-gelato-order.ts");
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -21,13 +20,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const imageUrl = session.metadata?.highResImageUrl;
     const productUid = getProductUidFromMetadata(session.metadata);
 
-    console.log("📥 Submitting Gelato v3 order with:", { name, email, address, imageUrl, productUid });
+    console.log("📥 Submitting Gelato v4 order with:", { name, email, address, imageUrl, productUid });
 
     if (!name || !email || !address || !address.line1 || !imageUrl || !productUid) {
       return res.status(400).json({ error: "Missing required order info" });
     }
 
     const orderPayload = {
+      orderType: "order",
       orderReferenceId: session.id,
       customerReferenceId: email,
       currency: "USD",
@@ -35,14 +35,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         {
           itemReferenceId: "dice-poster",
           productUid: productUid,
+          quantity: 1,
           files: [
             {
               type: "default",
               url: imageUrl,
-            },
+            }
           ],
-          quantity: 1,
-        },
+        }
       ],
       shippingAddress: {
         firstName: name.split(" ")[0],
@@ -55,18 +55,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         country: address.country,
         email,
       },
+      metadata: [
+        {
+          key: "source",
+          value: "dice-mosaic",
+        },
+      ],
     };
 
-    const apiKey = process.env.GELATO_SECRET;
-    if (!apiKey) throw new Error("GELATO_SECRET not found in environment");
+    const fullApiKey = process.env.GELATO_SECRET;
+    if (!fullApiKey) throw new Error("GELATO_SECRET is not set");
 
-    console.log("🌐 Sending v3 order to: https://api.gelato.com/v3/orders");
+    console.log("🌐 Sending v4 order to: https://order.gelatoapis.com/v4/orders");
+    console.log("🔑 Using full key (with colon):", fullApiKey);
 
-    const gelatoRes = await fetch("https://api.gelato.com/v3/orders", {
+    const gelatoRes = await fetch("https://order.gelatoapis.com/v4/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-API-KEY": apiKey,
+        "X-API-KEY": fullApiKey,  // ✅ USE ENTIRE KEY INCLUDING COLON
       },
       body: JSON.stringify(orderPayload),
     });
@@ -74,19 +81,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const result = await gelatoRes.json();
 
     if (!gelatoRes.ok) {
-      console.error("❌ Gelato v3 API error:", result);
+      console.error("❌ Gelato v4 API error:", result);
       return res.status(500).json({ error: "Failed to create order", details: result });
     }
 
-    console.log("✅ Gelato v3 order placed:", result);
+    console.log("✅ Gelato v4 order placed:", result);
     return res.status(200).json({ success: true, orderId: result.id });
 
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.error("❌ Error placing Gelato v3 order:", err);
-      return res.status(500).json({ error: err.message });
+      console.error("❌ Error placing Gelato v4 order:", err.message);
+      return res.status(500).json({ error: "Failed to create order", details: err.message });
     }
-    return res.status(500).json({ error: "Unknown error occurred" });
+    console.error("❌ Unknown error:", err);
+    return res.status(500).json({ error: "Unknown error" });
   }
 }
 
