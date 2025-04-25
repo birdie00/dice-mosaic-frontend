@@ -888,6 +888,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
       4. Select a Mosaic Style
     </h2>
 
+    {/* Helpful Info Box */}
     <div style={{
       backgroundColor: "#fef2f2",
       border: "1px solid #dc2626",
@@ -902,9 +903,10 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
       lineHeight: 1.6,
       boxShadow: "0 2px 6px rgba(0,0,0,0.04)"
     }}>
-      Click on the image to zoom in. Choose which option looks best and we will convert it into a high resolution print and Dice Map PDF!
+      Click on the image to zoom in. Choose which option looks best and we will convert it into a high-resolution print and Dice Map PDF!
     </div>
 
+    {/* Mosaic Options */}
     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "2rem" }}>
       {mosaicOptions.map((option) => (
         <div
@@ -922,116 +924,113 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
             transition: "border 0.2s ease-in-out"
           }}
         >
-          {/* ✅ Mosaic Dice Preview Grid */}
+          {/* Mosaic Dice Preview with Watermark */}
           <div
-  style={{
-    position: "relative", // ✅ Important to position watermark over it
-    width: "100%",
-    aspectRatio: `${option.grid[0].length} / ${option.grid.length}`,
-    overflow: "hidden",
-  }}
->
-  {/* Dice grid */}
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: `repeat(${option.grid[0].length}, 1fr)`,
-      width: "100%",
-      height: "100%",
-      gap: 0,
-      lineHeight: 0,
-    }}
-  >
-    {option.grid.map((row, y) =>
-      row.map((val, x) => (
-        <img
-          key={`${y}-${x}`}
-          src={`/dice/dice_${clampDiceValue(val)}.png`}
-          alt={`dice ${val}`}
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "block",
-            objectFit: "cover",
-            imageRendering: "auto",
-          }}
-        />
-      ))
-    )}
-  </div>
+            style={{
+              position: "relative",
+              width: "100%",
+              aspectRatio: `${option.grid[0].length} / ${option.grid.length}`,
+              overflow: "hidden",
+            }}
+          >
+            {/* Dice Grid */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(${option.grid[0].length}, 1fr)`,
+                width: "100%",
+                height: "100%",
+                gap: 0,
+                lineHeight: 0,
+              }}
+            >
+              {option.grid.map((row, y) =>
+                row.map((val, x) => (
+                  <img
+                    key={`${y}-${x}`}
+                    src={`/dice/dice_${clampDiceValue(val)}.png`}
+                    alt={`dice ${val}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      display: "block",
+                      objectFit: "cover",
+                      imageRendering: "auto",
+                    }}
+                  />
+                ))
+              )}
+            </div>
 
-  {/* Watermark Overlay */}
-  <div
-  style={{
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    pointerEvents: "none", // allow click-through
-    zIndex: 1,
-    backgroundImage: `
-      repeating-linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0.15) 0,
-        rgba(255, 255, 255, 0.15) 1px,
-        transparent 1px,
-        transparent 50px
-      ),
-      repeating-linear-gradient(
-        -45deg,
-        rgba(255, 255, 255, 0.15) 0,
-        rgba(255, 255, 255, 0.15) 1px,
-        transparent 1px,
-        transparent 50px
-      ),
-      repeating-text("pipcasso.com", rgba(255,255,255,0.25))
-    `,
-    backgroundSize: "150px 150px",
-    backgroundRepeat: "repeat",
-    backgroundPosition: "center",
-  }}
-/>
+            {/* Watermark Overlay */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                pointerEvents: "none",
+                zIndex: 1,
+                display: "flex",
+                flexWrap: "wrap",
+                alignContent: "center",
+                justifyContent: "center",
+                gap: "20px",
+                transform: "rotate(-25deg)",
+                opacity: 0.25,
+              }}
+            >
+              {Array.from({ length: 25 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    fontSize: "1.5rem",
+                    fontWeight: "bold",
+                    color: "#ffffff",
+                    userSelect: "none",
+                  }}
+                >
+                  pipcasso.com
+                </div>
+              ))}
+            </div>
+          </div>
 
-</div>
-
-
-    <strong style={{ display: "block", marginTop: "0.5rem" }}>
-      Style #{option.style_id}
-    </strong>
-  </div>
-))}
+          {/* Style Title */}
+          <strong style={{ display: "block", marginTop: "0.5rem" }}>
+            Style #{option.style_id}
+          </strong>
+        </div>
+      ))}
     </div>
 
+    {/* Navigation Buttons */}
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
-    <button
-  onClick={async () => {
-    if (selectedStyleId === null) return;
+      <button
+        onClick={async () => {
+          if (selectedStyleId === null) return;
 
-    setShowFinalizingMessage(true); // 👈 NEW
-    setLoading(true);
+          setShowFinalizingMessage(true);
+          setLoading(true);
 
-    try {
-      const imageLow = await generateImage("low");
-      const imageHigh = await generateImage("high");
+          try {
+            const imageLow = await generateImage("low");
+            const imageHigh = await generateImage("high");
 
-      setLowResImageUrl(imageLow);
-      setHighResImageUrl(imageHigh);
+            setLowResImageUrl(imageLow);
+            setHighResImageUrl(imageHigh);
 
-      await generatePDF();
-
-      setStep(5);
-    } catch (err) {
-      console.error("❌ Error in Step 4 → 5 logic:", err);
-      alert("Something went wrong generating your image or PDF.");
-    } finally {
-      setLoading(false);
-      setShowFinalizingMessage(false); // 👈 NEW
-    }
-  }}
-
-        
-        
+            await generatePDF();
+            setStep(5);
+          } catch (err) {
+            console.error("❌ Error in Step 4 → 5 logic:", err);
+            alert("Something went wrong generating your image or PDF.");
+          } finally {
+            setLoading(false);
+            setShowFinalizingMessage(false);
+          }
+        }}
         disabled={selectedStyleId === null}
         style={{
           padding: "0.75rem 1.5rem",
@@ -1041,11 +1040,12 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
           border: "none",
           borderRadius: "6px",
           cursor: selectedStyleId === null ? "not-allowed" : "pointer",
-          marginRight: "1rem"
+          marginRight: "1rem",
         }}
       >
         Next
       </button>
+
       <button
         onClick={() => setStep(3)}
         style={{
@@ -1054,7 +1054,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
           backgroundColor: "#aaa",
           color: "#fff",
           border: "none",
-          borderRadius: "6px"
+          borderRadius: "6px",
         }}
       >
         ⬅ Back
@@ -1062,6 +1062,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     </div>
   </section>
 )}
+
 
 {step === 5 && selectedStyleId !== null && (
   <section style={{ padding: "2rem 1rem" }}>
