@@ -5,6 +5,29 @@ import type CropperJS from "cropperjs";
 import Layout from "@/components/Layout";
 import React from "react";
 
+function getDiceStats(grid: number[][]) {
+  const counts = [0, 0, 0, 0, 0, 0];
+  let total = 0;
+
+  for (const row of grid) {
+    for (const val of row) {
+      const clamped = Math.max(1, Math.min(6, val)); // Clamp between 1 and 6
+      counts[clamped - 1]++;
+      total++;
+    }
+  }
+
+  const mostCommon = counts.indexOf(Math.max(...counts)) + 1;
+  const leastCommon = counts.indexOf(Math.min(...counts)) + 1;
+
+  return {
+    total,
+    mostCommon,
+    leastCommon,
+    counts,
+  };
+}
+
 
 interface MosaicOption {
   style_id: number;
