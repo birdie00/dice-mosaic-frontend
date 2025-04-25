@@ -37,14 +37,7 @@ export default async function sendThankYouEmail({
         <p style="font-size: 1rem;">
           You can access your project anytime at:<br />
           👉 <a href="https://pipcasso.com/redeem" style="color: #1C4C54;">https://pipcasso.com/redeem</a>
-        </p>
-
-        ${pdfUrl ? `
-        <p style="font-size: 1rem;">
-          📥 Your Dice Map PDF is available here:<br />
-          👉 <a href="${pdfUrl}" style="color: #1C4C54;">Download Your Dice Map PDF</a>
-        </p>
-        ` : ''}
+               ` : ''}
 
         <hr style="margin: 2rem 0;" />
 
