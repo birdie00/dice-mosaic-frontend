@@ -2,12 +2,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 console.log("📍 submit-gelato-order.ts loaded");
 
-export const config = {
-  api: {
-    bodyParser: false, // Use buffer() if handling Stripe webhooks directly
-  },
-};
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
