@@ -20,6 +20,7 @@ export default function CreatePage() {
 
 
   const [step, setStep] = useState<number>(1);
+  const [showFinalizingMessage, setShowFinalizingMessage] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -302,7 +303,43 @@ export default function CreatePage() {
     color: "#2F5884",
     lineHeight: 1.65,               // ⬆️ better readability
   }}
->
+>{showFinalizingMessage && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      zIndex: 9999,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <div
+      style={{
+        background: "#fff",
+        padding: "2rem",
+        borderRadius: "12px",
+        boxShadow: "0 0 15px rgba(0,0,0,0.3)",
+        maxWidth: "90%",
+        textAlign: "center",
+      }}
+    >
+      <h2 style={{ marginBottom: "1rem", color: "#E84C3D" }}>Finalizing Your Dice Map...</h2>
+      <p style={{ fontSize: "1rem", lineHeight: 1.5 }}>
+        We’re creating your final high-resolution image and PDF.
+        <br />
+        This may take up to <strong>2 minutes</strong>.
+        <br />
+        Please stay on this page and do not refresh.
+      </p>
+    </div>
+  </div>
+)}
+
       {showGeneratingMessage && (
   <div
     style={{
@@ -923,28 +960,32 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     </div>
 
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
-      <button
-        onClick={async () => {
-          if (selectedStyleId === null) return;
-        
-          setLoading(true);
-          try {
-            const imageLow = await generateImage("low");
-            const imageHigh = await generateImage("high");
-        
-            setLowResImageUrl(imageLow);
-            setHighResImageUrl(imageHigh);
-        
-            await generatePDF();
-        
-            setStep(5);
-          } catch (err) {
-            console.error("❌ Error in Step 4 → 5 logic:", err);
-            alert("Something went wrong generating your image or PDF.");
-          } finally {
-            setLoading(false);
-          }
-        }}
+    <button
+  onClick={async () => {
+    if (selectedStyleId === null) return;
+
+    setShowFinalizingMessage(true); // 👈 NEW
+    setLoading(true);
+
+    try {
+      const imageLow = await generateImage("low");
+      const imageHigh = await generateImage("high");
+
+      setLowResImageUrl(imageLow);
+      setHighResImageUrl(imageHigh);
+
+      await generatePDF();
+
+      setStep(5);
+    } catch (err) {
+      console.error("❌ Error in Step 4 → 5 logic:", err);
+      alert("Something went wrong generating your image or PDF.");
+    } finally {
+      setLoading(false);
+      setShowFinalizingMessage(false); // 👈 NEW
+    }
+  }}
+
         
         
         disabled={selectedStyleId === null}
