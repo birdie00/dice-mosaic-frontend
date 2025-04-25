@@ -923,34 +923,78 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
           }}
         >
           {/* ✅ Mosaic Dice Preview Grid */}
-    <div
-      style={{
-        position: "relative",
-        display: "grid",
-        gridTemplateColumns: `repeat(${option.grid[0].length}, 1fr)`,
-        aspectRatio: `${option.grid[0].length} / ${option.grid.length}`,
-        width: "100%",
-        gap: 0,
-        lineHeight: 0,
-      }}
-    >
-      {option.grid.map((row, y) =>
-        row.map((val, x) => (
-          <img
-            key={`${y}-${x}`}
-            src={`/dice/dice_${clampDiceValue(val)}.png`}
-            alt={`dice ${val}`}
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "block",
-              objectFit: "cover",
-              imageRendering: "auto",
-            }}
-          />
-        ))
-      )}
-    </div>
+          <div
+  style={{
+    position: "relative", // ✅ Important to position watermark over it
+    width: "100%",
+    aspectRatio: `${option.grid[0].length} / ${option.grid.length}`,
+    overflow: "hidden",
+  }}
+>
+  {/* Dice grid */}
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: `repeat(${option.grid[0].length}, 1fr)`,
+      width: "100%",
+      height: "100%",
+      gap: 0,
+      lineHeight: 0,
+    }}
+  >
+    {option.grid.map((row, y) =>
+      row.map((val, x) => (
+        <img
+          key={`${y}-${x}`}
+          src={`/dice/dice_${clampDiceValue(val)}.png`}
+          alt={`dice ${val}`}
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "block",
+            objectFit: "cover",
+            imageRendering: "auto",
+          }}
+        />
+      ))
+    )}
+  </div>
+
+  {/* Watermark Overlay */}
+  <div
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    pointerEvents: "none", // allow click-through
+    zIndex: 1,
+    backgroundImage: `
+      repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.15) 0,
+        rgba(255, 255, 255, 0.15) 1px,
+        transparent 1px,
+        transparent 50px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.15) 0,
+        rgba(255, 255, 255, 0.15) 1px,
+        transparent 1px,
+        transparent 50px
+      ),
+      repeating-text("pipcasso.com", rgba(255,255,255,0.25))
+    `,
+    backgroundSize: "150px 150px",
+    backgroundRepeat: "repeat",
+    backgroundPosition: "center",
+  }}
+/>
+
+</div>
+
 
     <strong style={{ display: "block", marginTop: "0.5rem" }}>
       Style #{option.style_id}
@@ -1150,8 +1194,8 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     {
       key: "highres",
       title: "High Quality Image",
-      subtitle: "~10300 x 10300 px",
-      price: "$14.99",
+      subtitle: "7500 x 7500 px",
+      price: "$9.99",
       buttonText: "Buy Now",
     },
     {
@@ -1164,8 +1208,8 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     {
       key: "bundle",
       title: "Digital Bundle",
-      subtitle: "High-Res + Dice Map",
-      price: "$29.95",
+      subtitle: "High-Res Image + Dice Map",
+      price: "$24.95",
       buttonText: "Buy Now",
     },
   ].map((item) => (
