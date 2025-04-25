@@ -37,7 +37,6 @@ export default async function sendThankYouEmail({
         <p style="font-size: 1rem;">
           You can access your project anytime at:<br />
           👉 <a href="https://pipcasso.com/redeem" style="color: #1C4C54;">https://pipcasso.com/redeem</a>
-               ` : ''}
 
         <hr style="margin: 2rem 0;" />
 
