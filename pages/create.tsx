@@ -1183,7 +1183,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
         <div
           key={colIdx}
           style={{
-            fontSize: "2rem",
+            fontSize: "clamp(1rem, 2vw, 2rem)"
             fontWeight: "bold",
             color: "#ffffff",
             userSelect: "none",
