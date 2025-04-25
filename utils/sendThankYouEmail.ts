@@ -42,7 +42,7 @@ export default async function sendThankYouEmail({
         <hr style="margin: 2rem 0;" />
 
         <p style="font-size: 0.95rem; color: #555;">
-          If you have any questions or need assistance, simply reply to this email. We'd love to hear from you and help!
+          If you have any questions or need assistance, do not reply to this email. Please contact us at support@pipcasso.com. We'd love to hear from you and help!
         </p>
 
         <p style="font-size: 0.95rem; color: #555;">Thanks again for supporting Pipcasso — your creativity inspires us! 🎲🧡</p>
