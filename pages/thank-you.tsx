@@ -296,7 +296,7 @@ const generate = async () => {
               >
                 pipcasso.com/redeem
               </a>{" "}
-              to re-download your map anytime.
+              to re-download your purchase anytime.
             </p>
           </div>
         )}

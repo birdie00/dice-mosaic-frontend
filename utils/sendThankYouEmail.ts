@@ -38,11 +38,6 @@ export default async function sendThankYouEmail({
 
         <hr style="margin: 2rem 0;" />
 
-        <h3>🧾 Your Receipt</h3>
-        <pre style="background: #f9f9f9; padding: 1rem; border-radius: 8px; font-size: 0.9rem; overflow-x: auto;">
-${JSON.stringify(stripeData, null, 2)}
-        </pre>
-
         <p>Need help? Just reply to this email. Happy building!<br/>— The Pipcasso Team 🎲</p>
       </div>
     `,
