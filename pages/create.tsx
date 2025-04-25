@@ -1148,13 +1148,6 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
 
   {[
     {
-      key: "lowres",
-      title: "Basic Image",
-      subtitle: "~2000 x 2000 px",
-      price: "$4.99",
-      buttonText: "Buy Now",
-    },
-    {
       key: "highres",
       title: "High Quality Image",
       subtitle: "~10300 x 10300 px",
