@@ -1226,23 +1226,33 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
             const stats = selected ? getDiceStats(selected.grid) : null;
             return (
               stats && (
-                <div
-                  style={{
-                    backgroundColor: "#fef3c7",
-                    border: "1px solid #fcd34d",
-                    padding: "1rem",
-                    borderRadius: "10px",
-                    marginTop: "1.25rem",
-                    fontSize: "1rem",
-                    lineHeight: 1.5,
-                    textAlign: "center",
-                  }}
-                >
-                  🎲 <strong>Fun Fact:</strong><br />
-                  Your mosaic uses <strong>{stats.total.toLocaleString()}</strong> dice!<br />
-                  Most common dice face: <strong>{stats.mostCommon}</strong> {stats.mostCommon === 0 ? '🖤' : ''}
-                  Least common dice face: <strong>{stats.leastCommon}</strong> {stats.leastCommon === 6 ? '⚪' : ''}
-                  </div>
+<div
+  style={{
+    marginTop: "1rem",
+    backgroundColor: "#fffbea",
+    border: "1px solid #fcd34d",
+    padding: "1rem 1.5rem",
+    borderRadius: "12px",
+    fontSize: "1rem",
+    lineHeight: 1.6,
+    color: "#444",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+  }}
+>
+  <strong style={{ display: "block", marginBottom: "0.5rem", color: "#6b21a8" }}>
+    🎲 Fun Fact:
+  </strong>
+  <p>Your mosaic uses <strong>{stats.total.toLocaleString()}</strong> dice!</p>
+  <p>
+    Most common dice face: <strong>{stats.mostCommon}</strong> (
+    {stats.counts[stats.mostCommon].toLocaleString()} times)
+  </p>
+  <p>
+    Least common dice face: <strong>{stats.leastCommon}</strong> (
+    {stats.counts[stats.leastCommon].toLocaleString()} times)
+  </p>
+</div>
+
               )
             );
           })()}
