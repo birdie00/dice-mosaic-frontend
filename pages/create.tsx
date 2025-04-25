@@ -991,11 +991,11 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
       transform: rowIdx % 2 === 0 ? "translateX(0)" : "translateX(50%)", // 👈 stagger every other row
     }}
   >
-    {Array.from({ length: 4 }).map((_, colIdx) => (
+    {Array.from({ length: 2 }).map((_, colIdx) => (
       <div
         key={colIdx}
         style={{
-          fontSize: "1.5rem",
+          fontSize: "1.2rem",
           fontWeight: "bold",
           color: "#ffffff",
           userSelect: "none",
