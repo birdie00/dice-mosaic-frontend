@@ -998,7 +998,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
             fontWeight: 500,
             color: "#ffffff",
             userSelect: "none",
-            padding: "1rem 3rem",
+            padding: "1rem 2.2rem",
             whiteSpace: "nowrap",
           }}
         >
