@@ -1237,7 +1237,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     {
       key: "pdf",
       title: "Dice Map PDF",
-      subtitle: "Paint by Number Style Map to DIY a Dice Portrait",
+      subtitle: "Dice Map to build a DIY Dice Portrait",
       price: "$19.99",
       buttonText: "Buy Now",
     },

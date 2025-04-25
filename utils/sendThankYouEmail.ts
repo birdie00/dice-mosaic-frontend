@@ -2,44 +2,75 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-type EmailProps = {
-  email: string;
-  code: string;
-  pdfUrl: string;
-  projectName: string;
-  stripeData?: any;
-};
-
-export default async function sendThankYouEmail({
-  email,
-  code,
-  pdfUrl,
-  projectName,
-  stripeData,
-}: EmailProps) {
+export async function sendThankYouEmail(email: string, code: string) {
   await resend.emails.send({
-    from: 'Pipcasso <noreply@resend.dev>', // Replace with your domain later
+    from: "Pipcasso <noreply@pipcasso.com>",
     to: email,
-    subject: '🎲 Your Dice Map and Access Code',
-    html: `
-      <div style="font-family: sans-serif; color: #111;">
-        <h2>Thank you for your Pipcasso purchase!</h2>
-        <p><strong>🎨 Project Name:</strong> ${projectName}</p>
+    subject: "🎲 Your Pipcasso download is ready!",
+html: `
+  <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 2rem; color: #1c1c1c;">
+    
+    <!-- Logo -->
+    <img 
+      src="https://dice-mosaic-frontend.vercel.app/images/HeaderLogo.png" 
+      alt="Pipcasso Logo" 
+      style="width: 140px; margin-bottom: 2rem;"
+    />
 
-        <p><strong>🎟️ Your Access Code:</strong> <code>${code}</code></p>
+    <!-- Greeting -->
+    <h2 style="font-size: 1.4rem; font-weight: 600;">Thanks for your Pipcasso purchase!</h2>
 
-        <p>
-          <a href="${pdfUrl}" style="display: inline-block; background-color: #E84C3D; color: #fff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold;">
-            ⬇️ Download Your Dice Map PDF
-          </a>
-        </p>
+    <!-- Message -->
+    <p style="font-size: 1rem; margin: 1rem 0;">
+      We’re truly honored that you chose Pipcasso to turn your image into something special. Your support helps us continue crafting one-of-a-kind dice art experiences — thank you!
+    </p>
 
-        <p>You can return anytime to <a href="https://pipcasso.com/redeem">pipcasso.com/redeem</a> and enter your email + code to download your map again.</p>
+    <p style="font-size: 1rem;">
+      Below is your unique access code. Use it to download your custom Dice Map whenever you’d like.
+    </p>
 
-        <hr style="margin: 2rem 0;" />
+    <!-- Code block -->
+    <div style="font-size: 1.25rem; font-weight: bold; background: #f3f3f3; padding: 0.75rem 1rem; border-radius: 6px; letter-spacing: 1px; display: inline-block; margin: 1rem 0;">
+      ${code}
+    </div>
 
-        <p>Need help? Just reply to this email. Happy building!<br/>— The Pipcasso Team 🎲</p>
-      </div>
-    `,
+    <!-- Button -->
+    <div style="margin: 1.5rem 0;">
+      <a href="https://pipcasso.com/redeem"
+        style="
+          background-color: #E84C3D;
+          color: white;
+          padding: 0.75rem 1.5rem;
+          text-decoration: none;
+          font-weight: bold;
+          border-radius: 6px;
+          display: inline-block;
+        "
+      >
+        ⬇️ Download Your Dice Map
+      </a>
+    </div>
+
+    <p style="font-size: 0.95rem; color: #555;">
+      You can return to <a href="https://pipcasso.com/redeem">pipcasso.com/redeem</a> at any time to redownload using your code.
+    </p>
+
+    <!-- Appreciation -->
+    <p style="margin-top: 2rem; font-size: 1rem;">
+      If you love your mosaic, we’d be thrilled if you shared it with others or tagged us on social media. Every share helps our small team grow.
+    </p>
+
+    <!-- Divider -->
+    <hr style="margin: 2rem 0;" />
+
+    <!-- Footer -->
+    <p style="font-size: 0.85rem; color: #888;">
+      Need help? Just reply to this email or contact us at <a href="mailto:support@pipcasso.com">support@pipcasso.com</a>.
+    </p>
+    <p style="font-size: 0.75rem; color: #aaa;">
+      Pipcasso 2025 • Digital download only – no physical dice included.
+    </p>
+  </div>
+`
   });
 }
