@@ -1166,7 +1166,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
     justifyContent: "space-evenly",
     alignItems: "center",
     transform: "rotate(-25deg)",
-    opacity: 0.1, // 👈 much lighter now
+    opacity: 0.18, // 👈 much lighter now
   }}
 >
   {Array.from({ length: 4 }).map((_, rowIdx) => (
