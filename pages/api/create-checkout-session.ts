@@ -25,14 +25,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } = req.body;
 
   const priceMap: Record<string, string | Record<string, string>> = {
-    lowres: "price_1RD2wr2fwLaC6Z6dInNMdCrA",
-highres: "price_1RHoaW2fwLaC6Z6d8BX28zWn",
-    pdf: "price_1RD2xW2fwLaC6Z6dbxHYbwKC",
-    bundle: "price_1RD3532fwLaC6Z6d7g5U4D24",
-    print: {
-      small: "price_1RD3Bp2fwLaC6Z6d69IThiiL",
-      medium: "price_1RD3Bp2fwLaC6Z6dnYfjXG6Y",
-      large: "price_1RD3Bp2fwLaC6Z6doY27koVI",
+    	lowres: "price_1RD2wr2fwLaC6Z6dInNMdCrA",
+	highres: "price_1RHoaW2fwLaC6Z6d8BX28zWn",
+    	pdf: "price_1RD2xW2fwLaC6Z6dbxHYbwKC",
+    	bundle: "price_1RD3532fwLaC6Z6d7g5U4D24",
+    	print: {
+     	 small: "price_1RD3Bp2fwLaC6Z6d69IThiiL",
+    	  medium: "price_1RD3Bp2fwLaC6Z6dnYfjXG6Y",
+    	  large: "price_1RD3Bp2fwLaC6Z6doY27koVI",
     },
   };
 
