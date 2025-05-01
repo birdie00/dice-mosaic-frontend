@@ -75,13 +75,6 @@ export default function CommissionsPage() {
           </section>
 {/* CTA Section */}
 <section style={{ textAlign: "center", margin: "3rem 0" }}>
-  <p style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>
-    Ready to bring your idea to life? Email us directly at{" "}
-    <a href="mailto:commissions@pipcasso.com" style={{ color: "#E84C3D", fontWeight: "bold" }}>
-      commissions@pipcasso.com
-    </a>{" "}
-    and we’ll reach out to you personally.
-  </p>
   <div style={{ marginTop: "2rem" }}>
     <input
       type="email"
