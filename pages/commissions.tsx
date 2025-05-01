@@ -35,6 +35,7 @@ export default function CommissionsPage() {
             </p>
           </section>
 
+
           {/* How It Works */}
           <section style={{ marginBottom: "3rem" }}>
             <h2 style={{ fontSize: "2rem", marginBottom: "2rem", textAlign: "center", color: "#6A3073" }}>
@@ -72,28 +73,44 @@ export default function CommissionsPage() {
               ))}
             </div>
           </section>
+{/* CTA Section */}
+<section style={{ textAlign: "center", margin: "3rem 0" }}>
+  <p style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>
+    Ready to bring your idea to life? Email us directly at{" "}
+    <a href="mailto:commissions@pipcasso.com" style={{ color: "#E84C3D", fontWeight: "bold" }}>
+      commissions@pipcasso.com
+    </a>{" "}
+    and we’ll reach out to you personally.
+  </p>
+  <div style={{ marginTop: "2rem" }}>
+    <input
+      type="email"
+      placeholder="Your email address"
+      style={{
+        padding: "0.75rem",
+        width: "300px",
+        maxWidth: "90%",
+        borderRadius: "8px",
+        border: "1px solid #ccc",
+        marginRight: "1rem",
+      }}
+    />
+    <button
+      style={{
+        padding: "0.75rem 1.5rem",
+        fontSize: "1rem",
+        backgroundColor: "#E84C3D",
+        color: "#fff",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+      }}
+    >
+      I'm Interested!
+    </button>
+  </div>
+</section>
 
-          {/* CTA Section */}
-          <section style={{ textAlign: "center", margin: "3rem 0" }}>
-            <p style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>
-              Ready to bring your idea to life?
-            </p>
-            <Link href="/contact">
-              <button
-                style={{
-                  padding: "0.75rem 2rem",
-                  fontSize: "1rem",
-                  backgroundColor: "#E84C3D",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                Request a Quote
-              </button>
-            </Link>
-          </section>
 
           {/* Contact Section */}
           <section
