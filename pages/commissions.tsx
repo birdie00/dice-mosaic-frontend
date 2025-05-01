@@ -35,28 +35,6 @@ export default function CommissionsPage() {
             </p>
           </section>
 
-          {/* Portfolio */}
-          <section style={{ marginBottom: "3rem", textAlign: "center" }}>
-            <h2 style={{ fontSize: "2rem", marginBottom: "2rem", color: "#6A3073" }}>
-              Previous Commissions
-            </h2>
-            <div style={{ display: "flex", gap: "1.5rem", justifyContent: "center", flexWrap: "wrap" }}>
-              {["portrait1", "portrait2", "portrait3"].map((img, i) => (
-                <Image
-                  key={i}
-                  src={`/portfolio/${img}.jpg`}
-                  alt={`Commission ${i + 1}`}
-                  width={300}
-                  height={300}
-                  style={{
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  }}
-                />
-              ))}
-            </div>
-          </section>
-
           {/* How It Works */}
           <section style={{ marginBottom: "3rem" }}>
             <h2 style={{ fontSize: "2rem", marginBottom: "2rem", textAlign: "center", color: "#6A3073" }}>
