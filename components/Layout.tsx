@@ -52,9 +52,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <Link href="/store" style={{ color: "#fff", margin: "0 1rem" }}>
       DIY Kits
     </Link>
-    <Link href="/cart" style={{ color: "#fff", margin: "0 1rem" }}>
-      🛒 Cart
-    </Link>
   </nav>
 
   {/* Mobile hamburger */}
@@ -97,9 +94,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </Link>
       <Link href="/store" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
         DIY Kits
-      </Link>
-      <Link href="/cart" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
-        🛒 Cart
       </Link>
     </nav>
   )}
