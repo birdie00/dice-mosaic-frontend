@@ -310,7 +310,7 @@ const generate = async () => {
                 marginTop: "0.5rem",
               }}
             >
-              🎨 Start Another Mosaic
+              🎨 Start Another Project
             </button>
           </a>
         </div>
