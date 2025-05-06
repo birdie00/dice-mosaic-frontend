@@ -74,54 +74,6 @@ export default function StorePage() {
               ))}
             </div>
           </section>
-
-          {/* Apparel & Extras */}
-          <section style={{ marginBottom: "3rem" }}>
-            <h2 style={{ fontSize: "2rem", marginBottom: "1.5rem", textAlign: "center", color: "#BF4F31" }}>
-              🎽 Apparel, Stickers & More
-            </h2>
-            <p style={{ textAlign: "center", marginBottom: "2rem", maxWidth: "700px", marginInline: "auto" }}>
-              Show off your Pipcasso pride with custom gear! Browse our limited-run designs and accessories.
-            </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", justifyContent: "center" }}>
-              {["shirt", "sticker", "hat"].map((item, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    width: "220px",
-                    backgroundColor: "#ffffff",
-                    padding: "1rem",
-                    borderRadius: "12px",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                    textAlign: "center",
-                  }}
-                >
-                  <Image
-                    src={`/store/${item}.jpg`}
-                    alt={item}
-                    width={200}
-                    height={200}
-                    style={{ borderRadius: "8px", marginBottom: "1rem" }}
-                  />
-                  <h4 style={{ color: "#BF4F31" }}>{item.charAt(0).toUpperCase() + item.slice(1)}</h4>
-                  <button
-                    style={{
-                      marginTop: "0.5rem",
-                      backgroundColor: "#BF4F31",
-                      color: "#fff",
-                      border: "none",
-                      padding: "0.5rem 1rem",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    Shop
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
         </div>
       </div>
     </Layout>
