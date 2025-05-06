@@ -35,7 +35,52 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     	  large: "price_1RD3Bp2fwLaC6Z6doY27koVI",
     },
   };
-
+  if (productType === "kit") {
+    const kitPrices: Record<string, number> = {
+      "10mm": 59999,
+      "8mm": 49999,
+    };
+  
+    const unitPrice = kitPrices[size];
+    if (!unitPrice) {
+      return res.status(400).json({ error: "Invalid kit size." });
+    }
+  
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      shipping_address_collection: {
+        allowed_countries: [
+          "US", "CA", "MX", "AU", "GB", "DE", "FR", "NL", "SE", "NO",
+          "DK", "FI", "IE", "IT", "ES", "BE", "CH", "AT", "NZ", "PT",
+        ],
+      },
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: unitPrice,
+            product_data: {
+              name: `DIY Dice Kit (${size})`,
+              description: "Includes dice, frame, and personalized Dice Map",
+            },
+          },
+          quantity: Math.max(1, parseInt(quantity)),
+        },
+      ],
+      success_url: `${req.headers.origin}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}/store?canceled=true`,
+      metadata: {
+        productType,
+        kitSize: size,
+        quantity,
+        email,
+      },
+    });
+  
+    return res.status(200).json({ url: session.url });
+  }
+  
   // 🖼 Physical Print
   if (productType === "print") {
     const sizePrices: Record<string, number> = {

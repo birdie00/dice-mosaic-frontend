@@ -1,8 +1,41 @@
-import Image from "next/image";
-import Link from "next/link";
+import { useState } from "react";
 import Layout from "@/components/Layout";
 
 export default function StorePage() {
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+
+  const kits = [
+    { size: "10mm", price: 59999, label: "$599.99" },
+    { size: "8mm", price: 49999, label: "$499.99" },
+  ];
+
+  const handleCheckout = async (kit: { size: string; price: number }, index: number) => {
+    setLoadingIndex(index);
+    try {
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productType: "kit",
+          kitSize: kit.size,
+          quantity: 1,
+        }),
+      });
+
+      const data = await res.json();
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Checkout session failed.");
+      }
+    } catch (err) {
+      console.error("Error creating checkout session:", err);
+      alert("Something went wrong.");
+    } finally {
+      setLoadingIndex(null);
+    }
+  };
+
   return (
     <Layout>
       <div
@@ -33,14 +66,12 @@ export default function StorePage() {
             </p>
           </section>
 
-          {/* Kits Section */}
           <section style={{ marginBottom: "3rem" }}>
-            <h2 style={{ fontSize: "2rem", marginBottom: "2rem", textAlign: "center", color: "#BF4F31" }}>Choose Your Kit</h2>
+            <h2 style={{ fontSize: "2rem", marginBottom: "2rem", textAlign: "center", color: "#BF4F31" }}>
+              Choose Your Kit
+            </h2>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", justifyContent: "center" }}>
-              {["10mm", "8mm"].flatMap((size) => [
-                { size, dims: "100x100" },
-                { size, dims: "80x80" },
-              ]).map((kit, i) => (
+              {kits.map((kit, i) => (
                 <div
                   key={i}
                   style={{
@@ -53,22 +84,26 @@ export default function StorePage() {
                   }}
                 >
                   <h3 style={{ color: "#BF4F31" }}>{kit.size} Dice Kit</h3>
-                  <p style={{ fontSize: "0.95rem" }}>Dimensions: {kit.dims}</p>
+                  <p style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#1C4C54" }}>
+                    {kit.label}
+                  </p>
                   <p style={{ marginBottom: "1rem" }}>
                     Includes dice, custom frame, and your unique Dice Map.
                   </p>
                   <button
+                    onClick={() => handleCheckout(kit, i)}
+                    disabled={loadingIndex === i}
                     style={{
                       backgroundColor: "#E84C3D",
                       color: "#fff",
                       border: "none",
                       padding: "0.6rem 1.2rem",
                       borderRadius: "8px",
-                      cursor: "pointer",
+                      cursor: loadingIndex === i ? "not-allowed" : "pointer",
                       fontWeight: "bold",
                     }}
                   >
-                    Order Now
+                    {loadingIndex === i ? "Processing..." : "Order Now"}
                   </button>
                 </div>
               ))}
