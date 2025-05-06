@@ -10,19 +10,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const {
-    productType,
-    size,
-    quantity,
-    email,
-    projectName,
-    pdfUrl,
-    lowResImageUrl,
-    highResImageUrl,
-    styleId,
-    grid,
-    printAspectRatio,
-  } = req.body;
+const {
+  productType,
+  size,
+  kitSize,
+  quantity,
+  email,
+  projectName,
+  pdfUrl,
+  lowResImageUrl,
+  highResImageUrl,
+  styleId,
+  grid,
+  printAspectRatio,
+} = req.body;
+
 
   const priceMap: Record<string, string | Record<string, string>> = {
     	lowres: "price_1RD2wr2fwLaC6Z6dInNMdCrA",
@@ -41,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       "8mm": 49999,
     };
   
-    const unitPrice = kitPrices[size];
+const unitPrice = kitPrices[kitSize];
     if (!unitPrice) {
       return res.status(400).json({ error: "Invalid kit size." });
     }
@@ -61,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             currency: "usd",
             unit_amount: unitPrice,
             product_data: {
-              name: `DIY Dice Kit (${size})`,
+name: `DIY Dice Kit (${kitSize})`,
               description: "Includes dice, frame, and personalized Dice Map",
             },
           },
@@ -72,7 +74,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       cancel_url: `${req.headers.origin}/store?canceled=true`,
       metadata: {
         productType,
-        kitSize: size,
+        kitSize,
         quantity,
         email,
       },
