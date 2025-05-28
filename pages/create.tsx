@@ -55,6 +55,8 @@ export default function CreatePage() {
   const [selectedStyleId, setSelectedStyleId] = useState<number | null>(null);
   const [aspectRatio, setAspectRatio] = useState<AspectRatioOption>("square");
   const [gridSize, setGridSize] = useState<[number, number]>([100, 100]);
+  const [customWidth, setCustomWidth] = useState<number>(100);
+  const [customHeight, setCustomHeight] = useState<number>(100);
   const [lowResImageUrl, setLowResImageUrl] = useState<string | null>(null);
   const [highResImageUrl, setHighResImageUrl] = useState<string | null>(null);
   const [showGeneratingMessage, setShowGeneratingMessage] = useState(false);
@@ -114,6 +116,7 @@ export default function CreatePage() {
   // 🔧 Image crop ratio logic
   const handleAspectRatioChange = (option: AspectRatioOption) => {
     setAspectRatio(option);
+
     const cropper = cropperRef.current?.cropper;
     if (!cropper) return;
 
@@ -131,7 +134,16 @@ export default function CreatePage() {
     cropper.setAspectRatio(ratio);
     setGridSize(newGrid);
   };
+const handleCustomRatioChange = () => {
+  if (!customWidth || !customHeight) return;
 
+  const cropper = cropperRef.current?.cropper;
+  if (!cropper) return;
+
+  const ratio = customWidth / customHeight;
+  cropper.setAspectRatio(ratio);
+  setGridSize([customWidth, customHeight]);
+};
   // 🔧 Handle image upload
   const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -744,7 +756,57 @@ export default function CreatePage() {
             <div style={{ fontStyle: "italic", color: "#555", fontSize: "0.85rem" }}>
               ({grid[0]} x {grid[1]} dice)
             </div>
+            <div
+  style={{
+    marginTop: "1.5rem",
+    textAlign: "center",
+    backgroundColor: "#fffbea",
+    padding: "1rem 1.5rem",
+    border: "1px solid #fcd34d",
+    borderRadius: "12px",
+  }}
+>
+  <h3 style={{ marginBottom: "0.5rem" }}>Custom Grid Size</h3>
+  <div style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+    <label>
+      Width (dice):
+      <input
+        type="number"
+        value={customWidth}
+        onChange={(e) => setCustomWidth(parseInt(e.target.value) || 1)}
+        style={{ marginLeft: "0.5rem", width: "80px" }}
+        min={1}
+      />
+    </label>
+    <label>
+      Height (dice):
+      <input
+        type="number"
+        value={customHeight}
+        onChange={(e) => setCustomHeight(parseInt(e.target.value) || 1)}
+        style={{ marginLeft: "0.5rem", width: "80px" }}
+        min={1}
+      />
+    </label>
+    <button
+      onClick={handleCustomRatioChange}
+      style={{
+        marginLeft: "1rem",
+        padding: "0.5rem 1rem",
+        backgroundColor: "#E84C3D",
+        color: "#fff",
+        border: "none",
+        borderRadius: "6px",
+        cursor: "pointer",
+      }}
+    >
+      Set Custom Crop
+    </button>
+  </div>
+</div>
+
           </div>
+          
         );
       })}
     </div>
