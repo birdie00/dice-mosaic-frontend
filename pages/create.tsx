@@ -756,7 +756,13 @@ const handleCustomRatioChange = () => {
             <div style={{ fontStyle: "italic", color: "#555", fontSize: "0.85rem" }}>
               ({grid[0]} x {grid[1]} dice)
             </div>
-            <div
+
+          </div>
+          
+        );
+      })}
+    </div>
+<div
   style={{
     marginTop: "1.5rem",
     textAlign: "center",
@@ -805,11 +811,6 @@ const handleCustomRatioChange = () => {
   </div>
 </div>
 
-          </div>
-          
-        );
-      })}
-    </div>
     <div
   style={{
     backgroundColor: "#fef2f2", // light red background
