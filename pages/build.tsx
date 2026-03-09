@@ -249,7 +249,7 @@ export default function BuildPage() {
                   >
                     {diceView ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={`/dice/${val}.png`} alt={String(val)}
+                      <img src={`/dice/dice_${val}.png`} alt={String(val)}
                         style={{ width: '90%', height: '90%', objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.9, pointerEvents: 'none' }} />
                     ) : (
                       <span style={{ fontSize: 7, fontWeight: 'bold', lineHeight: 1, color: isDone ? '#666' : DICE_COLORS[val]?.text, userSelect: 'none', pointerEvents: 'none' }}>
@@ -383,7 +383,7 @@ export default function BuildPage() {
                           >
                             {cellSize >= 8 && (diceView ? (
                               // eslint-disable-next-line @next/next/no-img-element
-                              <img src={`/dice/${val}.png`} alt={String(val)}
+                              <img src={`/dice/dice_${val}.png`} alt={String(val)}
                                 style={{ width: '80%', height: '80%', objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.9, pointerEvents: 'none', userSelect: 'none' }} />
                             ) : (
                               <span style={{ fontSize, color: color.text, fontWeight: 'bold', lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>
