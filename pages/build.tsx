@@ -245,9 +245,9 @@ export default function BuildPage() {
             {/* View toggle */}
             <button
               onClick={toggleDiceView}
-              style={{ width: '100%', padding: '0.65rem', backgroundColor: ACCENT3, color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem', textAlign: 'center' }}
+              style={{ width: '100%', padding: '0.65rem', backgroundColor: '#6B3FA0', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem', textAlign: 'center' }}
             >
-              {diceView ? '🔢 Switch to Number View' : '🎲 Switch to Dice View'}
+              {diceView ? 'Switch to Number View' : '🎲 Switch to Dice View'}
             </button>
 
             {/* Jump to row */}
