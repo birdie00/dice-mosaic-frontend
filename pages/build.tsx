@@ -95,7 +95,8 @@ export default function BuildPage() {
     const compute = () => {
       const byW = Math.floor(el.clientWidth  / project.cols);
       const byH = Math.floor(el.clientHeight / project.rows);
-      setCellSize(Math.max(2, Math.min(byW, byH)));
+      // Use at least 16px so cells are always readable; scroll if grid overflows
+      setCellSize(Math.max(16, Math.min(byW, byH)));
     };
     compute();
     const ro = new ResizeObserver(compute);
@@ -266,30 +267,66 @@ export default function BuildPage() {
             {/* Grid wrapper: fills remaining height, scrollable if grid exceeds it */}
             <div ref={gridWrapperRef} style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
               <div style={{ lineHeight: 0, display: 'inline-block' }}>
-                {project.grid.map((row, r) => (
-                  <div key={r} style={{ display: 'flex' }}>
-                    {row.map((val, col) => {
-                      const flatIdx       = r * project.cols + col;
-                      const isCurrentCell = r === currentRow && col === currentCol;
-                      const isDoneCell    = flatIdx < currentIndex;
-                      return (
-                        <div
-                          key={col}
-                          style={{
-                            width:           cellSize,
-                            height:          cellSize,
-                            backgroundColor: isDoneCell ? '#2a2a4a' : (DICE_COLORS[val]?.bg ?? '#111'),
-                            border:          isCurrentCell ? `1px solid ${ACCENT2}` : val === 6 && !isDoneCell ? '1px solid #666' : 'none',
-                            boxSizing:       'border-box',
-                            position:        'relative',
-                            zIndex:          isCurrentCell ? 1 : 0,
-                            boxShadow:       isCurrentCell ? `0 0 0 1px ${ACCENT2}` : 'none',
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
-                ))}
+                {project.grid.map((row, r) => {
+                  const isCurrentRow = r === currentRow;
+                  return (
+                    <div
+                      key={r}
+                      style={{
+                        display: 'flex',
+                        // Subtle amber tint behind the entire current row
+                        backgroundColor: isCurrentRow ? 'rgba(245,166,35,0.10)' : 'transparent',
+                      }}
+                    >
+                      {row.map((val, col) => {
+                        const flatIdx       = r * project.cols + col;
+                        const isCurrentCell = isCurrentRow && col === currentCol;
+                        const isDoneCell    = flatIdx < currentIndex;
+                        const color         = DICE_COLORS[val] ?? DICE_COLORS[0];
+                        const fontSize      = Math.max(8, Math.floor(cellSize * 0.52));
+                        return (
+                          <div
+                            key={col}
+                            style={{
+                              width:           cellSize,
+                              height:          cellSize,
+                              backgroundColor: color.bg,
+                              // Ghost effect: keep color visible, reduce opacity for done cells
+                              opacity:         isDoneCell ? 0.45 : 1,
+                              border:          isCurrentCell
+                                ? `3px solid ${ACCENT2}`
+                                : val === 6 ? '1px solid #666' : 'none',
+                              boxSizing:       'border-box',
+                              position:        'relative',
+                              zIndex:          isCurrentCell ? 2 : 1,
+                              // Thick glow on current cell so it's visible anywhere on the grid
+                              boxShadow:       isCurrentCell
+                                ? `0 0 0 2px ${ACCENT2}, 0 0 10px 2px ${ACCENT2}`
+                                : 'none',
+                              display:         'flex',
+                              alignItems:      'center',
+                              justifyContent:  'center',
+                              flexShrink:      0,
+                            }}
+                          >
+                            {cellSize >= 12 && (
+                              <span style={{
+                                fontSize,
+                                color:         color.text,
+                                fontWeight:    'bold',
+                                lineHeight:    1,
+                                userSelect:    'none',
+                                pointerEvents: 'none',
+                              }}>
+                                {val}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
