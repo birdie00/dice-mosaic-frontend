@@ -14,7 +14,7 @@
     "cropperjs": "^1.5.13",
     "micro": "^10.0.1",
     "nanoid": "^5.1.5",
-    "next": "15.2.4",
+    "next": "15.3.9",
     "nodemailer": "^6.10.0",
     "pdfkit": "^0.16.0",
     "react": "^19.1.0",
@@ -34,7 +34,7 @@
     "@types/react-dom": "^19.1.1",
     "autoprefixer": "^10.4.21",
     "eslint": "^9",
-    "eslint-config-next": "15.2.4",
+    "eslint-config-next": "15.3.9",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.0.17",
     "typescript": "^5"
