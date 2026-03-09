@@ -35,7 +35,20 @@ export default function BuildPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cellSize, setCellSize]   = useState(8);
   const [jumpRow, setJumpRow]     = useState('');
+  const [diceView, setDiceView]   = useState(false);
   const gridWrapperRef = useRef<HTMLDivElement>(null);
+
+  // Load / save dice view preference
+  useEffect(() => {
+    const saved = localStorage.getItem('buildMode_diceView');
+    if (saved === 'true') setDiceView(true);
+  }, []);
+  const toggleDiceView = () => {
+    setDiceView(v => {
+      localStorage.setItem('buildMode_diceView', String(!v));
+      return !v;
+    });
+  };
 
   // Pre-fill code from ?code= query param
   useEffect(() => {
@@ -181,6 +194,12 @@ export default function BuildPage() {
           </div>
           <span style={{ color: '#ccd6f6', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>{currentIndex} / {totalCells}</span>
           <span style={{ color: ACCENT2, fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>{progress.toFixed(1)}%</span>
+          <button
+            onClick={toggleDiceView}
+            style={{ padding: '0.3rem 0.7rem', backgroundColor: diceView ? ACCENT2 : CARD, color: diceView ? '#000' : '#ccd6f6', border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontWeight: 'bold', fontSize: '0.75rem', whiteSpace: 'nowrap', flexShrink: 0 }}
+          >
+            {diceView ? '🎲 Dice View' : '# Number View'}
+          </button>
         </div>
 
         {/* Main panels */}
@@ -221,19 +240,22 @@ export default function BuildPage() {
                     style={{
                       width: 14, height: 14, borderRadius: 2,
                       backgroundColor: isDone ? '#2a2a4a' : DICE_COLORS[val]?.bg,
-                      border: isCurrent ? `2px solid ${ACCENT2}` : val === 6 ? '1px solid #555' : 'none',
+                      border: isCurrent ? `2px solid ${ACCENT2}` : val === 6 ? '1px solid #999' : 'none',
                       opacity: isDone ? 0.45 : 1,
                       boxSizing: 'border-box',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0,
                     }}
                   >
-                    <span style={{
-                      fontSize: 7, fontWeight: 'bold', lineHeight: 1,
-                      color: isDone ? '#666' : DICE_COLORS[val]?.text,
-                      userSelect: 'none', pointerEvents: 'none',
-                    }}>
-                      {val}
-                    </span>
+                    {diceView ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={`/dice/${val}.png`} alt={String(val)}
+                        style={{ width: '90%', height: '90%', objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.9, pointerEvents: 'none' }} />
+                    ) : (
+                      <span style={{ fontSize: 7, fontWeight: 'bold', lineHeight: 1, color: isDone ? '#666' : DICE_COLORS[val]?.text, userSelect: 'none', pointerEvents: 'none' }}>
+                        {val}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -359,18 +381,15 @@ export default function BuildPage() {
                               cursor:          'pointer',
                             }}
                           >
-                            {cellSize >= 8 && (
-                              <span style={{
-                                fontSize,
-                                color:         color.text,
-                                fontWeight:    'bold',
-                                lineHeight:    1,
-                                userSelect:    'none',
-                                pointerEvents: 'none',
-                              }}>
+                            {cellSize >= 8 && (diceView ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={`/dice/${val}.png`} alt={String(val)}
+                                style={{ width: '80%', height: '80%', objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.9, pointerEvents: 'none', userSelect: 'none' }} />
+                            ) : (
+                              <span style={{ fontSize, color: color.text, fontWeight: 'bold', lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>
                                 {val}
                               </span>
-                            )}
+                            ))}
                           </div>
                         );
                       })}
