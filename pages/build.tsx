@@ -34,6 +34,7 @@ export default function BuildPage() {
   const [project, setProject]     = useState<ProjectData | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cellSize, setCellSize]   = useState(8);
+  const [jumpRow, setJumpRow]     = useState('');
   const gridWrapperRef = useRef<HTMLDivElement>(null);
 
   // Pre-fill code from ?code= query param
@@ -246,8 +247,41 @@ export default function BuildPage() {
               </div>
             </div>
 
+            {/* Jump to row */}
+            <div style={{ marginTop: 'auto' }}>
+              <div style={{ color: '#4a5580', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Jump to row</div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <input
+                  type="number"
+                  min={1}
+                  max={project.rows}
+                  value={jumpRow}
+                  onChange={e => setJumpRow(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      const row = Math.max(1, Math.min(project.rows, parseInt(jumpRow) || 1));
+                      setCurrentIndex((row - 1) * project.cols);
+                      setJumpRow('');
+                    }
+                  }}
+                  placeholder={`1–${project.rows}`}
+                  style={{ flex: 1, padding: '0.4rem 0.5rem', borderRadius: 6, border: `1px solid ${CARD}`, backgroundColor: '#0a1628', color: '#ccd6f6', fontSize: '0.85rem', fontFamily: 'monospace', minWidth: 0 }}
+                />
+                <button
+                  onClick={() => {
+                    const row = Math.max(1, Math.min(project.rows, parseInt(jumpRow) || 1));
+                    setCurrentIndex((row - 1) * project.cols);
+                    setJumpRow('');
+                  }}
+                  style={{ padding: '0.4rem 0.6rem', backgroundColor: CARD, color: '#ccd6f6', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.85rem', fontFamily: 'monospace' }}
+                >
+                  Go
+                </button>
+              </div>
+            </div>
+
             {/* Navigation */}
-            <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button
                   onClick={goBack}
@@ -296,6 +330,7 @@ export default function BuildPage() {
                         return (
                           <div
                             key={col}
+                            onClick={() => setCurrentIndex(flatIdx)}
                             style={{
                               width:           cellSize,
                               height:          cellSize,
@@ -316,9 +351,10 @@ export default function BuildPage() {
                               alignItems:      'center',
                               justifyContent:  'center',
                               flexShrink:      0,
+                              cursor:          'pointer',
                             }}
                           >
-                            {cellSize >= 12 && (
+                            {cellSize >= 8 && (
                               <span style={{
                                 fontSize,
                                 color:         color.text,
