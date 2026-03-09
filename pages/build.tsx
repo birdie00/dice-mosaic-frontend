@@ -229,7 +229,7 @@ export default function BuildPage() {
             <div key={r} style={{
               display: 'flex',
               backgroundColor: isCurrentRow ? 'rgba(232,65,42,0.07)' : 'transparent',
-              borderTop: isCurrentRow && currentRow > 0 ? `2px solid ${ACCENT}` : 'none',
+              borderTop: isCurrentRow && currentRow > 0 ? '1px solid rgba(196,103,58,0.6)' : 'none',
             }}>
               {row.map((val, col) => {
                 const flatIdx       = r * project.cols + col;
@@ -240,8 +240,8 @@ export default function BuildPage() {
                     key={col}
                     val={val} size={cellSize} diceView={diceView}
                     opacity={isDoneCell ? 0.45 : 1}
-                    border={isCurrentCell ? `3px solid ${ACCENT}` : (!diceView && val === 6) ? `1px solid ${BORDER}` : undefined}
-                    boxShadow={isCurrentCell ? `0 0 0 2px ${ACCENT}, 0 0 10px 2px ${ACCENT}` : undefined}
+                    border={isCurrentCell ? `2px solid ${ACCENT}` : (!diceView && val === 6) ? `1px solid ${BORDER}` : undefined}
+                    boxShadow={undefined}
                     animation={isCurrentCell ? 'cellPulse 1.2s ease-in-out infinite' : undefined}
                     onClick={() => setCurrentIndex(flatIdx)}
                     cursor="pointer"
@@ -356,8 +356,8 @@ export default function BuildPage() {
       <Head><title>Build Mode — {project.projectName}</title></Head>
       <style>{`
         @keyframes cellPulse {
-          0%, 100% { box-shadow: 0 0 0 2px ${ACCENT}, 0 0 8px 2px ${ACCENT}; }
-          50%       { box-shadow: 0 0 0 4px ${ACCENT}, 0 0 16px 4px ${ACCENT}; }
+          0%, 100% { border-color: ${ACCENT}; }
+          50%       { border-color: ${ACCENT2}; }
         }
       `}</style>
       <div style={{ height: '100vh', backgroundColor: BG, fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -385,7 +385,7 @@ export default function BuildPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <DiceCell val={currentVal} size={68} diceView={diceView}
                   border={`2px solid ${ACCENT}`}
-                  boxShadow={`0 0 0 2px ${ACCENT}, 0 0 10px 2px ${ACCENT}`}
+                  boxShadow={undefined}
                   animation="cellPulse 1.2s ease-in-out infinite"
                 />
                 <div>
