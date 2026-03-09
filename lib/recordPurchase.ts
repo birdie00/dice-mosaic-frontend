@@ -8,11 +8,13 @@ export async function recordPurchase({
   pdfUrl,
   projectName,
   stripeData,
+  gridData,
 }: {
   email: string;
   pdfUrl: string;
   projectName: string;
   stripeData?: any;
+  gridData?: string;  // JSON-stringified 2D array of dice values (0-6)
 }) {
   if (!email || !pdfUrl || !projectName) {
     console.error("❌ Missing required field(s):", { email, pdfUrl, projectName });
@@ -29,6 +31,7 @@ export async function recordPurchase({
       pdf_url: pdfUrl,
       project_name: projectName,
       stripe_data: JSON.stringify(stripeData ?? {}),
+      grid_data: gridData ?? null,
     },
   ]);
 

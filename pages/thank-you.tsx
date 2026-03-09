@@ -298,6 +298,27 @@ const generate = async () => {
               </a>{" "}
               to re-download your purchase anytime.
             </p>
+            <div style={{ marginTop: "1rem" }}>
+              <a href={`/build?code=${code}`}>
+                <button
+                  style={{
+                    backgroundColor: "#1a1a2e",
+                    color: "#e94560",
+                    padding: "0.75rem 1.5rem",
+                    border: "2px solid #e94560",
+                    borderRadius: "8px",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  🎲 Open Build Mode
+                </button>
+              </a>
+              <p style={{ marginTop: "0.5rem", fontSize: "0.85rem", color: "#666" }}>
+                Step-by-step guide to place your dice
+              </p>
+            </div>
           </div>
         )}
   
