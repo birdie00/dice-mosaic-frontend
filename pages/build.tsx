@@ -234,8 +234,8 @@ export default function BuildPage() {
 
   // Shared: grid renderer
   const gridEl = (
-    <div ref={gridWrapperRef} style={{ flex: 1, overflow: 'auto', minHeight: 0, WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-      <div style={{ lineHeight: 0, display: 'inline-block' }}>
+    <div ref={gridWrapperRef} style={{ flex: 1, overflow: 'auto', minHeight: 0, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+      <div style={{ lineHeight: 0, display: 'block' }}>
         {project.grid.map((row, r) => {
           const isCurrentRow = r === currentRow;
           return (
@@ -323,7 +323,7 @@ export default function BuildPage() {
           </div>
 
           {/* Full grid — fills remaining space, scrollable */}
-          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', paddingBottom: BOTTOM_BAR_H + TOGGLE_H }}>
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', paddingBottom: BOTTOM_BAR_H + TOGGLE_H, width: '100%' }}>
             {gridEl}
           </div>
 
