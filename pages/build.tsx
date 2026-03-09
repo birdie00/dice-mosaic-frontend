@@ -19,23 +19,27 @@ interface ProjectData {
   grid: number[][];
 }
 
-const BG      = '#1a1a2e';
-const ACCENT  = '#e94560';
-const ACCENT2 = '#f5a623';
-const PANEL   = '#16213e';
-const CARD    = '#0f3460';
+const BG      = '#0a0a0a';
+const PANEL   = '#111111';
+const CARD    = '#1a1a1a';
+const ACCENT  = '#E8412A';
+const ACCENT2 = '#F5A623';
+const ACCENT3 = '#3B8DC4';
+const TEXT    = '#F0F0F0';
+const MUTED   = '#888888';
+const LABEL   = '#555555';
 
 export default function BuildPage() {
   const router = useRouter();
-  const [screen, setScreen]       = useState<'login' | 'build'>('login');
-  const [code, setCode]           = useState('');
-  const [error, setError]         = useState('');
-  const [loading, setLoading]     = useState(false);
-  const [project, setProject]     = useState<ProjectData | null>(null);
+  const [screen, setScreen]             = useState<'login' | 'build'>('login');
+  const [code, setCode]                 = useState('');
+  const [error, setError]               = useState('');
+  const [loading, setLoading]           = useState(false);
+  const [project, setProject]           = useState<ProjectData | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [cellSize, setCellSize]   = useState(8);
-  const [jumpRow, setJumpRow]     = useState('');
-  const [diceView, setDiceView]   = useState(false);
+  const [cellSize, setCellSize]         = useState(8);
+  const [jumpRow, setJumpRow]           = useState('');
+  const [diceView, setDiceView]         = useState(false);
   const gridWrapperRef = useRef<HTMLDivElement>(null);
 
   // Load / save dice view preference
@@ -57,10 +61,10 @@ export default function BuildPage() {
     }
   }, [router.isReady, router.query.code]);
 
-  const totalCells  = project ? project.rows * project.cols : 0;
-  const currentRow  = project ? Math.floor(currentIndex / project.cols) : 0;
-  const currentCol  = project ? currentIndex % project.cols : 0;
-  const currentVal  = project ? (project.grid[currentRow]?.[currentCol] ?? 0) : 0;
+  const totalCells = project ? project.rows * project.cols : 0;
+  const currentRow = project ? Math.floor(currentIndex / project.cols) : 0;
+  const currentCol = project ? currentIndex % project.cols : 0;
+  const currentVal = project ? (project.grid[currentRow]?.[currentCol] ?? 0) : 0;
 
   const handleLogin = async () => {
     if (!code.trim()) return;
@@ -109,7 +113,6 @@ export default function BuildPage() {
     const compute = () => {
       const byW = Math.floor(el.clientWidth  / project.cols);
       const byH = Math.floor(el.clientHeight / project.rows);
-      // Use at least 16px so cells are always readable; scroll if grid overflows
       setCellSize(Math.max(10, Math.min(byW, byH)));
     };
     compute();
@@ -124,11 +127,11 @@ export default function BuildPage() {
       <>
         <Head><title>Build Mode — Pipcasso</title></Head>
         <div style={{ minHeight: '100vh', backgroundColor: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'monospace' }}>
-          <div style={{ backgroundColor: PANEL, borderRadius: 16, padding: '3rem', maxWidth: 420, width: '100%', margin: '1rem', boxShadow: `0 0 40px rgba(233,69,96,0.15)` }}>
+          <div style={{ backgroundColor: PANEL, borderRadius: 16, padding: '3rem', maxWidth: 420, width: '100%', margin: '1rem', boxShadow: `0 0 40px rgba(232,65,42,0.15)` }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <div style={{ fontSize: 48, marginBottom: 8 }}>🎲</div>
               <h1 style={{ color: ACCENT, fontSize: '1.8rem', margin: 0, fontWeight: 'bold' }}>Build Mode</h1>
-              <p style={{ color: '#8892b0', marginTop: 8, fontSize: '0.9rem' }}>Enter your access code to load your dice map</p>
+              <p style={{ color: MUTED, marginTop: 8, fontSize: '0.9rem' }}>Enter your access code to load your dice map</p>
             </div>
             <input
               type="text"
@@ -136,7 +139,7 @@ export default function BuildPage() {
               value={code}
               onChange={e => setCode(e.target.value.toUpperCase())}
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              style={{ width: '100%', padding: '0.8rem', borderRadius: 8, border: `1px solid ${CARD}`, backgroundColor: '#0a1628', color: '#ccd6f6', fontSize: '1.1rem', textAlign: 'center', letterSpacing: 4, marginBottom: '1rem', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '0.8rem', borderRadius: 8, border: `1px solid #222`, backgroundColor: CARD, color: TEXT, fontSize: '1.1rem', textAlign: 'center', letterSpacing: 4, marginBottom: '1rem', boxSizing: 'border-box' }}
             />
             {error && <p style={{ color: ACCENT, marginBottom: '1rem', fontSize: '0.85rem', textAlign: 'center' }}>{error}</p>}
             <button
@@ -156,22 +159,14 @@ export default function BuildPage() {
 
   const progress = totalCells > 0 ? (currentIndex / totalCells) * 100 : 0;
 
-  // Next 5 cells
-  const nextUp = Array.from({ length: 5 }, (_, i) => {
+  // Next 8 cells
+  const nextUp = Array.from({ length: 8 }, (_, i) => {
     const idx = currentIndex + 1 + i;
     if (idx >= totalCells) return null;
     const r   = Math.floor(idx / project.cols);
     const col = idx % project.cols;
     return { val: project.grid[r]?.[col] ?? 0, r, col };
   }).filter(Boolean) as { val: number; r: number; col: number }[];
-
-  // Current row strip
-  const rowStrip = Array.from({ length: project.cols }, (_, col) => ({
-    val:       project.grid[currentRow]?.[col] ?? 0,
-    col,
-    isCurrent: col === currentCol,
-    isDone:    col < currentCol,
-  }));
 
   // ── Build screen ───────────────────────────────────────────────────────
   return (
@@ -186,17 +181,17 @@ export default function BuildPage() {
       <div style={{ height: '100vh', backgroundColor: BG, fontFamily: 'monospace', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* Top bar */}
-        <div style={{ backgroundColor: PANEL, padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: `1px solid ${CARD}`, flexShrink: 0 }}>
+        <div style={{ backgroundColor: PANEL, padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid #222', flexShrink: 0 }}>
           <span style={{ color: ACCENT, fontWeight: 'bold', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>🎲 Build Mode</span>
-          <span style={{ color: '#8892b0', fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{project.projectName}</span>
-          <div style={{ flex: 1, height: 8, backgroundColor: CARD, borderRadius: 4, overflow: 'hidden', minWidth: 60 }}>
-            <div style={{ height: '100%', width: `${progress}%`, backgroundColor: ACCENT, borderRadius: 4, transition: 'width 0.1s ease' }} />
+          <span style={{ color: MUTED, fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{project.projectName}</span>
+          <div style={{ flex: 1, height: 8, backgroundColor: '#222', borderRadius: 4, overflow: 'hidden', minWidth: 60 }}>
+            <div style={{ height: '100%', width: `${progress}%`, background: `linear-gradient(to right, ${ACCENT}, ${ACCENT2})`, borderRadius: 4, transition: 'width 0.1s ease' }} />
           </div>
-          <span style={{ color: '#ccd6f6', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>{currentIndex} / {totalCells}</span>
+          <span style={{ color: TEXT, fontSize: '0.8rem', whiteSpace: 'nowrap' }}>{currentIndex} / {totalCells}</span>
           <span style={{ color: ACCENT2, fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>{progress.toFixed(1)}%</span>
           <button
             onClick={toggleDiceView}
-            style={{ padding: '0.3rem 0.7rem', backgroundColor: diceView ? ACCENT2 : CARD, color: diceView ? '#000' : '#ccd6f6', border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontWeight: 'bold', fontSize: '0.75rem', whiteSpace: 'nowrap', flexShrink: 0 }}
+            style={{ padding: '0.3rem 0.7rem', backgroundColor: diceView ? ACCENT2 : CARD, color: diceView ? '#000' : TEXT, border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontWeight: 'bold', fontSize: '0.75rem', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             {diceView ? '🎲 Dice View' : '# Number View'}
           </button>
@@ -206,11 +201,11 @@ export default function BuildPage() {
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
           {/* Left panel */}
-          <div style={{ width: 260, backgroundColor: PANEL, padding: '1.2rem', display: 'flex', flexDirection: 'column', gap: '1.2rem', borderRight: `1px solid ${CARD}`, overflowY: 'auto', flexShrink: 0 }}>
+          <div style={{ width: 220, backgroundColor: PANEL, padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderRight: '1px solid #222', overflowY: 'auto', flexShrink: 0 }}>
 
             {/* Current dice */}
             <div>
-              <div style={{ color: '#4a5580', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Current</div>
+              <div style={{ color: LABEL, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Current</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{
                   width: 68, height: 68, borderRadius: 12,
@@ -227,46 +222,15 @@ export default function BuildPage() {
                   ) : currentVal}
                 </div>
                 <div>
-                  <div style={{ color: '#8892b0', fontSize: '0.75rem' }}>Row {currentRow + 1}, Col {currentCol + 1}</div>
-                  <div style={{ color: '#4a5580', fontSize: '0.7rem', marginTop: 2 }}>#{currentIndex + 1} of {totalCells}</div>
+                  <div style={{ color: MUTED, fontSize: '0.75rem' }}>Row {currentRow + 1}, Col {currentCol + 1}</div>
+                  <div style={{ color: LABEL, fontSize: '0.7rem', marginTop: 2 }}>#{currentIndex + 1} of {totalCells}</div>
                 </div>
-              </div>
-            </div>
-
-            {/* Row strip */}
-            <div>
-              <div style={{ color: '#4a5580', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Row {currentRow + 1} of {project.rows}</div>
-              <div style={{ display: 'flex', flexWrap: 'nowrap', gap: 2, overflowX: 'auto' }}>
-                {rowStrip.map(({ val, col, isCurrent, isDone }) => (
-                  <div
-                    key={col}
-                    style={{
-                      width: 14, height: 14, borderRadius: 2,
-                      backgroundColor: diceView ? '#1a1a1a' : isDone ? '#2a2a4a' : DICE_COLORS[val]?.bg,
-                      border: isCurrent ? `2px solid ${ACCENT2}` : (!diceView && val === 6) ? '1px solid #999' : 'none',
-                      opacity: isDone ? 0.45 : 1,
-                      boxSizing: 'border-box',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {diceView ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={`/dice/dice_${val}.png`} alt={String(val)}
-                        style={{ width: '95%', height: '95%', objectFit: 'contain', pointerEvents: 'none' }} />
-                    ) : (
-                      <span style={{ fontSize: 7, fontWeight: 'bold', lineHeight: 1, color: isDone ? '#666' : DICE_COLORS[val]?.text, userSelect: 'none', pointerEvents: 'none' }}>
-                        {val}
-                      </span>
-                    )}
-                  </div>
-                ))}
               </div>
             </div>
 
             {/* Next up */}
             <div>
-              <div style={{ color: '#4a5580', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Next Up</div>
+              <div style={{ color: LABEL, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Next Up</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {nextUp.map(({ val, r, col }, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -277,16 +241,16 @@ export default function BuildPage() {
                           style={{ width: '95%', height: '95%', objectFit: 'contain', pointerEvents: 'none' }} />
                       ) : val}
                     </div>
-                    <span style={{ color: '#8892b0', fontSize: '0.72rem' }}>R{r + 1} C{col + 1}</span>
+                    <span style={{ color: MUTED, fontSize: '0.72rem' }}>R{r + 1} C{col + 1}</span>
                   </div>
                 ))}
-                {nextUp.length === 0 && <span style={{ color: '#4a5580', fontSize: '0.8rem' }}>Last cell!</span>}
+                {nextUp.length === 0 && <span style={{ color: LABEL, fontSize: '0.8rem' }}>Last cell!</span>}
               </div>
             </div>
 
             {/* Jump to row */}
             <div style={{ marginTop: 'auto' }}>
-              <div style={{ color: '#4a5580', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Jump to row</div>
+              <div style={{ color: LABEL, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Jump to row</div>
               <div style={{ display: 'flex', gap: 6 }}>
                 <input
                   type="number"
@@ -302,7 +266,7 @@ export default function BuildPage() {
                     }
                   }}
                   placeholder={`1–${project.rows}`}
-                  style={{ flex: 1, padding: '0.4rem 0.5rem', borderRadius: 6, border: `1px solid ${CARD}`, backgroundColor: '#0a1628', color: '#ccd6f6', fontSize: '0.85rem', fontFamily: 'monospace', minWidth: 0 }}
+                  style={{ flex: 1, padding: '0.4rem 0.5rem', borderRadius: 6, border: '1px solid #222', backgroundColor: CARD, color: TEXT, fontSize: '0.85rem', fontFamily: 'monospace', minWidth: 0 }}
                 />
                 <button
                   onClick={() => {
@@ -310,7 +274,7 @@ export default function BuildPage() {
                     setCurrentIndex((row - 1) * project.cols);
                     setJumpRow('');
                   }}
-                  style={{ padding: '0.4rem 0.6rem', backgroundColor: CARD, color: '#ccd6f6', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.85rem', fontFamily: 'monospace' }}
+                  style={{ padding: '0.4rem 0.6rem', backgroundColor: CARD, color: TEXT, border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.85rem', fontFamily: 'monospace' }}
                 >
                   Go
                 </button>
@@ -323,7 +287,7 @@ export default function BuildPage() {
                 <button
                   onClick={goBack}
                   disabled={currentIndex === 0}
-                  style={{ flex: 1, padding: '0.55rem', backgroundColor: CARD, color: '#ccd6f6', border: 'none', borderRadius: 8, cursor: currentIndex === 0 ? 'not-allowed' : 'pointer', opacity: currentIndex === 0 ? 0.4 : 1, fontFamily: 'monospace', fontWeight: 'bold', fontSize: '0.9rem' }}
+                  style={{ flex: 1, padding: '0.55rem', backgroundColor: ACCENT3, color: '#fff', border: 'none', borderRadius: 8, cursor: currentIndex === 0 ? 'not-allowed' : 'pointer', opacity: currentIndex === 0 ? 0.4 : 1, fontFamily: 'monospace', fontWeight: 'bold', fontSize: '0.9rem' }}
                 >
                   ← Back
                 </button>
@@ -335,13 +299,13 @@ export default function BuildPage() {
                   Next →
                 </button>
               </div>
-              <div style={{ color: '#4a5580', fontSize: '0.65rem', textAlign: 'center' }}>Space / ← → arrow keys</div>
+              <div style={{ color: LABEL, fontSize: '0.65rem', textAlign: 'center' }}>Space / ← → arrow keys</div>
             </div>
           </div>
 
           {/* Right panel — full colour grid */}
           <div style={{ flex: 1, padding: '1.2rem', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ color: '#4a5580', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, flexShrink: 0 }}>
+            <div style={{ color: LABEL, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, flexShrink: 0 }}>
               Full Grid — {project.cols}W × {project.rows}H
             </div>
             {/* Grid wrapper: fills remaining height, scrollable if grid exceeds it */}
@@ -355,7 +319,6 @@ export default function BuildPage() {
                       style={{
                         display: 'flex',
                         backgroundColor: isCurrentRow ? 'rgba(245,166,35,0.10)' : 'transparent',
-                        // Bright orange line marks the boundary between done rows and current row
                         borderTop: isCurrentRow && currentRow > 0 ? `2px solid ${ACCENT2}` : 'none',
                       }}
                     >
@@ -373,7 +336,6 @@ export default function BuildPage() {
                               width:           cellSize,
                               height:          cellSize,
                               backgroundColor: diceView ? '#1a1a1a' : color.bg,
-                              // Ghost effect: keep color visible, reduce opacity for done cells
                               opacity:         isDoneCell ? 0.45 : 1,
                               border:          isCurrentCell
                                 ? `3px solid ${ACCENT2}`
