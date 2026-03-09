@@ -131,6 +131,7 @@ name: `DIY Dice Kit (${kitSize})`,
         highResImageUrl,
         styleId: styleId?.toString() || "",
         printAspectRatio: printAspectRatio || "portrait",
+        grid: grid ? JSON.stringify(grid).slice(0, 500) : "",
       },
     });
 
@@ -164,6 +165,7 @@ name: `DIY Dice Kit (${kitSize})`,
         pdfUrl,
         lowResImageUrl,
         highResImageUrl,
+        grid: grid ? JSON.stringify(grid).slice(0, 500) : "",
       },
     });
 
