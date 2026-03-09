@@ -227,9 +227,8 @@ export default function BuildPage() {
                   ) : currentVal}
                 </div>
                 <div>
-                  <div style={{ color: '#ccd6f6', fontWeight: 'bold', fontSize: '1rem' }}>{DICE_COLORS[currentVal]?.label}</div>
-                  <div style={{ color: '#8892b0', fontSize: '0.75rem', marginTop: 2 }}>Row {currentRow + 1}, Col {currentCol + 1}</div>
-                  <div style={{ color: '#4a5580', fontSize: '0.7rem' }}>#{currentIndex + 1} of {totalCells}</div>
+                  <div style={{ color: '#8892b0', fontSize: '0.75rem' }}>Row {currentRow + 1}, Col {currentCol + 1}</div>
+                  <div style={{ color: '#4a5580', fontSize: '0.7rem', marginTop: 2 }}>#{currentIndex + 1} of {totalCells}</div>
                 </div>
               </div>
             </div>
@@ -278,7 +277,7 @@ export default function BuildPage() {
                           style={{ width: '95%', height: '95%', objectFit: 'contain', pointerEvents: 'none' }} />
                       ) : val}
                     </div>
-                    <span style={{ color: '#8892b0', fontSize: '0.72rem' }}>{DICE_COLORS[val]?.label} — R{r + 1} C{col + 1}</span>
+                    <span style={{ color: '#8892b0', fontSize: '0.72rem' }}>R{r + 1} C{col + 1}</span>
                   </div>
                 ))}
                 {nextUp.length === 0 && <span style={{ color: '#4a5580', fontSize: '0.8rem' }}>Last cell!</span>}
