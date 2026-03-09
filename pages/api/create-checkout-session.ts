@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
+import { supabase } from "@/lib/supabase";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
@@ -95,6 +96,13 @@ name: `DIY Dice Kit (${kitSize})`,
       return res.status(400).json({ error: "Invalid print size." });
     }
 
+    if (pdfUrl && grid) {
+      const { error: draftError } = await supabase
+        .from('grid_drafts')
+        .upsert({ pdf_url: pdfUrl, grid_data: JSON.stringify(grid) });
+      if (draftError) console.error('⚠️ Failed to save grid draft:', draftError);
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
@@ -131,7 +139,6 @@ name: `DIY Dice Kit (${kitSize})`,
         highResImageUrl,
         styleId: styleId?.toString() || "",
         printAspectRatio: printAspectRatio || "portrait",
-        grid: grid ? JSON.stringify(grid).slice(0, 500) : "",
       },
     });
 
@@ -146,6 +153,13 @@ name: `DIY Dice Kit (${kitSize})`,
   }
 
   try {
+    if (pdfUrl && grid) {
+      const { error: draftError } = await supabase
+        .from('grid_drafts')
+        .upsert({ pdf_url: pdfUrl, grid_data: JSON.stringify(grid) });
+      if (draftError) console.error('⚠️ Failed to save grid draft:', draftError);
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: [
@@ -165,7 +179,6 @@ name: `DIY Dice Kit (${kitSize})`,
         pdfUrl,
         lowResImageUrl,
         highResImageUrl,
-        grid: grid ? JSON.stringify(grid).slice(0, 500) : "",
       },
     });
 

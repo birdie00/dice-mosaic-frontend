@@ -25,6 +25,22 @@ export async function recordPurchase({
   console.log("📦 Recording purchase for:", { email, projectName, pdfUrl });
   console.log("🔲 recordPurchase received gridData:", gridData ? `${gridData.length} chars` : "undefined/null");
 
+  // If no gridData was passed directly, look it up from grid_drafts by pdfUrl
+  let resolvedGridData = gridData ?? null;
+  if (!resolvedGridData && pdfUrl) {
+    const { data: draft, error: draftErr } = await supabase
+      .from('grid_drafts')
+      .select('grid_data')
+      .eq('pdf_url', pdfUrl)
+      .single();
+    if (draft?.grid_data) {
+      resolvedGridData = draft.grid_data;
+      console.log("✅ Resolved gridData from grid_drafts:", `${resolvedGridData.length} chars`);
+    } else {
+      console.warn("⚠️ No grid draft found for pdfUrl:", pdfUrl, draftErr);
+    }
+  }
+
   const { error } = await supabase.from('purchases').insert([
     {
       code,
@@ -32,7 +48,7 @@ export async function recordPurchase({
       pdf_url: pdfUrl,
       project_name: projectName,
       stripe_data: JSON.stringify(stripeData ?? {}),
-      grid_data: gridData ?? null,
+      grid_data: resolvedGridData,
     },
   ]);
 
@@ -41,7 +57,17 @@ export async function recordPurchase({
     console.error("❌ Supabase error details:", JSON.stringify(error));
     throw new Error("Database error");
   }
-  console.log("✅ Supabase insert succeeded, grid_data saved:", gridData ? "yes" : "no");
+  console.log("✅ Supabase insert succeeded, grid_data saved:", resolvedGridData ? "yes" : "no");
+
+  // Clean up the draft row now that it's been saved to purchases
+  if (resolvedGridData && pdfUrl) {
+    const { error: deleteErr } = await supabase
+      .from('grid_drafts')
+      .delete()
+      .eq('pdf_url', pdfUrl);
+    if (deleteErr) console.warn("⚠️ Failed to delete grid draft:", deleteErr);
+    else console.log("🗑️ grid_drafts row cleaned up for:", pdfUrl);
+  }
 
   try {
     await sendThankYouEmail({ email, code, pdfUrl, projectName, stripeData });
