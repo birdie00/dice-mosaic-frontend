@@ -96,7 +96,7 @@ export default function BuildPage() {
       const byW = Math.floor(el.clientWidth  / project.cols);
       const byH = Math.floor(el.clientHeight / project.rows);
       // Use at least 16px so cells are always readable; scroll if grid overflows
-      setCellSize(Math.max(16, Math.min(byW, byH)));
+      setCellSize(Math.max(10, Math.min(byW, byH)));
     };
     compute();
     const ro = new ResizeObserver(compute);
@@ -215,10 +215,19 @@ export default function BuildPage() {
                       width: 14, height: 14, borderRadius: 2,
                       backgroundColor: isDone ? '#2a2a4a' : DICE_COLORS[val]?.bg,
                       border: isCurrent ? `2px solid ${ACCENT2}` : val === 6 ? '1px solid #555' : 'none',
-                      opacity: isDone ? 0.35 : 1,
+                      opacity: isDone ? 0.45 : 1,
                       boxSizing: 'border-box',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}
-                  />
+                  >
+                    <span style={{
+                      fontSize: 7, fontWeight: 'bold', lineHeight: 1,
+                      color: isDone ? '#666' : DICE_COLORS[val]?.text,
+                      userSelect: 'none', pointerEvents: 'none',
+                    }}>
+                      {val}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
