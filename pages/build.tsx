@@ -214,13 +214,17 @@ export default function BuildPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{
                   width: 68, height: 68, borderRadius: 12,
-                  backgroundColor: DICE_COLORS[currentVal]?.bg,
-                  border: currentVal === 6 ? '2px solid #888' : `2px solid ${ACCENT2}`,
+                  backgroundColor: diceView ? '#1a1a1a' : DICE_COLORS[currentVal]?.bg,
+                  border: diceView ? `2px solid ${ACCENT2}` : currentVal === 6 ? '2px solid #888' : `2px solid ${ACCENT2}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 28, fontWeight: 'bold', color: DICE_COLORS[currentVal]?.text,
-                  flexShrink: 0,
+                  flexShrink: 0, overflow: 'hidden',
                 }}>
-                  {currentVal}
+                  {diceView ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={`/dice/dice_${currentVal}.png`} alt={String(currentVal)}
+                      style={{ width: '95%', height: '95%', objectFit: 'contain', pointerEvents: 'none' }} />
+                  ) : currentVal}
                 </div>
                 <div>
                   <div style={{ color: '#ccd6f6', fontWeight: 'bold', fontSize: '1rem' }}>{DICE_COLORS[currentVal]?.label}</div>
@@ -240,7 +244,7 @@ export default function BuildPage() {
                     style={{
                       width: 14, height: 14, borderRadius: 2,
                       backgroundColor: diceView ? '#1a1a1a' : isDone ? '#2a2a4a' : DICE_COLORS[val]?.bg,
-                      border: isCurrent ? `2px solid ${ACCENT2}` : val === 6 ? '1px solid #999' : 'none',
+                      border: isCurrent ? `2px solid ${ACCENT2}` : (!diceView && val === 6) ? '1px solid #999' : 'none',
                       opacity: isDone ? 0.45 : 1,
                       boxSizing: 'border-box',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -267,7 +271,13 @@ export default function BuildPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {nextUp.map(({ val, r, col }, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ width: 22, height: 22, borderRadius: 4, backgroundColor: DICE_COLORS[val]?.bg, border: val === 6 ? '1px solid #555' : 'none', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: DICE_COLORS[val]?.text, fontWeight: 'bold' }}>{val}</div>
+                    <div style={{ width: 22, height: 22, borderRadius: 4, backgroundColor: diceView ? '#1a1a1a' : DICE_COLORS[val]?.bg, border: (!diceView && val === 6) ? '1px solid #555' : 'none', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: DICE_COLORS[val]?.text, fontWeight: 'bold', overflow: 'hidden' }}>
+                      {diceView ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={`/dice/dice_${val}.png`} alt={String(val)}
+                          style={{ width: '95%', height: '95%', objectFit: 'contain', pointerEvents: 'none' }} />
+                      ) : val}
+                    </div>
                     <span style={{ color: '#8892b0', fontSize: '0.72rem' }}>{DICE_COLORS[val]?.label} — R{r + 1} C{col + 1}</span>
                   </div>
                 ))}
@@ -368,7 +378,7 @@ export default function BuildPage() {
                               opacity:         isDoneCell ? 0.45 : 1,
                               border:          isCurrentCell
                                 ? `3px solid ${ACCENT2}`
-                                : val === 6 ? '1px solid #999999' : 'none',
+                                : (!diceView && val === 6) ? '1px solid #999999' : 'none',
                               boxSizing:       'border-box',
                               position:        'relative',
                               zIndex:          isCurrentCell ? 2 : 1,
