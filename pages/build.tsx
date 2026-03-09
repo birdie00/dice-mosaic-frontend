@@ -239,7 +239,7 @@ export default function BuildPage() {
                     key={col}
                     style={{
                       width: 14, height: 14, borderRadius: 2,
-                      backgroundColor: isDone ? '#2a2a4a' : DICE_COLORS[val]?.bg,
+                      backgroundColor: diceView ? '#1a1a1a' : isDone ? '#2a2a4a' : DICE_COLORS[val]?.bg,
                       border: isCurrent ? `2px solid ${ACCENT2}` : val === 6 ? '1px solid #999' : 'none',
                       opacity: isDone ? 0.45 : 1,
                       boxSizing: 'border-box',
@@ -250,7 +250,7 @@ export default function BuildPage() {
                     {diceView ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={`/dice/dice_${val}.png`} alt={String(val)}
-                        style={{ width: '90%', height: '90%', objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.9, pointerEvents: 'none' }} />
+                        style={{ width: '95%', height: '95%', objectFit: 'contain', pointerEvents: 'none' }} />
                     ) : (
                       <span style={{ fontSize: 7, fontWeight: 'bold', lineHeight: 1, color: isDone ? '#666' : DICE_COLORS[val]?.text, userSelect: 'none', pointerEvents: 'none' }}>
                         {val}
@@ -363,7 +363,7 @@ export default function BuildPage() {
                             style={{
                               width:           cellSize,
                               height:          cellSize,
-                              backgroundColor: color.bg,
+                              backgroundColor: diceView ? '#1a1a1a' : color.bg,
                               // Ghost effect: keep color visible, reduce opacity for done cells
                               opacity:         isDoneCell ? 0.45 : 1,
                               border:          isCurrentCell
@@ -384,7 +384,7 @@ export default function BuildPage() {
                             {cellSize >= 8 && (diceView ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={`/dice/dice_${val}.png`} alt={String(val)}
-                                style={{ width: '80%', height: '80%', objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.9, pointerEvents: 'none', userSelect: 'none' }} />
+                                style={{ width: '95%', height: '95%', objectFit: 'contain', pointerEvents: 'none', userSelect: 'none' }} />
                             ) : (
                               <span style={{ fontSize, color: color.text, fontWeight: 'bold', lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>
                                 {val}
