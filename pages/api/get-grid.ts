@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { data, error } = await supabase
     .from('purchases')
-    .select('project_name, grid_data')
+    .select('project_name, grid_data, stripe_data')
     .eq('code', normalizedCode)
     .single();
 
@@ -27,6 +27,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (error || !data) {
     return res.status(404).json({ error: 'Not found', supabaseError: error?.message });
+  }
+
+  // Block product types that don't include Build Mode
+  try {
+    const productType = JSON.parse(data.stripe_data)?.metadata?.productType;
+    console.log('🔑 productType for code', normalizedCode, ':', productType);
+    if (productType === 'print' || productType === 'highres' || productType === 'lowres') {
+      return res.status(403).json({ error: 'Build Mode is only available for DIY Dice Map purchases.' });
+    }
+  } catch {
+    console.warn('⚠️ Could not parse stripe_data for productType check');
   }
 
   if (!data.grid_data) {

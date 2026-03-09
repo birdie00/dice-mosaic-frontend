@@ -120,6 +120,10 @@ export default function BuildPage() {
     setError('');
     try {
       const res = await fetch(`/api/get-grid?code=${code.trim().toUpperCase()}`);
+      if (res.status === 403) {
+        setError('__403__');
+        return;
+      }
       if (!res.ok) { setError('Access code not found. Please check and try again.'); return; }
       const data = await res.json();
       setProject(data);
@@ -188,7 +192,16 @@ export default function BuildPage() {
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
               style={{ width: '100%', padding: '0.8rem', borderRadius: 8, border: `1px solid ${BORDER}`, backgroundColor: BG, color: TEXT, fontSize: '1.1rem', textAlign: 'center', letterSpacing: 4, marginBottom: '1rem', boxSizing: 'border-box', fontFamily: 'monospace' }}
             />
-            {error && <p style={{ color: ACCENT, marginBottom: '1rem', fontSize: '0.85rem', textAlign: 'center' }}>{error}</p>}
+            {error === '__403__' ? (
+              <div style={{ marginBottom: '1rem', padding: '1rem', backgroundColor: '#FFF8F0', border: `1px solid ${BORDER}`, borderRadius: 8, borderLeft: `4px solid ${ACCENT}` }}>
+                <p style={{ color: TEXT, fontWeight: 700, fontSize: '0.9rem', margin: '0 0 0.4rem' }}>Build Mode not available for this purchase</p>
+                <p style={{ color: MUTED, fontSize: '0.82rem', margin: 0, lineHeight: 1.5 }}>
+                  Build Mode is only available for DIY Dice Map purchases. Print orders and image downloads don&apos;t include Build Mode access.
+                </p>
+              </div>
+            ) : error ? (
+              <p style={{ color: ACCENT, marginBottom: '1rem', fontSize: '0.85rem', textAlign: 'center' }}>{error}</p>
+            ) : null}
             <button onClick={handleLogin} disabled={loading}
               style={{ width: '100%', padding: '0.8rem', backgroundColor: ACCENT, color: '#fff', border: 'none', borderRadius: 8, fontWeight: 'bold', fontSize: '1rem', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}>
               {loading ? 'Loading...' : 'Start Building 🎲'}
