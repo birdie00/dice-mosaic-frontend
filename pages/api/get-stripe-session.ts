@@ -33,6 +33,7 @@ const session = await stripe.checkout.sessions.retrieve(session_id as string, {
       projectName,
       pdfUrl,
       stripeData: session,
+      gridData: metadata.grid ?? undefined,
     });
 
     return res.status(200).json({
