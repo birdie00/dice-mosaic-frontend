@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
@@ -33,6 +33,8 @@ export default function BuildPage() {
   const [loading, setLoading]     = useState(false);
   const [project, setProject]     = useState<ProjectData | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [cellSize, setCellSize]   = useState(8);
+  const gridWrapperRef = useRef<HTMLDivElement>(null);
 
   // Pre-fill code from ?code= query param
   useEffect(() => {
@@ -85,6 +87,22 @@ export default function BuildPage() {
     return () => window.removeEventListener('keydown', handler);
   }, [screen, advance, goBack]);
 
+  // Dynamically size grid cells to fill the available wrapper area
+  useEffect(() => {
+    if (!project) return;
+    const el = gridWrapperRef.current;
+    if (!el) return;
+    const compute = () => {
+      const byW = Math.floor(el.clientWidth  / project.cols);
+      const byH = Math.floor(el.clientHeight / project.rows);
+      setCellSize(Math.max(2, Math.min(byW, byH)));
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [project]);
+
   // ── Login screen ───────────────────────────────────────────────────────
   if (screen === 'login') {
     return (
@@ -122,7 +140,6 @@ export default function BuildPage() {
   if (!project) return null;
 
   const progress = totalCells > 0 ? (currentIndex / totalCells) * 100 : 0;
-  const CELL_SIZE = Math.max(3, Math.min(8, Math.floor(280 / Math.max(project.rows, project.cols))));
 
   // Next 5 cells
   const nextUp = Array.from({ length: 5 }, (_, i) => {
@@ -242,35 +259,38 @@ export default function BuildPage() {
           </div>
 
           {/* Right panel — full colour grid */}
-          <div style={{ flex: 1, padding: '1.2rem', overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ flex: 1, padding: '1.2rem', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ color: '#4a5580', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, flexShrink: 0 }}>
               Full Grid — {project.cols}W × {project.rows}H
             </div>
-            <div style={{ lineHeight: 0, flexShrink: 0 }}>
-              {project.grid.map((row, r) => (
-                <div key={r} style={{ display: 'flex' }}>
-                  {row.map((val, col) => {
-                    const flatIdx       = r * project.cols + col;
-                    const isCurrentCell = r === currentRow && col === currentCol;
-                    const isDoneCell    = flatIdx < currentIndex;
-                    return (
-                      <div
-                        key={col}
-                        style={{
-                          width:           CELL_SIZE,
-                          height:          CELL_SIZE,
-                          backgroundColor: isDoneCell ? '#2a2a4a' : (DICE_COLORS[val]?.bg ?? '#111'),
-                          border:          isCurrentCell ? `1px solid ${ACCENT2}` : val === 6 && !isDoneCell ? '1px solid #666' : 'none',
-                          boxSizing:       'border-box',
-                          position:        'relative',
-                          zIndex:          isCurrentCell ? 1 : 0,
-                          boxShadow:       isCurrentCell ? `0 0 0 1px ${ACCENT2}` : 'none',
-                        }}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
+            {/* Grid wrapper: fills remaining height, scrollable if grid exceeds it */}
+            <div ref={gridWrapperRef} style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
+              <div style={{ lineHeight: 0, display: 'inline-block' }}>
+                {project.grid.map((row, r) => (
+                  <div key={r} style={{ display: 'flex' }}>
+                    {row.map((val, col) => {
+                      const flatIdx       = r * project.cols + col;
+                      const isCurrentCell = r === currentRow && col === currentCol;
+                      const isDoneCell    = flatIdx < currentIndex;
+                      return (
+                        <div
+                          key={col}
+                          style={{
+                            width:           cellSize,
+                            height:          cellSize,
+                            backgroundColor: isDoneCell ? '#2a2a4a' : (DICE_COLORS[val]?.bg ?? '#111'),
+                            border:          isCurrentCell ? `1px solid ${ACCENT2}` : val === 6 && !isDoneCell ? '1px solid #666' : 'none',
+                            boxSizing:       'border-box',
+                            position:        'relative',
+                            zIndex:          isCurrentCell ? 1 : 0,
+                            boxShadow:       isCurrentCell ? `0 0 0 1px ${ACCENT2}` : 'none',
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
