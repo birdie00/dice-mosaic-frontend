@@ -35,7 +35,7 @@ export async function recordPurchase({
       .single();
     if (draft?.grid_data) {
       resolvedGridData = draft.grid_data;
-      console.log("✅ Resolved gridData from grid_drafts:", `${resolvedGridData.length} chars`);
+      console.log("✅ Resolved gridData from grid_drafts:", `${(resolvedGridData ?? '').length} chars`);
     } else {
       console.warn("⚠️ No grid draft found for pdfUrl:", pdfUrl, draftErr);
     }
