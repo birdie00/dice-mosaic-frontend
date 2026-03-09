@@ -189,12 +189,6 @@ export default function BuildPage() {
           </div>
           <span style={{ color: '#cccccc', fontSize: '0.8rem', whiteSpace: 'nowrap', fontFamily: 'monospace' }}>{currentIndex} / {totalCells}</span>
           <span style={{ color: ACCENT2, fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap', fontFamily: 'monospace' }}>{progress.toFixed(1)}%</span>
-          <button
-            onClick={toggleDiceView}
-            style={{ padding: '0.3rem 0.7rem', backgroundColor: diceView ? ACCENT2 : '#333', color: diceView ? '#000' : '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontWeight: 'bold', fontSize: '0.75rem', whiteSpace: 'nowrap', flexShrink: 0 }}
-          >
-            {diceView ? '🎲 Dice View' : '# Number View'}
-          </button>
         </div>
 
         {/* Main panels */}
@@ -247,6 +241,14 @@ export default function BuildPage() {
                 {nextUp.length === 0 && <span style={{ color: MUTED, fontSize: '0.8rem' }}>Last cell!</span>}
               </div>
             </div>
+
+            {/* View toggle */}
+            <button
+              onClick={toggleDiceView}
+              style={{ width: '100%', padding: '0.65rem', backgroundColor: ACCENT3, color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem', textAlign: 'center' }}
+            >
+              {diceView ? '🔢 Switch to Number View' : '🎲 Switch to Dice View'}
+            </button>
 
             {/* Jump to row */}
             <div style={{ marginTop: 'auto' }}>
