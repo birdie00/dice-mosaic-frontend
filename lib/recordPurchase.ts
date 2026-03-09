@@ -23,6 +23,7 @@ export async function recordPurchase({
 
   const code = nanoid(6).toUpperCase(); // e.g., "XK49HZ"
   console.log("📦 Recording purchase for:", { email, projectName, pdfUrl });
+  console.log("🔲 recordPurchase received gridData:", gridData ? `${gridData.length} chars` : "undefined/null");
 
   const { error } = await supabase.from('purchases').insert([
     {
@@ -37,8 +38,10 @@ export async function recordPurchase({
 
   if (error) {
     console.error("❌ Error inserting into Supabase:", error);
+    console.error("❌ Supabase error details:", JSON.stringify(error));
     throw new Error("Database error");
   }
+  console.log("✅ Supabase insert succeeded, grid_data saved:", gridData ? "yes" : "no");
 
   try {
     await sendThankYouEmail({ email, code, pdfUrl, projectName, stripeData });

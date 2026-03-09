@@ -23,17 +23,25 @@ const session = await stripe.checkout.sessions.retrieve(session_id as string, {
     const pdfUrl = metadata.pdfUrl;
     const projectName = metadata.projectName;
 
+    console.log("📋 Full metadata keys:", Object.keys(metadata));
+    console.log("📋 Full metadata:", JSON.stringify(metadata, null, 2));
+    console.log("🔲 metadata.grid present:", !!metadata.grid);
+    console.log("🔲 metadata.grid length:", metadata.grid?.length ?? 0);
+
     if (!email || !pdfUrl || !projectName) {
       console.warn("⚠️ Missing required metadata fields.");
       return res.status(400).json({ error: "Missing required metadata fields." });
     }
+
+    const gridData = metadata.grid ?? undefined;
+    console.log("🎯 gridData being passed to recordPurchase:", gridData ? `${gridData.length} chars` : "undefined");
 
     const result = await recordPurchase({
       email,
       projectName,
       pdfUrl,
       stripeData: session,
-      gridData: metadata.grid ?? undefined,
+      gridData,
     });
 
     return res.status(200).json({
