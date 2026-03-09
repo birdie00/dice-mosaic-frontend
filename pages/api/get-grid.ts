@@ -10,14 +10,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Missing code' });
   }
 
+  const normalizedCode = code.trim().toUpperCase();
+  console.log('🔍 get-grid received code:', JSON.stringify(code));
+  console.log('🔍 get-grid normalized code:', normalizedCode);
+  console.log('🔍 Querying purchases WHERE code =', normalizedCode);
+
   const { data, error } = await supabase
     .from('purchases')
     .select('project_name, grid_data')
-    .eq('code', code.trim().toUpperCase())
+    .eq('code', normalizedCode)
     .single();
 
-  if (error || !data || !data.grid_data) {
-    return res.status(404).json({ error: 'Not found' });
+  console.log('🗄️ Supabase response — error:', JSON.stringify(error));
+  console.log('🗄️ Supabase response — data:', JSON.stringify(data));
+  console.log('🗄️ grid_data present:', !!data?.grid_data, 'length:', data?.grid_data?.length ?? 0);
+
+  if (error || !data) {
+    return res.status(404).json({ error: 'Not found', supabaseError: error?.message });
+  }
+
+  if (!data.grid_data) {
+    return res.status(404).json({ error: 'No grid data for this code' });
   }
 
   let grid: number[][];
