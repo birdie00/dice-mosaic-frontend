@@ -19,15 +19,15 @@ interface ProjectData {
   grid: number[][];
 }
 
-const BG      = '#0a0a0a';
-const PANEL   = '#111111';
-const CARD    = '#1a1a1a';
-const ACCENT  = '#E8412A';
-const ACCENT2 = '#F5A623';
-const ACCENT3 = '#3B8DC4';
-const TEXT    = '#F0F0F0';
-const MUTED   = '#888888';
-const LABEL   = '#555555';
+const BG      = '#F5EFE6';   // warm cream
+const PANEL   = '#FFFFFF';   // white cards
+const TOPBAR  = '#0a0a0a';   // black header
+const ACCENT  = '#E8412A';   // orange-red
+const ACCENT2 = '#F5A623';   // warm yellow
+const ACCENT3 = '#2A7F7F';   // teal
+const TEXT    = '#1a1a1a';   // near black
+const MUTED   = '#666666';   // muted text
+const BORDER  = '#E0D8CE';   // subtle warm grey
 
 export default function BuildPage() {
   const router = useRouter();
@@ -126,8 +126,8 @@ export default function BuildPage() {
     return (
       <>
         <Head><title>Build Mode — Pipcasso</title></Head>
-        <div style={{ minHeight: '100vh', backgroundColor: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'monospace' }}>
-          <div style={{ backgroundColor: PANEL, borderRadius: 16, padding: '3rem', maxWidth: 420, width: '100%', margin: '1rem', boxShadow: `0 0 40px rgba(232,65,42,0.15)` }}>
+        <div style={{ minHeight: '100vh', backgroundColor: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
+          <div style={{ backgroundColor: PANEL, borderRadius: 16, padding: '3rem', maxWidth: 420, width: '100%', margin: '1rem', boxShadow: '0 4px 24px rgba(0,0,0,0.10)', border: `1px solid ${BORDER}` }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <div style={{ fontSize: 48, marginBottom: 8 }}>🎲</div>
               <h1 style={{ color: ACCENT, fontSize: '1.8rem', margin: 0, fontWeight: 'bold' }}>Build Mode</h1>
@@ -139,7 +139,7 @@ export default function BuildPage() {
               value={code}
               onChange={e => setCode(e.target.value.toUpperCase())}
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
-              style={{ width: '100%', padding: '0.8rem', borderRadius: 8, border: `1px solid #222`, backgroundColor: CARD, color: TEXT, fontSize: '1.1rem', textAlign: 'center', letterSpacing: 4, marginBottom: '1rem', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '0.8rem', borderRadius: 8, border: `1px solid ${BORDER}`, backgroundColor: BG, color: TEXT, fontSize: '1.1rem', textAlign: 'center', letterSpacing: 4, marginBottom: '1rem', boxSizing: 'border-box', fontFamily: 'monospace' }}
             />
             {error && <p style={{ color: ACCENT, marginBottom: '1rem', fontSize: '0.85rem', textAlign: 'center' }}>{error}</p>}
             <button
@@ -174,24 +174,24 @@ export default function BuildPage() {
       <Head><title>Build Mode — {project.projectName}</title></Head>
       <style>{`
         @keyframes cellPulse {
-          0%, 100% { box-shadow: 0 0 0 2px ${ACCENT2}, 0 0 10px 2px ${ACCENT2}; }
-          50%       { box-shadow: 0 0 0 4px ${ACCENT2}, 0 0 20px 6px ${ACCENT2}; }
+          0%, 100% { box-shadow: 0 0 0 2px ${ACCENT}, 0 0 8px 2px ${ACCENT}; }
+          50%       { box-shadow: 0 0 0 4px ${ACCENT}, 0 0 16px 4px ${ACCENT}; }
         }
       `}</style>
-      <div style={{ height: '100vh', backgroundColor: BG, fontFamily: 'monospace', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ height: '100vh', backgroundColor: BG, fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-        {/* Top bar */}
-        <div style={{ backgroundColor: PANEL, padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid #222', flexShrink: 0 }}>
-          <span style={{ color: ACCENT, fontWeight: 'bold', fontSize: '0.95rem', whiteSpace: 'nowrap' }}>🎲 Build Mode</span>
-          <span style={{ color: MUTED, fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{project.projectName}</span>
-          <div style={{ flex: 1, height: 8, backgroundColor: '#222', borderRadius: 4, overflow: 'hidden', minWidth: 60 }}>
-            <div style={{ height: '100%', width: `${progress}%`, background: `linear-gradient(to right, ${ACCENT}, ${ACCENT2})`, borderRadius: 4, transition: 'width 0.1s ease' }} />
+        {/* Top bar — black, matching site header */}
+        <div style={{ backgroundColor: TOPBAR, padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
+          <span style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '0.95rem', whiteSpace: 'nowrap', fontFamily: 'monospace' }}>🎲 Build Mode</span>
+          <span style={{ color: '#aaaaaa', fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{project.projectName}</span>
+          <div style={{ flex: 1, height: 6, backgroundColor: '#333', borderRadius: 3, overflow: 'hidden', minWidth: 60 }}>
+            <div style={{ height: '100%', width: `${progress}%`, backgroundColor: ACCENT, borderRadius: 3, transition: 'width 0.1s ease' }} />
           </div>
-          <span style={{ color: TEXT, fontSize: '0.8rem', whiteSpace: 'nowrap' }}>{currentIndex} / {totalCells}</span>
-          <span style={{ color: ACCENT2, fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>{progress.toFixed(1)}%</span>
+          <span style={{ color: '#cccccc', fontSize: '0.8rem', whiteSpace: 'nowrap', fontFamily: 'monospace' }}>{currentIndex} / {totalCells}</span>
+          <span style={{ color: ACCENT2, fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap', fontFamily: 'monospace' }}>{progress.toFixed(1)}%</span>
           <button
             onClick={toggleDiceView}
-            style={{ padding: '0.3rem 0.7rem', backgroundColor: diceView ? ACCENT2 : CARD, color: diceView ? '#000' : TEXT, border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontWeight: 'bold', fontSize: '0.75rem', whiteSpace: 'nowrap', flexShrink: 0 }}
+            style={{ padding: '0.3rem 0.7rem', backgroundColor: diceView ? ACCENT2 : '#333', color: diceView ? '#000' : '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontWeight: 'bold', fontSize: '0.75rem', whiteSpace: 'nowrap', flexShrink: 0 }}
           >
             {diceView ? '🎲 Dice View' : '# Number View'}
           </button>
@@ -200,17 +200,17 @@ export default function BuildPage() {
         {/* Main panels */}
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
 
-          {/* Left panel */}
-          <div style={{ width: 220, backgroundColor: PANEL, padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderRight: '1px solid #222', overflowY: 'auto', flexShrink: 0 }}>
+          {/* Left panel — white card */}
+          <div style={{ width: 220, backgroundColor: PANEL, padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', borderRight: `1px solid ${BORDER}`, overflowY: 'auto', flexShrink: 0 }}>
 
             {/* Current dice */}
             <div>
-              <div style={{ color: LABEL, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Current</div>
+              <div style={{ color: MUTED, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6, fontWeight: 600 }}>Current</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{
                   width: 68, height: 68, borderRadius: 12,
                   backgroundColor: diceView ? '#1a1a1a' : DICE_COLORS[currentVal]?.bg,
-                  border: diceView ? `2px solid ${ACCENT2}` : currentVal === 6 ? '2px solid #888' : `2px solid ${ACCENT2}`,
+                  border: `2px solid ${ACCENT}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 28, fontWeight: 'bold', color: DICE_COLORS[currentVal]?.text,
                   flexShrink: 0, overflow: 'hidden',
@@ -222,35 +222,35 @@ export default function BuildPage() {
                   ) : currentVal}
                 </div>
                 <div>
-                  <div style={{ color: MUTED, fontSize: '0.75rem' }}>Row {currentRow + 1}, Col {currentCol + 1}</div>
-                  <div style={{ color: LABEL, fontSize: '0.7rem', marginTop: 2 }}>#{currentIndex + 1} of {totalCells}</div>
+                  <div style={{ color: TEXT, fontSize: '0.8rem', fontWeight: 600 }}>Row {currentRow + 1}, Col {currentCol + 1}</div>
+                  <div style={{ color: MUTED, fontSize: '0.7rem', marginTop: 2 }}>#{currentIndex + 1} of {totalCells}</div>
                 </div>
               </div>
             </div>
 
             {/* Next up */}
             <div>
-              <div style={{ color: LABEL, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Next Up</div>
+              <div style={{ color: MUTED, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6, fontWeight: 600 }}>Next Up</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {nextUp.map(({ val, r, col }, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ width: 22, height: 22, borderRadius: 4, backgroundColor: diceView ? '#1a1a1a' : DICE_COLORS[val]?.bg, border: (!diceView && val === 6) ? '1px solid #555' : 'none', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: DICE_COLORS[val]?.text, fontWeight: 'bold', overflow: 'hidden' }}>
+                    <div style={{ width: 22, height: 22, borderRadius: 4, backgroundColor: diceView ? '#1a1a1a' : DICE_COLORS[val]?.bg, border: (!diceView && val === 6) ? `1px solid ${BORDER}` : 'none', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: DICE_COLORS[val]?.text, fontWeight: 'bold', overflow: 'hidden' }}>
                       {diceView ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={`/dice/dice_${val}.png`} alt={String(val)}
                           style={{ width: '95%', height: '95%', objectFit: 'contain', pointerEvents: 'none' }} />
                       ) : val}
                     </div>
-                    <span style={{ color: MUTED, fontSize: '0.72rem' }}>R{r + 1} C{col + 1}</span>
+                    <span style={{ color: MUTED, fontSize: '0.72rem', fontFamily: 'monospace' }}>R{r + 1} C{col + 1}</span>
                   </div>
                 ))}
-                {nextUp.length === 0 && <span style={{ color: LABEL, fontSize: '0.8rem' }}>Last cell!</span>}
+                {nextUp.length === 0 && <span style={{ color: MUTED, fontSize: '0.8rem' }}>Last cell!</span>}
               </div>
             </div>
 
             {/* Jump to row */}
             <div style={{ marginTop: 'auto' }}>
-              <div style={{ color: LABEL, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Jump to row</div>
+              <div style={{ color: MUTED, fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6, fontWeight: 600 }}>Jump to row</div>
               <div style={{ display: 'flex', gap: 6 }}>
                 <input
                   type="number"
@@ -266,7 +266,7 @@ export default function BuildPage() {
                     }
                   }}
                   placeholder={`1–${project.rows}`}
-                  style={{ flex: 1, padding: '0.4rem 0.5rem', borderRadius: 6, border: '1px solid #222', backgroundColor: CARD, color: TEXT, fontSize: '0.85rem', fontFamily: 'monospace', minWidth: 0 }}
+                  style={{ flex: 1, padding: '0.4rem 0.5rem', borderRadius: 6, border: `1px solid ${BORDER}`, backgroundColor: BG, color: TEXT, fontSize: '0.85rem', fontFamily: 'monospace', minWidth: 0 }}
                 />
                 <button
                   onClick={() => {
@@ -274,7 +274,7 @@ export default function BuildPage() {
                     setCurrentIndex((row - 1) * project.cols);
                     setJumpRow('');
                   }}
-                  style={{ padding: '0.4rem 0.6rem', backgroundColor: CARD, color: TEXT, border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.85rem', fontFamily: 'monospace' }}
+                  style={{ padding: '0.4rem 0.6rem', backgroundColor: BG, color: TEXT, border: `1px solid ${BORDER}`, borderRadius: 6, cursor: 'pointer', fontSize: '0.85rem', fontFamily: 'monospace' }}
                 >
                   Go
                 </button>
@@ -287,25 +287,25 @@ export default function BuildPage() {
                 <button
                   onClick={goBack}
                   disabled={currentIndex === 0}
-                  style={{ flex: 1, padding: '0.55rem', backgroundColor: ACCENT3, color: '#fff', border: 'none', borderRadius: 8, cursor: currentIndex === 0 ? 'not-allowed' : 'pointer', opacity: currentIndex === 0 ? 0.4 : 1, fontFamily: 'monospace', fontWeight: 'bold', fontSize: '0.9rem' }}
+                  style={{ flex: 1, padding: '0.55rem', backgroundColor: ACCENT3, color: '#fff', border: 'none', borderRadius: 8, cursor: currentIndex === 0 ? 'not-allowed' : 'pointer', opacity: currentIndex === 0 ? 0.4 : 1, fontWeight: 'bold', fontSize: '0.9rem' }}
                 >
                   ← Back
                 </button>
                 <button
                   onClick={advance}
                   disabled={currentIndex >= totalCells - 1}
-                  style={{ flex: 1, padding: '0.55rem', backgroundColor: ACCENT, color: '#fff', border: 'none', borderRadius: 8, cursor: currentIndex >= totalCells - 1 ? 'not-allowed' : 'pointer', opacity: currentIndex >= totalCells - 1 ? 0.5 : 1, fontFamily: 'monospace', fontWeight: 'bold', fontSize: '0.9rem' }}
+                  style={{ flex: 1, padding: '0.55rem', backgroundColor: ACCENT, color: '#fff', border: 'none', borderRadius: 8, cursor: currentIndex >= totalCells - 1 ? 'not-allowed' : 'pointer', opacity: currentIndex >= totalCells - 1 ? 0.5 : 1, fontWeight: 'bold', fontSize: '0.9rem' }}
                 >
                   Next →
                 </button>
               </div>
-              <div style={{ color: LABEL, fontSize: '0.65rem', textAlign: 'center' }}>Space / ← → arrow keys</div>
+              <div style={{ color: MUTED, fontSize: '0.65rem', textAlign: 'center', fontFamily: 'monospace' }}>Space / ← → arrow keys</div>
             </div>
           </div>
 
-          {/* Right panel — full colour grid */}
-          <div style={{ flex: 1, padding: '1.2rem', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ color: LABEL, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, flexShrink: 0 }}>
+          {/* Right panel — cream background, full colour grid */}
+          <div style={{ flex: 1, padding: '1.2rem', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 10, backgroundColor: BG }}>
+            <div style={{ color: MUTED, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, flexShrink: 0, fontWeight: 600 }}>
               Full Grid — {project.cols}W × {project.rows}H
             </div>
             {/* Grid wrapper: fills remaining height, scrollable if grid exceeds it */}
@@ -318,8 +318,8 @@ export default function BuildPage() {
                       key={r}
                       style={{
                         display: 'flex',
-                        backgroundColor: isCurrentRow ? 'rgba(245,166,35,0.10)' : 'transparent',
-                        borderTop: isCurrentRow && currentRow > 0 ? `2px solid ${ACCENT2}` : 'none',
+                        backgroundColor: isCurrentRow ? 'rgba(232,65,42,0.07)' : 'transparent',
+                        borderTop: isCurrentRow && currentRow > 0 ? `2px solid ${ACCENT}` : 'none',
                       }}
                     >
                       {row.map((val, col) => {
@@ -338,12 +338,12 @@ export default function BuildPage() {
                               backgroundColor: diceView ? '#1a1a1a' : color.bg,
                               opacity:         isDoneCell ? 0.45 : 1,
                               border:          isCurrentCell
-                                ? `3px solid ${ACCENT2}`
-                                : (!diceView && val === 6) ? '1px solid #999999' : 'none',
+                                ? `3px solid ${ACCENT}`
+                                : (!diceView && val === 6) ? `1px solid ${BORDER}` : 'none',
                               boxSizing:       'border-box',
                               position:        'relative',
                               zIndex:          isCurrentCell ? 2 : 1,
-                              boxShadow:       isCurrentCell ? `0 0 0 2px ${ACCENT2}, 0 0 10px 2px ${ACCENT2}` : 'none',
+                              boxShadow:       isCurrentCell ? `0 0 0 2px ${ACCENT}, 0 0 10px 2px ${ACCENT}` : 'none',
                               animation:       isCurrentCell ? 'cellPulse 1.2s ease-in-out infinite' : 'none',
                               display:         'flex',
                               alignItems:      'center',
