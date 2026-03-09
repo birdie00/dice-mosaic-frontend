@@ -48,6 +48,7 @@ const session = await stripe.checkout.sessions.retrieve(session_id as string, {
       metadata: session.metadata,
       pdfUrl,
       code: result.code,
+      customer_details: session.customer_details,
       ...(result.warning && { warning: result.warning }),
     });
   } catch (err: any) {

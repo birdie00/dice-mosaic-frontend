@@ -8,27 +8,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { session } = req.body;
-
-    if (!session) {
-      return res.status(400).json({ error: "Missing Stripe session in request body" });
-    }
-
-    const name = session.shipping_details?.name || session.customer_details?.name;
-    const email = session.customer_details?.email;
-    const address = session.shipping_details?.address;
-    const imageUrl = session.metadata?.highResImageUrl;
-    const productUid = getProductUidFromMetadata(session.metadata);
+    const { name, email, address, imageUrl, productUid } = req.body;
 
     console.log("📥 Submitting Gelato v4 order with:", { name, email, address, imageUrl, productUid });
 
     if (!name || !email || !address || !address.line1 || !imageUrl || !productUid) {
-      return res.status(400).json({ error: "Missing required order info" });
+      return res.status(400).json({ error: "Missing required order info", received: { name, email, address, imageUrl, productUid } });
     }
 
     const orderPayload = {
       orderType: "order",
-      orderReferenceId: session.id,
+      orderReferenceId: `pipcasso-${Date.now()}`,
       customerReferenceId: email,
       currency: "USD",
       items: [

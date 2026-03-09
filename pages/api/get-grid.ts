@@ -35,7 +35,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   let grid: number[][];
   try {
-    grid = JSON.parse(data.grid_data);
+    // grid_data may be a pre-parsed array (jsonb column) or a JSON string (text column)
+    grid = typeof data.grid_data === 'string'
+      ? JSON.parse(data.grid_data)
+      : data.grid_data;
   } catch {
     return res.status(500).json({ error: 'Invalid grid data' });
   }
