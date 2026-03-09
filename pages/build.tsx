@@ -164,6 +164,12 @@ export default function BuildPage() {
   return (
     <>
       <Head><title>Build Mode — {project.projectName}</title></Head>
+      <style>{`
+        @keyframes cellPulse {
+          0%, 100% { box-shadow: 0 0 0 2px ${ACCENT2}, 0 0 10px 2px ${ACCENT2}; }
+          50%       { box-shadow: 0 0 0 4px ${ACCENT2}, 0 0 20px 6px ${ACCENT2}; }
+        }
+      `}</style>
       <div style={{ height: '100vh', backgroundColor: BG, fontFamily: 'monospace', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
         {/* Top bar */}
@@ -208,7 +214,7 @@ export default function BuildPage() {
             {/* Row strip */}
             <div>
               <div style={{ color: '#4a5580', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 6 }}>Row {currentRow + 1} of {project.rows}</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              <div style={{ display: 'flex', flexWrap: 'nowrap', gap: 2, overflowX: 'auto' }}>
                 {rowStrip.map(({ val, col, isCurrent, isDone }) => (
                   <div
                     key={col}
@@ -317,8 +323,9 @@ export default function BuildPage() {
                       key={r}
                       style={{
                         display: 'flex',
-                        // Subtle amber tint behind the entire current row
                         backgroundColor: isCurrentRow ? 'rgba(245,166,35,0.10)' : 'transparent',
+                        // Bright orange line marks the boundary between done rows and current row
+                        borderTop: isCurrentRow && currentRow > 0 ? `2px solid ${ACCENT2}` : 'none',
                       }}
                     >
                       {row.map((val, col) => {
@@ -339,14 +346,12 @@ export default function BuildPage() {
                               opacity:         isDoneCell ? 0.45 : 1,
                               border:          isCurrentCell
                                 ? `3px solid ${ACCENT2}`
-                                : val === 6 ? '1px solid #666' : 'none',
+                                : val === 6 ? '1px solid #999999' : 'none',
                               boxSizing:       'border-box',
                               position:        'relative',
                               zIndex:          isCurrentCell ? 2 : 1,
-                              // Thick glow on current cell so it's visible anywhere on the grid
-                              boxShadow:       isCurrentCell
-                                ? `0 0 0 2px ${ACCENT2}, 0 0 10px 2px ${ACCENT2}`
-                                : 'none',
+                              boxShadow:       isCurrentCell ? `0 0 0 2px ${ACCENT2}, 0 0 10px 2px ${ACCENT2}` : 'none',
+                              animation:       isCurrentCell ? 'cellPulse 1.2s ease-in-out infinite' : 'none',
                               display:         'flex',
                               alignItems:      'center',
                               justifyContent:  'center',
