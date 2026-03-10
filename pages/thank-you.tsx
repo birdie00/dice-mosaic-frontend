@@ -149,11 +149,11 @@ const generate = async () => {
                   }
                 }}
               >
-                🖼 Download Your Basic Image
+                🖼 Download Your Image
               </button>
             )}
-  
-            {productType === "highres" && highResUrl && (
+
+            {(productType === "highres" || productType === "print") && highResUrl && (
               <button
                 style={downloadButtonStyle}
                 onClick={async () => {
@@ -172,22 +172,22 @@ const generate = async () => {
                   }
                 }}
               >
-                🖼 Download Your High-Res Image
+                🖼 Download Your High-Res Mosaic Image
               </button>
             )}
             {productType === "highres" && generatingHighRes && (
-  <p style={{ fontSize: "1.1rem", color: "#444" }}>
-    🛠 Generating your high-res image... please wait
-  </p>
-)}
+              <p style={{ fontSize: "1.1rem", color: "#444" }}>
+                🛠 Generating your high-res image... please wait
+              </p>
+            )}
 
-{productType === "highres" && highResDownloadUrl && (
-  <a href={highResDownloadUrl} download>
-    <button style={downloadButtonStyle}>
-      🖼 Download Your High-Res Image
-    </button>
-  </a>
-)}
+            {productType === "highres" && highResDownloadUrl && (
+              <a href={highResDownloadUrl} download>
+                <button style={downloadButtonStyle}>
+                  🖼 Download Your High-Res Mosaic Image
+                </button>
+              </a>
+            )}
 
   
             {productType === "bundle" && (
@@ -224,7 +224,7 @@ const generate = async () => {
               </>
             )}
   
-            {!pdfUrl && !lowResUrl && !highResUrl && (
+            {!pdfUrl && !lowResUrl && !highResUrl && !generatingHighRes && (
               <p style={{ fontSize: "1.1rem", color: "#b91c1c" }}>
                 We couldn't find your download. Please contact support.
               </p>

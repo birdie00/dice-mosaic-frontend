@@ -58,7 +58,7 @@ export default function RedeemPage() {
         }}
       >
         <h1 style={{ fontSize: '2rem', color: '#E84C3D', marginBottom: '1rem' }}>
-          🎲 Redeem Your Dice Map
+          Redeem Your Purchase
         </h1>
         <p style={{ fontSize: '1rem', color: '#333', marginBottom: '2rem' }}>
           Enter the email and access code from your confirmation email.
@@ -107,7 +107,7 @@ export default function RedeemPage() {
             transition: 'background-color 0.2s',
           }}
         >
-          {loading ? 'Checking...' : 'Get My Dice Map'}
+          {loading ? 'Checking...' : 'Get My Files'}
         </button>
 
         {error && (
