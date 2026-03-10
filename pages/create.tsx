@@ -189,16 +189,28 @@ const handleCustomRatioChange = () => {
     formData.append("grid_width", gridSize[0].toString());
     formData.append("grid_height", gridSize[1].toString());
 
-    
     setLoading(true);
-    const res = await fetch(`${BACKEND_URL}/analyze`, {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch(`${BACKEND_URL}/analyze`, {
+        method: "POST",
+        body: formData,
+        signal: AbortSignal.timeout(90000), // 90s — Render cold start can take 50s
+      });
 
-    const data = await res.json();
-    setMosaicOptions(data.styles);
-    setLoading(false);
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      const data = await res.json();
+      setMosaicOptions(data.styles);
+    } catch (err: any) {
+      console.error("Error generating mosaics:", err);
+      const isTimeout = err?.name === "TimeoutError" || err?.name === "AbortError";
+      alert(
+        isTimeout
+          ? "The server is warming up — this can take up to 60 seconds on first load. Please try again."
+          : "There was an error generating your mosaic. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const generatePDF = async () => {
@@ -221,16 +233,15 @@ const handleCustomRatioChange = () => {
   
       const res = await fetch(`${BACKEND_URL}/generate-pdf`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           grid_data: gridToSend,
           style_id: selectedStyleId,
           project_name: projectName,
         }),
+        signal: AbortSignal.timeout(90000), // 90s — Render cold start can take 50s
       });
-  
+
       if (!res.ok) {
         throw new Error(`Server responded with status ${res.status}`);
       }
@@ -243,20 +254,22 @@ const handleCustomRatioChange = () => {
       const resolvedPdfUrl = `${BACKEND_URL}${data.dice_map_url}`;
       setPdfUrl(resolvedPdfUrl);
 
-      // Save grid to grid_drafts immediately so it's available for Build Mode
-      // even if the user navigates away before completing checkout.
-      try {
-        await fetch('/api/save-grid-draft', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pdfUrl: resolvedPdfUrl, gridData: JSON.stringify(gridToSend) }),
-        });
-      } catch (draftErr) {
+      // Save grid to grid_drafts immediately — fire and forget, non-blocking.
+      fetch('/api/save-grid-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pdfUrl: resolvedPdfUrl, gridData: JSON.stringify(gridToSend) }),
+      }).catch((draftErr) => {
         console.warn('⚠️ Could not save grid draft after PDF generation:', draftErr);
-      }
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      alert("There was an error generating your PDF. Please try again.");
+      });
+    } catch (err: any) {
+      console.error("Error generating PDF:", err);
+      const isTimeout = err?.name === "TimeoutError" || err?.name === "AbortError";
+      alert(
+        isTimeout
+          ? "The server is warming up — this can take up to 60 seconds on first load. Please try again."
+          : "There was an error generating your PDF. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -265,7 +278,7 @@ const handleCustomRatioChange = () => {
   const generateImage = async (resolution: "low" | "high") => {
     const selected = mosaicOptions.find((o) => o.style_id === selectedStyleId);
     if (!selected) return null;
-  
+
     const res = await fetch(`${BACKEND_URL}/generate-image`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -276,8 +289,10 @@ const handleCustomRatioChange = () => {
         resolution,
         mode: "dice",
       }),
+      signal: AbortSignal.timeout(90000), // 90s — Render cold start can take 50s
     });
-  
+
+    if (!res.ok) throw new Error(`generate-image error ${res.status}`);
     const data = await res.json();
     return `${BACKEND_URL}${data.image_url}`;
   };
