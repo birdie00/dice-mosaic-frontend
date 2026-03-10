@@ -1,23 +1,23 @@
 import { useState } from 'react';
 
 export default function RedeemPage() {
-  const [email, setEmail] = useState(‘’);
-  const [code, setCode] = useState(‘’);
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [imageLabel, setImageLabel] = useState<string>(‘Download Your Image’);
-  const [error, setError] = useState(‘’);
+  const [imageLabel, setImageLabel] = useState<string>('Download Your Image');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     setLoading(true);
-    setError(‘’);
+    setError('');
     setPdfUrl(null);
     setImageUrl(null);
 
-    const res = await fetch(‘/api/redeem-code’, {
-      method: ‘POST’,
-      headers: { ‘Content-Type’: ‘application/json’ },
+    const res = await fetch('/api/redeem-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, code }),
     });
 
@@ -27,9 +27,9 @@ export default function RedeemPage() {
       setPdfUrl(data.pdfUrl);
     } else if (res.ok && data.imageUrl) {
       setImageUrl(data.imageUrl);
-      setImageLabel(data.label || ‘Download Your Image’);
+      setImageLabel(data.label || 'Download Your Image');
     } else {
-      setError(data.error || "Access code not found or doesn’t match your email.");
+      setError(data.error || "Access code not found or doesn't match your email.");
     }
 
     setLoading(false);
