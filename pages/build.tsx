@@ -201,11 +201,17 @@ export default function BuildPage() {
     for (let r = 0; r < project.rows; r++) {
       for (let c = 0; c < project.cols; c++) {
         const val = project.grid[r]?.[c] ?? 0;
-        ctx.fillStyle = DICE_COLORS[val]?.bg ?? '#111111';
+        const hex = DICE_COLORS[val]?.bg ?? '#111111';
+        // Convert hex color to greyscale using luminance weights
+        const rv = parseInt(hex.slice(1, 3), 16);
+        const gv = parseInt(hex.slice(3, 5), 16);
+        const bv = parseInt(hex.slice(5, 7), 16);
+        const luma = Math.round(0.299 * rv + 0.587 * gv + 0.114 * bv);
+        ctx.fillStyle = `rgb(${luma},${luma},${luma})`;
         ctx.fillRect(c * cellW, r * cellH, cellW, cellH);
       }
     }
-    // Viewport rectangle
+    // Viewport rectangle — bright orange so it stands out
     ctx.strokeStyle = ACCENT;
     ctx.lineWidth = 1.5;
     ctx.strokeRect(startCol * cellW, startRow * cellH, windowCols * cellW, windowRows * cellH);
