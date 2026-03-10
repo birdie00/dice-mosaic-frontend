@@ -96,7 +96,7 @@ name: `DIY Dice Kit (${kitSize})`,
       return res.status(400).json({ error: "Invalid print size." });
     }
 
-    if (pdfUrl && grid) {
+    if (pdfUrl && Array.isArray(grid) && grid.length > 0) {
       const { error: draftError } = await supabase
         .from('grid_drafts')
         .upsert({ pdf_url: pdfUrl, grid_data: JSON.stringify(grid) });
@@ -153,7 +153,7 @@ name: `DIY Dice Kit (${kitSize})`,
   }
 
   try {
-    if (pdfUrl && grid) {
+    if (pdfUrl && Array.isArray(grid) && grid.length > 0) {
       const { error: draftError } = await supabase
         .from('grid_drafts')
         .upsert({ pdf_url: pdfUrl, grid_data: JSON.stringify(grid) });

@@ -81,6 +81,7 @@ export default function CreatePage() {
 
 
   const [email, setEmail] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const isValidEmail = (email: string): boolean => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
@@ -97,6 +98,13 @@ export default function CreatePage() {
     };
     preloadDiceImages();
   }, []);
+
+  // Detect admin mode from ?admin=pipcasso query param
+  useEffect(() => {
+    if (router.isReady) {
+      setIsAdmin(router.query.admin === 'pipcasso');
+    }
+  }, [router.isReady, router.query.admin]);
 
   useEffect(() => {
     const { success } = router.query;
@@ -231,8 +239,21 @@ const handleCustomRatioChange = () => {
       if (!data.dice_map_url) {
         throw new Error("Missing dice_map_url in response.");
       }
-  
-      setPdfUrl(`${BACKEND_URL}${data.dice_map_url}`);
+
+      const resolvedPdfUrl = `${BACKEND_URL}${data.dice_map_url}`;
+      setPdfUrl(resolvedPdfUrl);
+
+      // Save grid to grid_drafts immediately so it's available for Build Mode
+      // even if the user navigates away before completing checkout.
+      try {
+        await fetch('/api/save-grid-draft', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pdfUrl: resolvedPdfUrl, gridData: JSON.stringify(gridToSend) }),
+        });
+      } catch (draftErr) {
+        console.warn('⚠️ Could not save grid draft after PDF generation:', draftErr);
+      }
     } catch (error) {
       console.error("Error generating PDF:", error);
       alert("There was an error generating your PDF. Please try again.");
@@ -762,6 +783,7 @@ const handleCustomRatioChange = () => {
         );
       })}
     </div>
+{isAdmin && (
 <div
   style={{
     marginTop: "1.5rem",
@@ -810,6 +832,7 @@ const handleCustomRatioChange = () => {
     </button>
   </div>
 </div>
+)}
 
     <div
   style={{
