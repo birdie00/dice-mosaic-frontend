@@ -193,7 +193,9 @@ export default function BuildPage() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    const W = 80, H = 80;
+    const maxSize = 80;
+    const W = project.cols >= project.rows ? maxSize : Math.round(maxSize * project.cols / project.rows);
+    const H = project.rows >= project.cols ? maxSize : Math.round(maxSize * project.rows / project.cols);
     canvas.width = W;
     canvas.height = H;
     const cellW = W / project.cols;
@@ -375,7 +377,7 @@ export default function BuildPage() {
             </div>
             {/* Mini-map — top-right */}
             <canvas ref={miniMapRef}
-              style={{ position: 'absolute', top: 36, right: 12, width: 80, height: 80, border: `1px solid ${BORDER}`, borderRadius: 4, zIndex: 5 }}
+              style={{ position: 'absolute', top: 36, right: 12, maxWidth: 80, maxHeight: 80, border: `1px solid ${BORDER}`, borderRadius: 4, zIndex: 5 }}
             />
             {/* Zoomed grid */}
             <div ref={gridWrapperRef} style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', overflow: 'hidden' }}>
