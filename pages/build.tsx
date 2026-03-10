@@ -68,6 +68,8 @@ function DiceCell({ val, size, diceView, border, boxShadow, animation, opacity, 
   );
 }
 
+const WINDOW_SIZE = 20;
+
 export default function BuildPage() {
   const router = useRouter();
   const [screen, setScreen]             = useState<'login' | 'build'>('login');
@@ -81,6 +83,7 @@ export default function BuildPage() {
   const [diceView, setDiceView]         = useState(false);
   const [isMobile, setIsMobile]         = useState(false);
   const gridWrapperRef = useRef<HTMLDivElement>(null);
+  const miniMapRef     = useRef<HTMLCanvasElement>(null);
 
   // Detect mobile
   useEffect(() => {
@@ -154,16 +157,17 @@ export default function BuildPage() {
     return () => window.removeEventListener('keydown', handler);
   }, [screen, advance, goBack]);
 
-  // Resize observer: on mobile fit width only; on desktop fit both dimensions
+  // Resize observer: on mobile fit window cols; on desktop fit both dimensions
   useEffect(() => {
     if (!project) return;
     const el = gridWrapperRef.current;
     if (!el) return;
     const compute = () => {
-      const byW = Math.floor(el.clientWidth / project.cols);
       if (isMobile) {
-        setCellSize(Math.max(3, byW));
+        const wc = Math.min(WINDOW_SIZE, project.cols);
+        setCellSize(Math.max(3, Math.floor(el.clientWidth / wc)));
       } else {
+        const byW = Math.floor(el.clientWidth / project.cols);
         const byH = Math.floor(el.clientHeight / project.rows);
         setCellSize(Math.max(10, Math.min(byW, byH)));
       }
@@ -173,6 +177,39 @@ export default function BuildPage() {
     ro.observe(el);
     return () => ro.disconnect();
   }, [project, isMobile]);
+
+  // ── Window bounds (mobile zoomed view) ─────────────────────────────────
+  const windowCols = project ? Math.min(WINDOW_SIZE, project.cols) : WINDOW_SIZE;
+  const windowRows = project ? Math.min(WINDOW_SIZE, project.rows) : WINDOW_SIZE;
+  const startCol = project ? Math.max(0, Math.min(currentCol - Math.floor(windowCols / 2), project.cols - windowCols)) : 0;
+  const startRow = project ? Math.max(0, Math.min(currentRow - Math.floor(windowRows / 2), project.rows - windowRows)) : 0;
+  const endCol = startCol + windowCols - 1;
+  const endRow = startRow + windowRows - 1;
+
+  // Draw mini-map whenever window position or project changes
+  useEffect(() => {
+    if (!project || !isMobile) return;
+    const canvas = miniMapRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const W = 80, H = 80;
+    canvas.width = W;
+    canvas.height = H;
+    const cellW = W / project.cols;
+    const cellH = H / project.rows;
+    for (let r = 0; r < project.rows; r++) {
+      for (let c = 0; c < project.cols; c++) {
+        const val = project.grid[r]?.[c] ?? 0;
+        ctx.fillStyle = DICE_COLORS[val]?.bg ?? '#111111';
+        ctx.fillRect(c * cellW, r * cellH, cellW, cellH);
+      }
+    }
+    // Viewport rectangle
+    ctx.strokeStyle = ACCENT;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(startCol * cellW, startRow * cellH, windowCols * cellW, windowRows * cellH);
+  }, [project, isMobile, startRow, startCol, windowCols, windowRows]);
 
   // ── Login screen ───────────────────────────────────────────────────────
   if (screen === 'login') {
@@ -322,9 +359,53 @@ export default function BuildPage() {
             </div>
           </div>
 
-          {/* Full grid — fills remaining space, scrollable */}
-          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', paddingBottom: BOTTOM_BAR_H + TOGGLE_H, width: '100%' }}>
-            {gridEl}
+          {/* Zoomed window — fills remaining space */}
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', paddingBottom: BOTTOM_BAR_H + TOGGLE_H, width: '100%', position: 'relative' }}>
+            {/* Range label + mini-map row */}
+            <div style={{ display: 'flex', alignItems: 'center', padding: '0.3rem 1rem', flexShrink: 0, gap: 8 }}>
+              <span style={{ color: MUTED, fontSize: '0.6rem', fontFamily: 'monospace', fontWeight: 600, flex: 1 }}>
+                Rows {startRow + 1}–{endRow + 1}, Cols {startCol + 1}–{endCol + 1}
+              </span>
+            </div>
+            {/* Mini-map — top-right */}
+            <canvas ref={miniMapRef}
+              style={{ position: 'absolute', top: 36, right: 12, width: 80, height: 80, border: `1px solid ${BORDER}`, borderRadius: 4, zIndex: 5 }}
+            />
+            {/* Zoomed grid */}
+            <div ref={gridWrapperRef} style={{ flex: 1, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', overflow: 'hidden' }}>
+              <div style={{ lineHeight: 0, display: 'block' }}>
+                {Array.from({ length: windowRows }, (_, wi) => {
+                  const r = startRow + wi;
+                  const isCurrentRow = r === currentRow;
+                  return (
+                    <div key={r} style={{
+                      display: 'flex',
+                      backgroundColor: isCurrentRow ? 'rgba(232,65,42,0.07)' : 'transparent',
+                      borderTop: isCurrentRow && wi > 0 ? '1px solid rgba(196,103,58,0.6)' : 'none',
+                    }}>
+                      {Array.from({ length: windowCols }, (_, wc) => {
+                        const col = startCol + wc;
+                        const flatIdx = r * project.cols + col;
+                        const isCurrentCell = r === currentRow && col === currentCol;
+                        const isDoneCell = flatIdx < currentIndex;
+                        const val = project.grid[r]?.[col] ?? 0;
+                        return (
+                          <DiceCell
+                            key={col}
+                            val={val} size={cellSize} diceView={diceView}
+                            opacity={isDoneCell ? 0.45 : 1}
+                            border={isCurrentCell ? `2px solid ${ACCENT}` : (!diceView && val === 6) ? `1px solid ${BORDER}` : undefined}
+                            animation={isCurrentCell ? 'cellPulse 1.2s ease-in-out infinite' : undefined}
+                            onClick={() => setCurrentIndex(flatIdx)}
+                            cursor="pointer"
+                          />
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Toggle button — just above bottom bar */}
