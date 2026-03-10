@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { data, error } = await supabase
     .from('purchases')
-    .select('pdf_url')
+    .select('pdf_url, stripe_data')
     .eq('email', email.trim().toLowerCase())
     .eq('code', code.trim().toUpperCase()) // Force case match
     .single();
@@ -24,6 +24,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (error || !data) {
     console.error("❌ Redeem failed:", error || 'No match found');
     return res.status(404).json({ error: 'Not found' });
+  }
+
+  let productType = 'pdf';
+  try {
+    const stripeData = typeof data.stripe_data === 'string' ? JSON.parse(data.stripe_data) : data.stripe_data;
+    productType = stripeData?.metadata?.productType || 'pdf';
+  } catch {
+    // fallback to pdf
+  }
+
+  if (productType === 'print' || productType === 'highres') {
+    let stripeData: any;
+    try {
+      stripeData = typeof data.stripe_data === 'string' ? JSON.parse(data.stripe_data) : data.stripe_data;
+    } catch { stripeData = {}; }
+    const imageUrl = stripeData?.metadata?.highResImageUrl || null;
+    return res.status(200).json({ imageUrl, label: 'Download Your High-Res Mosaic Image' });
+  }
+
+  if (productType === 'lowres') {
+    let stripeData: any;
+    try {
+      stripeData = typeof data.stripe_data === 'string' ? JSON.parse(data.stripe_data) : data.stripe_data;
+    } catch { stripeData = {}; }
+    const imageUrl = stripeData?.metadata?.lowResImageUrl || null;
+    return res.status(200).json({ imageUrl, label: 'Download Your Image' });
   }
 
   return res.status(200).json({ pdfUrl: data.pdf_url });

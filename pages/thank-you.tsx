@@ -232,7 +232,7 @@ const generate = async () => {
           </>
         )}
   
-        {code && (
+        {code && (productType === "pdf" || productType === "bundle") && (
           <div style={{ marginTop: "2rem", color: "#3B1B47", fontSize: "1rem" }}>
             <p>
               🎟️ <strong>Your Access Code:</strong> <code>{code}</code>

@@ -1,20 +1,23 @@
 import { useState } from 'react';
 
 export default function RedeemPage() {
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
+  const [email, setEmail] = useState(‘’);
+  const [code, setCode] = useState(‘’);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [error, setError] = useState('');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageLabel, setImageLabel] = useState<string>(‘Download Your Image’);
+  const [error, setError] = useState(‘’);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     setLoading(true);
-    setError('');
+    setError(‘’);
     setPdfUrl(null);
+    setImageUrl(null);
 
-    const res = await fetch('/api/redeem-code', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res = await fetch(‘/api/redeem-code’, {
+      method: ‘POST’,
+      headers: { ‘Content-Type’: ‘application/json’ },
       body: JSON.stringify({ email, code }),
     });
 
@@ -22,8 +25,11 @@ export default function RedeemPage() {
 
     if (res.ok && data.pdfUrl) {
       setPdfUrl(data.pdfUrl);
+    } else if (res.ok && data.imageUrl) {
+      setImageUrl(data.imageUrl);
+      setImageLabel(data.label || ‘Download Your Image’);
     } else {
-      setError(data.error || 'Access code not found or doesn’t match your email.');
+      setError(data.error || "Access code not found or doesn’t match your email.");
     }
 
     setLoading(false);
@@ -127,6 +133,40 @@ export default function RedeemPage() {
                 Download Dice Map PDF
               </button>
             </a>
+          </div>
+        )}
+
+        {imageUrl && (
+          <div style={{ marginTop: '2rem' }}>
+            <button
+              style={{
+                backgroundColor: '#E84C3D',
+                color: '#fff',
+                padding: '1rem 2rem',
+                fontSize: '1.1rem',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                cursor: 'pointer',
+              }}
+              onClick={async () => {
+                try {
+                  const r = await fetch(imageUrl);
+                  const blob = await r.blob();
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'pipcasso-image.png';
+                  a.click();
+                  URL.revokeObjectURL(url);
+                } catch {
+                  alert('Failed to download image. Please try again.');
+                }
+              }}
+            >
+              {imageLabel}
+            </button>
           </div>
         )}
       </div>
