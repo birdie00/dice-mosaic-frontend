@@ -31,7 +31,8 @@ function getDiceStats(grid: number[][]) {
 
 interface MosaicOption {
   style_id: number;
-  grid: number[][];
+  grid: number[][];       // pixelated preview — display only
+  full_grid?: number[][]; // full-resolution — used for PDF / image generation
 }
 
 
@@ -226,7 +227,8 @@ const handleCustomRatioChange = () => {
     }
   
     const selected = mosaicOptions[selectedIndex];
-    const gridToSend = selected.grid.map((row) => [...row]); // deep clone
+    // Use full_grid (full resolution) for PDF — fall back to grid if backend is old
+    const gridToSend = (selected.full_grid ?? selected.grid).map((row) => [...row]);
 
     try {
       setLoading(true);
@@ -283,7 +285,7 @@ const handleCustomRatioChange = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        grid_data: selected.grid,
+        grid_data: selected.full_grid ?? selected.grid, // use full resolution
         style_id: selectedStyleId,
         project_name: projectName,
         resolution,
@@ -1428,7 +1430,7 @@ Choose the aspect ratio that best fits your image. Tip: Cropping a smaller secti
                       undefined,
                       1,
                       selectedStyleId || undefined,
-                      selected?.grid || []
+                      selected?.full_grid ?? selected?.grid ?? []
                     );
                   }}
                 >
