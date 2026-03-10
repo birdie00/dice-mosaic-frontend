@@ -88,24 +88,3 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-function getProductUidFromMetadata(metadata: any): string | null {
-  const aspect = metadata?.printAspectRatio || "portrait";
-  const size = metadata?.size || "small";
-
-  const gelatoProductMap: Record<string, Record<string, string>> = {
-    portrait: {
-      small: "framed_poster_mounted_210x297mm-8x12-inch_black_wood_w12xt22-mm_plexiglass_a4-8x12-inch_200-gsm-80lb-coated-silk_4-0_ver",
-      large: "framed_poster_mounted_400x600-mm-16x24-inch_black_wood_w12xt22-mm_plexiglass_400x600-mm-16x24-inch_200-gsm-80lb-coated-silk_4-0_ver",
-    },
-    square: {
-      small: "framed_poster_mounted_300x300-mm-12x12-inch_black_wood_w12xt22-mm_plexiglass_300x300-mm-12x12-inch_200-gsm-80lb-coated-silk_4-0_ver",
-      large: "framed_poster_mounted_500x500-mm-20x20-inch_black_wood_w12xt22-mm_plexiglass_500x500-mm-20x20-inch_200-gsm-80lb-coated-silk_4-0_ver",
-    },
-    landscape: {
-      small: "framed_poster_mounted_210x297mm-8x12-inch_black_wood_w12xt22-mm_plexiglass_a4-8x12-inch_200-gsm-80lb-coated-silk_4-0_hor",
-      large: "framed_poster_mounted_400x600-mm-16x24-inch_black_wood_w12xt22-mm_plexiglass_400x600-mm-16x24-inch_200-gsm-80lb-coated-silk_4-0_hor",
-    },
-  };
-
-  return gelatoProductMap[aspect]?.[size] || null;
-}
