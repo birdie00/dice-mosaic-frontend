@@ -161,36 +161,91 @@ export default function HomepageV2() {
       </Head>
 
       {/* ── 2. TRANSFORMATION SLIDER ────────────────────────────────────── */}
-      <section style={{ backgroundColor: CREAM, padding: "4rem 1.5rem", textAlign: "center" }}>
-        <p style={{ color: RED, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
-          Before &amp; After
-        </p>
-        <h2
-          style={{
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
-            color: DARK,
-            marginBottom: "2rem",
-            letterSpacing: "1px",
-          }}
-        >
-          See the Magic
-        </h2>
+      <section style={{ backgroundColor: CREAM, padding: "2rem 1.5rem", textAlign: "center" }}>
         <div style={{ maxWidth: 620, margin: "0 auto", borderRadius: 12, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
           <ReactCompareImage
             leftImage="/dog_real.png"
             rightImage="/dog_dice.png"
             sliderLineColor={RED}
-            leftImageLabel="Original Photo"
-            rightImageLabel="Dice Mosaic"
           />
         </div>
-        <p style={{ marginTop: "1.25rem", color: MUTED, fontSize: "0.9rem" }}>
+        <p style={{ marginTop: "1rem", color: MUTED, fontSize: "0.9rem" }}>
           Drag the slider to reveal the transformation
         </p>
       </section>
 
-      {/* ── 3. WHAT YOU GET ─────────────────────────────────────────────── */}
+      {/* ── 3. BUILD MODE SHOWCASE ──────────────────────────────────────── */}
+      <section style={{ backgroundColor: DARK, color: WHITE, padding: "5rem 1.5rem" }}>
+        <div
+          style={{
+            maxWidth: 1000,
+            margin: "0 auto",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "3rem",
+            alignItems: "center",
+          }}
+        >
+          {/* Text side */}
+          <div>
+            <p style={{ color: GOLD, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+              Exclusive Feature
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+                marginBottom: "1.25rem",
+                letterSpacing: "1px",
+                lineHeight: 1.1,
+              }}
+            >
+              Build With Confidence
+            </h2>
+            <p style={{ color: "#ccc", lineHeight: 1.7, marginBottom: "1.75rem", fontSize: "0.97rem" }}>
+              Every Dice Map purchase includes access to our exclusive{" "}
+              <strong style={{ color: WHITE }}>Build Mode</strong> — a step-by-step digital guide
+              that walks you through placing every single die, one at a time.
+            </p>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+              {[
+                "Cell-by-cell guidance",
+                "Dice view & number view",
+                "Jump to any row instantly",
+                "Works perfectly on mobile",
+                "Save your progress anytime",
+              ].map((pt) => (
+                <li key={pt} style={{ display: "flex", alignItems: "center", gap: "0.6rem", color: "#ddd", fontSize: "0.95rem" }}>
+                  <span style={{ color: GOLD, fontWeight: 700, fontSize: "1.1rem" }}>✓</span>
+                  {pt}
+                </li>
+              ))}
+            </ul>
+            <Link href="/build" style={{ ...btnPrimary, backgroundColor: GOLD, color: DARK }}>
+              Try Build Mode
+            </Link>
+          </div>
+
+          {/* Mockup side */}
+          <div
+            style={{
+              backgroundColor: "#1a1a1a",
+              borderRadius: 16,
+              overflow: "hidden",
+              border: "1px solid #333",
+              boxShadow: "0 16px 48px rgba(0,0,0,0.5)",
+            }}
+          >
+            <img
+              src="/images/build-mode.png"
+              alt="Build Mode screenshot"
+              style={{ width: "100%", display: "block" }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. WHAT YOU GET ─────────────────────────────────────────────── */}
       <section style={{ backgroundColor: WHITE, padding: "5rem 1.5rem" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <p style={{ textAlign: "center", color: RED, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
@@ -290,77 +345,6 @@ export default function HomepageV2() {
                 </Link>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── 4. BUILD MODE SHOWCASE ──────────────────────────────────────── */}
-      <section style={{ backgroundColor: DARK, color: WHITE, padding: "5rem 1.5rem" }}>
-        <div
-          style={{
-            maxWidth: 1000,
-            margin: "0 auto",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: "3rem",
-            alignItems: "center",
-          }}
-        >
-          {/* Text side */}
-          <div>
-            <p style={{ color: GOLD, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
-              Exclusive Feature
-            </p>
-            <h2
-              style={{
-                fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
-                marginBottom: "1.25rem",
-                letterSpacing: "1px",
-                lineHeight: 1.1,
-              }}
-            >
-              Build With Confidence
-            </h2>
-            <p style={{ color: "#ccc", lineHeight: 1.7, marginBottom: "1.75rem", fontSize: "0.97rem" }}>
-              Every Dice Map purchase includes access to our exclusive{" "}
-              <strong style={{ color: WHITE }}>Build Mode</strong> — a step-by-step digital guide
-              that walks you through placing every single die, one at a time.
-            </p>
-            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-              {[
-                "Cell-by-cell guidance",
-                "Dice view & number view",
-                "Jump to any row instantly",
-                "Works perfectly on mobile",
-                "Save your progress anytime",
-              ].map((pt) => (
-                <li key={pt} style={{ display: "flex", alignItems: "center", gap: "0.6rem", color: "#ddd", fontSize: "0.95rem" }}>
-                  <span style={{ color: GOLD, fontWeight: 700, fontSize: "1.1rem" }}>✓</span>
-                  {pt}
-                </li>
-              ))}
-            </ul>
-            <Link href="/build" style={{ ...btnPrimary, backgroundColor: GOLD, color: DARK }}>
-              Try Build Mode
-            </Link>
-          </div>
-
-          {/* Mockup side */}
-          <div
-            style={{
-              backgroundColor: "#1a1a1a",
-              borderRadius: 16,
-              overflow: "hidden",
-              border: "1px solid #333",
-              boxShadow: "0 16px 48px rgba(0,0,0,0.5)",
-            }}
-          >
-            <img
-              src="/images/build-mode.png"
-              alt="Build Mode screenshot"
-              style={{ width: "100%", display: "block" }}
-            />
           </div>
         </div>
       </section>
