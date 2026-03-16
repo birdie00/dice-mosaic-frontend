@@ -59,6 +59,48 @@ async function sendOwnerNotification({
   });
 }
 
+async function sendGelatoFailureAlert({
+  customerName,
+  customerEmail,
+  amountTotal,
+  address,
+  errorMessage,
+}: {
+  customerName: string | null | undefined;
+  customerEmail: string | null | undefined;
+  amountTotal: number | null;
+  address: Stripe.Address | null | undefined;
+  errorMessage: string;
+}) {
+  const amount = amountTotal != null ? `$${(amountTotal / 100).toFixed(2)}` : "N/A";
+
+  const addressLines = address
+    ? [
+        address.line1,
+        address.line2,
+        `${address.city}, ${address.state} ${address.postal_code}`,
+        address.country,
+      ]
+        .filter(Boolean)
+        .join("\n")
+    : "N/A";
+
+  const body = [
+    `Customer: ${customerName || "Unknown"}`,
+    `Email: ${customerEmail || "Unknown"}`,
+    `Amount: ${amount}`,
+    `Shipping address:\n${addressLines}`,
+    `Error: ${errorMessage}`,
+  ].join("\n");
+
+  await resend.emails.send({
+    from: "Pipcasso <noreply@pipcasso.com>",
+    to: "getpipcasso@gmail.com",
+    subject: "⚠️ Gelato Order Failed — Manual Action Needed",
+    text: body,
+  });
+}
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
 });
@@ -96,6 +138,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const productType = session.metadata?.productType || "unknown";
 
     let gelatoFailed = false;
+    let gelatoErrorMessage = "";
 
     if (productType === "print") {
       try {
@@ -119,7 +162,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const productUid = gelatoProductMap[aspect]?.[size];
 
         if (!productUid) {
-          console.error("❌ Could not determine Gelato productUid", { aspect, size });
+          gelatoErrorMessage = `Could not determine Gelato productUid (aspect: ${aspect}, size: ${size})`;
+          console.error("❌", gelatoErrorMessage);
           gelatoFailed = true;
         } else {
           const gelatoRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/submit-gelato-order`, {
@@ -135,16 +179,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           });
 
           if (!gelatoRes.ok) {
-            console.error("❌ Gelato order submission failed:", await gelatoRes.text());
+            gelatoErrorMessage = await gelatoRes.text();
+            console.error("❌ Gelato order submission failed:", gelatoErrorMessage);
             gelatoFailed = true;
           } else {
             const result = await gelatoRes.json();
             console.log("✅ Gelato order submitted. Order ID:", result.orderId);
           }
         }
-      } catch (err) {
+      } catch (err: any) {
+        gelatoErrorMessage = err?.message || String(err);
         console.error("❌ Error calling submit-gelato-order:", err);
         gelatoFailed = true;
+      }
+
+      if (gelatoFailed) {
+        try {
+          await sendGelatoFailureAlert({
+            customerName: session.customer_details?.name,
+            customerEmail: session.customer_details?.email,
+            amountTotal: session.amount_total,
+            address: session.customer_details?.address,
+            errorMessage: gelatoErrorMessage,
+          });
+          console.log("✅ Gelato failure alert sent.");
+        } catch (err) {
+          console.error("❌ Failed to send Gelato failure alert:", err);
+        }
       }
     }
 
