@@ -160,18 +160,95 @@ export default function HomepageV2() {
         <meta name="description" content="America's #1 custom dice mosaic company. Instant digital delivery. Color-guided building tools included." />
       </Head>
 
-      {/* ── 2. TRANSFORMATION SLIDER ────────────────────────────────────── */}
-      <section style={{ backgroundColor: CREAM, padding: "2rem 1.5rem", textAlign: "center" }}>
-        <div style={{ maxWidth: 620, margin: "0 auto", borderRadius: 12, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
-          <ReactCompareImage
-            leftImage="/dog_real.png"
-            rightImage="/dog_dice.png"
-            sliderLineColor={RED}
-          />
+      {/* ── 2. TRANSFORMATION SLIDER + PRODUCT CARDS ────────────────────── */}
+      <section style={{ backgroundColor: CREAM, padding: "2rem 1.5rem" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div className="slider-layout">
+
+            {/* Left: Slider */}
+            <div className="slider-col">
+              <div style={{ borderRadius: 12, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
+                <ReactCompareImage
+                  leftImage="/dog_real.png"
+                  rightImage="/dog_dice.png"
+                  sliderLineColor={RED}
+                />
+              </div>
+              <p style={{ marginTop: "0.75rem", color: MUTED, fontSize: "0.85rem", textAlign: "center" }}>
+                Drag the slider to reveal the transformation
+              </p>
+            </div>
+
+            {/* Right: Compact product cards */}
+            <div className="cards-col">
+              {[
+                { title: "Dice Map PDF",  price: "From $14.99",   href: "/create",       cta: "Create Now",     accent: TEAL   },
+                { title: "DIY Kit",       price: "From $499",     href: "/store",        cta: "Shop Kits",      accent: PURPLE },
+                { title: "Framed Print",  price: "From $59.99",   href: "/create",       cta: "Order Print",    accent: GOLD   },
+                { title: "Commission",    price: "Custom quote",  href: "/commissions",  cta: "Request Quote",  accent: RED    },
+              ].map((card) => (
+                <div
+                  key={card.title}
+                  style={{
+                    backgroundColor: WHITE,
+                    borderRadius: 14,
+                    padding: "1rem 1.25rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "1rem",
+                    border: `1px solid ${BORDER}`,
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+                  }}
+                >
+                  <div>
+                    <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.2rem", color: card.accent, letterSpacing: "0.5px", marginBottom: "0.15rem" }}>
+                      {card.title}
+                    </h3>
+                    <div style={{ fontWeight: 700, color: DARK, fontSize: "0.88rem" }}>{card.price}</div>
+                  </div>
+                  <Link
+                    href={card.href}
+                    style={{
+                      ...btnPrimary,
+                      backgroundColor: card.accent,
+                      fontSize: "0.8rem",
+                      padding: "0.45rem 1rem",
+                      whiteSpace: "nowrap" as const,
+                    }}
+                  >
+                    {card.cta}
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+          </div>
         </div>
-        <p style={{ marginTop: "1rem", color: MUTED, fontSize: "0.9rem" }}>
-          Drag the slider to reveal the transformation
-        </p>
+
+        <style jsx>{`
+          .slider-layout {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+          }
+          .slider-col {
+            flex: 1 1 50%;
+            min-width: 0;
+          }
+          .cards-col {
+            flex: 1 1 50%;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+          }
+          @media (max-width: 768px) {
+            .slider-layout {
+              flex-direction: column;
+            }
+          }
+        `}</style>
       </section>
 
       {/* ── 3. BUILD MODE SHOWCASE ──────────────────────────────────────── */}
