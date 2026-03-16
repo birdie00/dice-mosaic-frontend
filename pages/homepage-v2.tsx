@@ -119,38 +119,48 @@ export default function HomepageV2() {
             justifyContent: "center",
             alignItems: "center",
             padding: "1rem",
+            boxSizing: "border-box",
           }}
         >
-          <img
-            src="/images/HeaderLogo.png"
-            alt="Pipcasso Logo"
+          <div
             style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
               width: "100%",
-              maxWidth: "100%",
-              objectFit: "contain",
-              marginBottom: "1.25rem",
-            }}
-          />
-          <p
-            style={{
-              color: WHITE,
-              fontSize: "1.1rem",
-              letterSpacing: "0.08em",
-              textAlign: "center",
-              marginBottom: "2rem",
-              fontFamily: "'Righteous', sans-serif",
+              maxWidth: "400px",
             }}
           >
-            America&apos;s #1 Custom Dice Mosaic Company
-          </p>
+            <img
+              src="/images/HeaderLogo.png"
+              alt="Pipcasso Logo"
+              style={{
+                width: "100%",
+                objectFit: "contain",
+                marginBottom: "1.25rem",
+              }}
+            />
+            <p
+              style={{
+                color: WHITE,
+                fontSize: "1.1rem",
+                letterSpacing: "0.08em",
+                textAlign: "center",
+                marginBottom: "2rem",
+                fontFamily: "'Righteous', sans-serif",
+              }}
+            >
+              America&apos;s #1 Custom Dice Mosaic Company
+            </p>
 
-          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/create" style={btnPrimary}>
-              Create Yours Now
-            </Link>
-            <a href="#how-it-works" style={btnOutline}>
-              See How It Works
-            </a>
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+              <Link href="/create" style={btnPrimary}>
+                Create Yours Now
+              </Link>
+              <a href="#how-it-works" style={btnOutline}>
+                See How It Works
+              </a>
+            </div>
           </div>
         </div>
       </section>
