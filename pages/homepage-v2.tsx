@@ -76,58 +76,61 @@ export default function HomepageV2() {
       </Head>
 
       {/* ── 1. HERO ─────────────────────────────────────────────────────── */}
-      <section
-        style={{
-          backgroundColor: TEAL,
-          backgroundImage: "radial-gradient(circle at 70% 50%, #1a7a80 0%, #0d4347 100%)",
-          color: WHITE,
-          padding: "6rem 1.5rem 5rem",
-          textAlign: "center",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        {/* Subtle dot-grid background pattern */}
-        <div
-          aria-hidden
+      <section style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
+        {/* Video background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
           style={{
             position: "absolute",
-            inset: 0,
-            backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
-            pointerEvents: "none",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            zIndex: 0,
+          }}
+          src="/videos/dice-falling.mp4"
+        />
+
+        {/* Dark overlay */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            zIndex: 1,
           }}
         />
 
-        <div style={{ position: "relative", maxWidth: 760, margin: "0 auto" }}>
-          <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🎲</div>
-
-          <h1
+        {/* Content */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 2,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "1rem",
+          }}
+        >
+          <img
+            src="/images/HeaderLogo.png"
+            alt="Pipcasso Logo"
             style={{
-              fontFamily: "'Bebas Neue', 'Righteous', sans-serif",
-              fontSize: "clamp(2.2rem, 5vw, 3.8rem)",
-              lineHeight: 1.1,
-              marginBottom: "1.25rem",
-              letterSpacing: "1px",
+              width: "100%",
+              maxWidth: "500px",
+              objectFit: "contain",
+              marginBottom: "2rem",
             }}
-          >
-            Turn Any Photo Into a<br />Dice Mosaic Masterpiece
-          </h1>
-
-          <p
-            style={{
-              fontSize: "clamp(1rem, 2.5vw, 1.2rem)",
-              opacity: 0.88,
-              marginBottom: "2.5rem",
-              lineHeight: 1.6,
-              maxWidth: 580,
-              margin: "0 auto 2.5rem",
-            }}
-          >
-            America&apos;s #1 custom dice mosaic company. Instant digital delivery.
-            Color-guided building tools included.
-          </p>
-
+          />
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/create" style={btnPrimary}>
               Create Yours Now
