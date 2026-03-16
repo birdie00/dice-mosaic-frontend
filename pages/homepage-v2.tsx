@@ -356,69 +356,11 @@ export default function HomepageV2() {
               boxShadow: "0 16px 48px rgba(0,0,0,0.5)",
             }}
           >
-            {/* Fake top bar */}
-            <div
-              style={{
-                backgroundColor: "#0a0a0a",
-                padding: "0.6rem 1rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.75rem",
-                borderBottom: "1px solid #222",
-              }}
-            >
-              <span style={{ color: WHITE, fontWeight: "bold", fontSize: "0.8rem", fontFamily: "monospace" }}>🎲 Build Mode</span>
-              <div style={{ flex: 1, height: 4, backgroundColor: "#333", borderRadius: 2, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: "43%", backgroundColor: RED, borderRadius: 2 }} />
-              </div>
-              <span style={{ color: GOLD, fontSize: "0.75rem", fontFamily: "monospace", fontWeight: "bold" }}>43.0%</span>
-            </div>
-
-            {/* Fake grid */}
-            <div style={{ padding: "1rem", display: "flex", gap: "0.75rem" }}>
-              {/* Left panel mock */}
-              <div style={{ width: 80, flexShrink: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <div style={{ fontSize: "0.55rem", color: "#666", textTransform: "uppercase", letterSpacing: 1 }}>Current</div>
-                {[RED, TEAL, GOLD, "#111", "#2980b9", RED].map((c, i) => (
-                  <div key={i} style={{ height: 14, borderRadius: 3, backgroundColor: c, opacity: i === 0 ? 1 : 0.6 }} />
-                ))}
-              </div>
-
-              {/* Grid mock */}
-              <div style={{ flex: 1 }}>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(12, 1fr)",
-                    gap: 2,
-                  }}
-                >
-                  {Array.from({ length: 96 }).map((_, i) => {
-                    const colors = ["#111", RED, "#2980b9", "#e67e22", "#27ae60", "#f1c40f", WHITE];
-                    const v = (i * 7 + i % 3 + Math.floor(i / 12)) % 7;
-                    const isCurrent = i === 41;
-                    return (
-                      <div
-                        key={i}
-                        style={{
-                          aspectRatio: "1",
-                          backgroundColor: colors[v],
-                          borderRadius: 2,
-                          opacity: i < 41 ? 0.35 : 1,
-                          border: isCurrent ? `2px solid ${RED}` : "none",
-                          boxSizing: "border-box",
-                        }}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ padding: "0.75rem 1rem", borderTop: "1px solid #222", display: "flex", gap: "0.5rem" }}>
-              <div style={{ flex: 1, height: 32, backgroundColor: TEAL, borderRadius: 6, opacity: 0.8 }} />
-              <div style={{ flex: 2, height: 32, backgroundColor: RED, borderRadius: 6 }} />
-            </div>
+            <img
+              src="/images/build-mode.png"
+              alt="Build Mode screenshot"
+              style={{ width: "100%", display: "block" }}
+            />
           </div>
         </div>
       </section>
