@@ -76,8 +76,13 @@ export default function HomepageV2() {
       </Head>
 
       {/* ── 1. HERO ─────────────────────────────────────────────────────── */}
-      <section style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
-        {/* Video background */}
+      <header
+        style={{
+          height: "100vh",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
         <video
           autoPlay
           muted
@@ -95,7 +100,6 @@ export default function HomepageV2() {
           src="/videos/dice-falling.mp4"
         />
 
-        {/* Dark overlay */}
         <div
           style={{
             position: "absolute",
@@ -108,62 +112,52 @@ export default function HomepageV2() {
           }}
         />
 
-        {/* Content */}
         <div
           style={{
-            position: "absolute",
-            inset: 0,
+            position: "relative",
             zIndex: 2,
+            height: "100%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
             padding: "1rem",
-            boxSizing: "border-box",
           }}
         >
-          <div
+          <img
+            src="/images/HeaderLogo.png"
+            alt="Pipcasso Logo"
             style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
               width: "100%",
-              maxWidth: "400px",
+              maxWidth: "100%",
+              objectFit: "contain",
+              marginBottom: "1.25rem",
+            }}
+          />
+
+          <p
+            style={{
+              color: WHITE,
+              fontSize: "1.1rem",
+              letterSpacing: "0.08em",
+              textAlign: "center",
+              marginBottom: "1.5rem",
+              fontFamily: "'Righteous', sans-serif",
             }}
           >
-            <img
-              src="/images/HeaderLogo.png"
-              alt="Pipcasso Logo"
-              style={{
-                width: "100%",
-                objectFit: "contain",
-                marginBottom: "1.25rem",
-              }}
-            />
-            <p
-              style={{
-                color: WHITE,
-                fontSize: "1.1rem",
-                letterSpacing: "0.08em",
-                textAlign: "center",
-                marginBottom: "2rem",
-                fontFamily: "'Righteous', sans-serif",
-              }}
-            >
-              America&apos;s #1 Custom Dice Mosaic Company
-            </p>
+            America&apos;s #1 Custom Dice Mosaic Company
+          </p>
 
-            <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/create" style={btnPrimary}>
-                Create Yours Now
-              </Link>
-              <a href="#how-it-works" style={btnOutline}>
-                See How It Works
-              </a>
-            </div>
+          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/create" style={btnPrimary}>
+              Create Yours Now
+            </Link>
+            <a href="#how-it-works" style={btnOutline}>
+              See How It Works
+            </a>
           </div>
         </div>
-      </section>
+      </header>
 
       {/* ── 2. TRANSFORMATION SLIDER ────────────────────────────────────── */}
       <section style={{ backgroundColor: CREAM, padding: "4rem 1.5rem", textAlign: "center" }}>
