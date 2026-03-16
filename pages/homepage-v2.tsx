@@ -67,97 +67,98 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 // ── Main page ────────────────────────────────────────────────────────────────
+const hero = (
+  <section
+    style={{
+      height: "100vh",
+      position: "relative",
+      overflow: "hidden",
+    }}
+  >
+    <video
+      autoPlay
+      muted
+      loop
+      playsInline
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        zIndex: 0,
+      }}
+      src="/videos/dice-falling.mp4"
+    />
+
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        zIndex: 1,
+      }}
+    />
+
+    <div
+      style={{
+        position: "relative",
+        zIndex: 2,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "1rem",
+      }}
+    >
+      <img
+        src="/images/HeaderLogo.png"
+        alt="Pipcasso Logo"
+        style={{
+          width: "100%",
+          maxWidth: "100%",
+          objectFit: "contain",
+          marginBottom: "1.25rem",
+        }}
+      />
+
+      <p
+        style={{
+          color: WHITE,
+          fontSize: "1.1rem",
+          letterSpacing: "0.08em",
+          textAlign: "center",
+          marginBottom: "1.5rem",
+          fontFamily: "'Righteous', sans-serif",
+        }}
+      >
+        America&apos;s #1 Custom Dice Mosaic Company
+      </p>
+
+      <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+        <Link href="/create" style={btnPrimary}>
+          Create Yours Now
+        </Link>
+        <a href="#how-it-works" style={btnOutline}>
+          See How It Works
+        </a>
+      </div>
+    </div>
+  </section>
+);
+
 export default function HomepageV2() {
   return (
-    <Layout>
+    <Layout hero={hero}>
       <Head>
         <title>Pipcasso — Turn Any Photo Into a Dice Mosaic</title>
         <meta name="description" content="America's #1 custom dice mosaic company. Instant digital delivery. Color-guided building tools included." />
       </Head>
-
-      {/* ── 1. HERO ─────────────────────────────────────────────────────── */}
-      <header
-        style={{
-          height: "100vh",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            zIndex: 0,
-          }}
-          src="/videos/dice-falling.mp4"
-        />
-
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.6)",
-            zIndex: 1,
-          }}
-        />
-
-        <div
-          style={{
-            position: "relative",
-            zIndex: 2,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "1rem",
-          }}
-        >
-          <img
-            src="/images/HeaderLogo.png"
-            alt="Pipcasso Logo"
-            style={{
-              width: "100%",
-              maxWidth: "100%",
-              objectFit: "contain",
-              marginBottom: "1.25rem",
-            }}
-          />
-
-          <p
-            style={{
-              color: WHITE,
-              fontSize: "1.1rem",
-              letterSpacing: "0.08em",
-              textAlign: "center",
-              marginBottom: "1.5rem",
-              fontFamily: "'Righteous', sans-serif",
-            }}
-          >
-            America&apos;s #1 Custom Dice Mosaic Company
-          </p>
-
-          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/create" style={btnPrimary}>
-              Create Yours Now
-            </Link>
-            <a href="#how-it-works" style={btnOutline}>
-              See How It Works
-            </a>
-          </div>
-        </div>
-      </header>
 
       {/* ── 2. TRANSFORMATION SLIDER ────────────────────────────────────── */}
       <section style={{ backgroundColor: CREAM, padding: "4rem 1.5rem", textAlign: "center" }}>

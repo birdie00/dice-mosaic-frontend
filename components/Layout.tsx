@@ -4,7 +4,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children, hero }: { children: React.ReactNode; hero?: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -122,6 +122,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 
 
+      {hero}
       <main>{children}</main>
 
       <footer style={footerStyle}>
