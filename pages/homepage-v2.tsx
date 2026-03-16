@@ -111,9 +111,9 @@ export default function HomepageV2() {
         {/* Content */}
         <div
           style={{
-            position: "relative",
+            position: "absolute",
+            inset: 0,
             zIndex: 2,
-            height: "100%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
@@ -126,11 +126,24 @@ export default function HomepageV2() {
             alt="Pipcasso Logo"
             style={{
               width: "100%",
-              maxWidth: "500px",
+              maxWidth: "100%",
               objectFit: "contain",
-              marginBottom: "2rem",
+              marginBottom: "1.25rem",
             }}
           />
+          <p
+            style={{
+              color: WHITE,
+              fontSize: "1.1rem",
+              letterSpacing: "0.08em",
+              textAlign: "center",
+              marginBottom: "2rem",
+              fontFamily: "'Righteous', sans-serif",
+            }}
+          >
+            America&apos;s #1 Custom Dice Mosaic Company
+          </p>
+
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/create" style={btnPrimary}>
               Create Yours Now
