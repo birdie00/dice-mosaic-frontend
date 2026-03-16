@@ -3,6 +3,61 @@
 import { buffer } from "micro";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+async function sendOwnerNotification({
+  customerName,
+  customerEmail,
+  amountTotal,
+  productType,
+  address,
+  gelatoFailed,
+}: {
+  customerName: string | null | undefined;
+  customerEmail: string | null | undefined;
+  amountTotal: number | null;
+  productType: string;
+  address: Stripe.Address | null | undefined;
+  gelatoFailed?: boolean;
+}) {
+  const amount = amountTotal != null ? `$${(amountTotal / 100).toFixed(2)}` : "N/A";
+
+  const addressLines =
+    productType === "print" && address
+      ? [
+          address.line1,
+          address.line2,
+          `${address.city}, ${address.state} ${address.postal_code}`,
+          address.country,
+        ]
+          .filter(Boolean)
+          .join("\n")
+      : null;
+
+  const gelatoNote = gelatoFailed
+    ? "\n⚠️ Gelato order failed — manual fulfillment needed"
+    : "";
+
+  const body = [
+    `Customer: ${customerName || "Unknown"}`,
+    `Email: ${customerEmail || "Unknown"}`,
+    `Amount: ${amount}`,
+    `Product type: ${productType}`,
+    addressLines ? `Shipping address:\n${addressLines}` : null,
+    gelatoNote || null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  await resend.emails.send({
+    from: "Pipcasso <noreply@pipcasso.com>",
+    to: "getpipcasso@gmail.com",
+    subject: `🎲 New Pipcasso Order — ${productType}`,
+    text: body,
+  });
+}
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-03-31.basil",
@@ -38,8 +93,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
+    const productType = session.metadata?.productType || "unknown";
 
-    if (session.metadata?.productType === "print") {
+    let gelatoFailed = false;
+
+    if (productType === "print") {
       try {
         const gelatoProductMap: Record<string, Record<string, string>> = {
           portrait: {
@@ -56,12 +114,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
         };
 
-        const aspect = session.metadata.printAspectRatio || "portrait";
-        const size = session.metadata.size || "small";
+        const aspect = session.metadata!.printAspectRatio || "portrait";
+        const size = session.metadata!.size || "small";
         const productUid = gelatoProductMap[aspect]?.[size];
 
         if (!productUid) {
           console.error("❌ Could not determine Gelato productUid", { aspect, size });
+          gelatoFailed = true;
         } else {
           const gelatoRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/submit-gelato-order`, {
             method: "POST",
@@ -70,13 +129,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               name: session.customer_details?.name,
               email: session.customer_details?.email,
               address: session.customer_details?.address,
-              imageUrl: session.metadata.highResImageUrl,
+              imageUrl: session.metadata!.highResImageUrl,
               productUid,
             }),
           });
 
           if (!gelatoRes.ok) {
             console.error("❌ Gelato order submission failed:", await gelatoRes.text());
+            gelatoFailed = true;
           } else {
             const result = await gelatoRes.json();
             console.log("✅ Gelato order submitted. Order ID:", result.orderId);
@@ -84,7 +144,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       } catch (err) {
         console.error("❌ Error calling submit-gelato-order:", err);
+        gelatoFailed = true;
       }
+    }
+
+    try {
+      await sendOwnerNotification({
+        customerName: session.customer_details?.name,
+        customerEmail: session.customer_details?.email,
+        amountTotal: session.amount_total,
+        productType,
+        address: productType === "print" ? session.customer_details?.address : null,
+        gelatoFailed: productType === "print" ? gelatoFailed : undefined,
+      });
+      console.log("✅ Owner notification sent.");
+    } catch (err) {
+      console.error("❌ Failed to send owner notification:", err);
     }
   }
 
