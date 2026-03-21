@@ -194,7 +194,7 @@ export default function HomepageV2() {
                 Dice Art. Reimagined.
               </h2>
               <p style={{ color: MUTED, fontSize: "1rem", lineHeight: 1.75, marginBottom: "2rem" }}>
-                At Pipcasso, we transform any photo into a stunning mosaic made from thousands of real black dice.
+                At Pipcasso, we transform any photo into a stunning mosaic made from thousands of dice.
                 Whether it&apos;s a portrait, a pet, a logo, or a cherished memory — our generator instantly maps
                 your image into a buildable dice masterpiece. See what your photo looks like as a dice mosaic in seconds.
               </p>
@@ -324,7 +324,7 @@ export default function HomepageV2() {
                 step: "03",
                 icon: "📦",
                 title: "Download, Build, or Ship",
-                desc: "Get your PDF instantly, order a framed print, or have a professional build it for you.",
+                desc: "Get your blueprint instantly, order a framed print, or have a professional build it for you.",
               },
             ].map((item) => (
               <div
@@ -399,7 +399,7 @@ export default function HomepageV2() {
             <p style={{ color: "#ccc", lineHeight: 1.7, marginBottom: "1.75rem", fontSize: "0.97rem" }}>
               Every Dice Map purchase includes access to our exclusive{" "}
               <strong style={{ color: WHITE }}>Build Mode</strong> — a free interactive tool that turns
-              your PDF blueprint into a step-by-step digital guide. Think of it like a GPS for your mosaic.
+              your blueprint into a step-by-step digital guide. Think of it like a GPS for your mosaic.
               It tells you exactly which die to place next, tracks your progress, and lets you jump to any
               row instantly. No guessing, no losing your place.
             </p>
@@ -488,7 +488,7 @@ export default function HomepageV2() {
           {/* Photo */}
           <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
             <img
-              src="/images/commission1.jpeg"
+              src="/images/commission2.jpeg"
               alt="Custom dice mosaic commission"
               style={{ width: "100%", display: "block", objectFit: "cover", aspectRatio: "4/5" }}
             />
@@ -512,7 +512,7 @@ export default function HomepageV2() {
             </h2>
             <p style={{ color: "#ccc", lineHeight: 1.75, marginBottom: "2rem", fontSize: "0.97rem" }}>
               We hand-build custom dice mosaic pieces for private homes, businesses, and brands. Every piece
-              is made from thousands of real black dice, individually placed by hand. From portraits to logos
+              is made from thousands of dice, individually placed by hand. From portraits to logos
               — if you can imagine it, we can build it. Pieces start at $1,000 and are built and shipped
               directly to you.
             </p>
@@ -552,7 +552,7 @@ export default function HomepageV2() {
             {[
               {
                 icon: "🗺️",
-                title: "Dice Map PDF",
+                title: "Dice Map",
                 desc: "Your photo as a step-by-step building blueprint. Instantly downloadable, printer-ready.",
                 price: "From $14.99",
                 href: "/create",
@@ -645,11 +645,11 @@ export default function HomepageV2() {
           >
             {[
               { icon: "🇺🇸", title: "USA-Based Company", desc: "Designed, built, and supported right here in America." },
-              { icon: "⚡", title: "Instant Digital Delivery", desc: "Your Dice Map PDF is ready to download the moment you pay." },
+              { icon: "⚡", title: "Instant Digital Delivery", desc: "Your dice map is ready to download the moment you pay." },
               { icon: "🎨", title: "Color-Coded Building Guide", desc: "Standard black & white dice with full-color visual guidance for every step." },
               { icon: "🔧", title: "Exclusive Build Mode Tool", desc: "A step-by-step digital assistant included with every Dice Map purchase." },
-              { icon: "💰", title: "Every Budget Covered", desc: "From $14.99 PDFs to custom commissioned pieces — something for everyone." },
-              { icon: "📄", title: "Professional Quality PDFs", desc: "Print-ready, labeled maps with row and column guides for flawless building." },
+              { icon: "💰", title: "Every Budget Covered", desc: "From $14.99 dice maps to custom commissioned pieces — something for everyone." },
+              { icon: "📄", title: "Professional Quality Blueprints", desc: "Print-ready, labeled maps with row and column guides for flawless building." },
             ].map((item) => (
               <div
                 key={item.title}
@@ -695,7 +695,7 @@ export default function HomepageV2() {
 
           <FaqItem
             q="What kind of dice are used?"
-            a="Standard 16mm black & white pips dice. The color you see in the mosaic preview and PDF is a visual guide only — every die in the actual build is black and white."
+            a="Standard 16mm black & white pips dice. The color you see in the mosaic preview and blueprint is a visual guide only — every die in the actual build is black and white."
           />
           <FaqItem
             q="How big can my mosaic be?"
@@ -711,7 +711,7 @@ export default function HomepageV2() {
           />
           <FaqItem
             q="How long does delivery take?"
-            a="Digital products (PDF, Build Mode access) are instant. Framed prints ship within 5–7 business days. Commission pieces are quoted individually based on complexity and size."
+            a="Digital products (dice map blueprint, Build Mode access) are instant. Framed prints ship within 5–7 business days. Commission pieces are quoted individually based on complexity and size."
           />
         </div>
       </section>
