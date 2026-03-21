@@ -160,8 +160,8 @@ export default function HomepageV2() {
         <meta name="description" content="America's #1 custom dice mosaic company. Instant digital delivery. Color-guided building tools included." />
       </Head>
 
-      {/* ── 3. TRANSFORMATION SLIDER + PRODUCT CARDS ────────────────────── */}
-      <section style={{ backgroundColor: CREAM, padding: "2rem 1.5rem" }}>
+      {/* ── TRANSFORMATION SLIDER + INTRO TEXT ──────────────────────────── */}
+      <section style={{ backgroundColor: CREAM, padding: "4rem 1.5rem" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div className="slider-layout">
 
@@ -179,47 +179,28 @@ export default function HomepageV2() {
               </p>
             </div>
 
-            {/* Right: Compact product cards */}
-            <div className="cards-col">
-              {[
-                { title: "Dice Map PDF",  price: "From $14.99",   href: "/create",       cta: "Create Now",     accent: TEAL   },
-                { title: "Framed Print",  price: "From $59.99",   href: "/create",       cta: "Order Print",    accent: GOLD   },
-                { title: "Commission",    price: "Custom quote",  href: "/commissions",  cta: "Request Quote",  accent: RED    },
-              ].map((card) => (
-                <div
-                  key={card.title}
-                  style={{
-                    backgroundColor: WHITE,
-                    borderRadius: 14,
-                    padding: "1rem 1.25rem",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: "1rem",
-                    border: `1px solid ${BORDER}`,
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-                  }}
-                >
-                  <div>
-                    <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.2rem", color: card.accent, letterSpacing: "0.5px", marginBottom: "0.15rem" }}>
-                      {card.title}
-                    </h3>
-                    <div style={{ fontWeight: 700, color: DARK, fontSize: "0.88rem" }}>{card.price}</div>
-                  </div>
-                  <Link
-                    href={card.href}
-                    style={{
-                      ...btnPrimary,
-                      backgroundColor: card.accent,
-                      fontSize: "0.8rem",
-                      padding: "0.45rem 1rem",
-                      whiteSpace: "nowrap" as const,
-                    }}
-                  >
-                    {card.cta}
-                  </Link>
-                </div>
-              ))}
+            {/* Right: Descriptive text */}
+            <div className="text-col">
+              <h2
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "clamp(2rem, 4vw, 3rem)",
+                  color: DARK,
+                  letterSpacing: "1px",
+                  lineHeight: 1.1,
+                  marginBottom: "1.25rem",
+                }}
+              >
+                Dice Art. Reimagined.
+              </h2>
+              <p style={{ color: MUTED, fontSize: "1rem", lineHeight: 1.75, marginBottom: "2rem" }}>
+                At Pipcasso, we transform any photo into a stunning mosaic made from thousands of real black dice.
+                Whether it&apos;s a portrait, a pet, a logo, or a cherished memory — our generator instantly maps
+                your image into a buildable dice masterpiece. See what your photo looks like as a dice mosaic in seconds.
+              </p>
+              <Link href="/create" style={btnPrimary}>
+                Start Creating →
+              </Link>
             </div>
 
           </div>
@@ -228,19 +209,16 @@ export default function HomepageV2() {
         <style jsx>{`
           .slider-layout {
             display: flex;
-            gap: 2rem;
+            gap: 3rem;
             align-items: center;
           }
           .slider-col {
             flex: 1 1 50%;
             min-width: 0;
           }
-          .cards-col {
+          .text-col {
             flex: 1 1 50%;
             min-width: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
           }
           @media (max-width: 768px) {
             .slider-layout {
@@ -248,6 +226,91 @@ export default function HomepageV2() {
             }
           }
         `}</style>
+      </section>
+
+      {/* ── HOW IT WORKS ────────────────────────────────────────────────── */}
+      <section id="how-it-works" style={{ backgroundColor: DARK, color: WHITE, padding: "5rem 1.5rem" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
+          <p style={{ color: RED, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+            Simple Process
+          </p>
+          <h2
+            style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+              marginBottom: "3.5rem",
+              letterSpacing: "1px",
+            }}
+          >
+            How It Works
+          </h2>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: "2rem",
+            }}
+          >
+            {[
+              {
+                step: "01",
+                icon: "📸",
+                title: "Upload Your Photo",
+                desc: "Choose any photo — a portrait, pet, landscape, or logo. Our tool handles the rest.",
+              },
+              {
+                step: "02",
+                icon: "🎨",
+                title: "Choose Your Style & Size",
+                desc: "Pick from 6 mosaic styles and select your grid size. Preview the result instantly.",
+              },
+              {
+                step: "03",
+                icon: "📦",
+                title: "Download, Build, or Ship",
+                desc: "Get your PDF instantly, order a framed print, or have a professional build it for you.",
+              },
+            ].map((item) => (
+              <div
+                key={item.step}
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.06)",
+                  borderRadius: 14,
+                  padding: "2rem 1.5rem",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  position: "relative",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-1rem",
+                    left: "1.5rem",
+                    backgroundColor: RED,
+                    color: WHITE,
+                    fontWeight: 900,
+                    fontSize: "0.75rem",
+                    padding: "0.2rem 0.6rem",
+                    borderRadius: 6,
+                    letterSpacing: 1,
+                  }}
+                >
+                  Step {item.step}
+                </div>
+                <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem", marginTop: "0.5rem" }}>{item.icon}</div>
+                <h3 style={{ fontWeight: 700, fontSize: "1.1rem", color: WHITE, marginBottom: "0.6rem" }}>{item.title}</h3>
+                <p style={{ color: "#bbb", fontSize: "0.9rem", lineHeight: 1.65 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: "3rem" }}>
+            <Link href="/create" style={btnPrimary}>
+              Get Started — It&apos;s Free to Try
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* ── 3. BUILD MODE SHOWCASE ──────────────────────────────────────── */}
@@ -412,92 +475,6 @@ export default function HomepageV2() {
                 </Link>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── 5. HOW IT WORKS ─────────────────────────────────────────────── */}
-      <section id="how-it-works" style={{ backgroundColor: CREAM, padding: "5rem 1.5rem" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
-          <p style={{ color: RED, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
-            Simple Process
-          </p>
-          <h2
-            style={{
-              fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
-              color: DARK,
-              marginBottom: "3.5rem",
-              letterSpacing: "1px",
-            }}
-          >
-            How It Works
-          </h2>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "2rem",
-            }}
-          >
-            {[
-              {
-                step: "01",
-                icon: "📸",
-                title: "Upload Your Photo",
-                desc: "Choose any photo — a portrait, pet, landscape, or logo. Our tool handles the rest.",
-              },
-              {
-                step: "02",
-                icon: "🎨",
-                title: "Choose Your Style & Size",
-                desc: "Pick from 6 mosaic styles and select your grid size. Preview the result instantly.",
-              },
-              {
-                step: "03",
-                icon: "📦",
-                title: "Download, Build, or Ship",
-                desc: "Get your PDF instantly, order a framed print, or have a professional build it for you.",
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                style={{
-                  backgroundColor: WHITE,
-                  borderRadius: 14,
-                  padding: "2rem 1.5rem",
-                  border: `1px solid ${BORDER}`,
-                  position: "relative",
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "-1rem",
-                    left: "1.5rem",
-                    backgroundColor: RED,
-                    color: WHITE,
-                    fontWeight: 900,
-                    fontSize: "0.75rem",
-                    padding: "0.2rem 0.6rem",
-                    borderRadius: 6,
-                    letterSpacing: 1,
-                  }}
-                >
-                  Step {item.step}
-                </div>
-                <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem", marginTop: "0.5rem" }}>{item.icon}</div>
-                <h3 style={{ fontWeight: 700, fontSize: "1.1rem", color: DARK, marginBottom: "0.6rem" }}>{item.title}</h3>
-                <p style={{ color: MUTED, fontSize: "0.9rem", lineHeight: 1.65 }}>{item.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ marginTop: "3rem" }}>
-            <Link href="/create" style={btnPrimary}>
-              Get Started — It&apos;s Free to Try
-            </Link>
           </div>
         </div>
       </section>
