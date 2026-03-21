@@ -52,6 +52,7 @@ const unitPrice = kitPrices[kitSize];
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
+      allow_promotion_codes: true,
       shipping_address_collection: {
         allowed_countries: [
           "US", "CA", "MX", "AU", "GB", "DE", "FR", "NL", "SE", "NO",
@@ -106,6 +107,7 @@ name: `DIY Dice Kit (${kitSize})`,
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
+      allow_promotion_codes: true,
       shipping_address_collection: {
         allowed_countries: [
           "US", "CA", "MX", "AU", "GB", "DE", "FR", "NL", "SE", "NO",
@@ -162,6 +164,7 @@ name: `DIY Dice Kit (${kitSize})`,
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+      allow_promotion_codes: true,
       line_items: [
         {
           price: priceId,
