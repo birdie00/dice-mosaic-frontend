@@ -1,590 +1,758 @@
-import React, { useRef, useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import ReactCompareImage from "react-compare-image";
+import React, { useState } from "react";
+import Head from "next/head";
 import Link from "next/link";
+import ReactCompareImage from "react-compare-image";
+import Layout from "@/components/Layout";
 
+// ── Brand tokens ────────────────────────────────────────────────────────────
+const CREAM   = "#FDF7F1";
+const TEAL    = "#155e63";
+const TEAL_LT = "#1a7a80";
+const RED     = "#E84C3D";
+const GOLD    = "#ECB84A";
+const PURPLE  = "#6A3073";
+const DARK    = "#0e0e0e";
+const MUTED   = "#5a5a5a";
+const WHITE   = "#ffffff";
+const BORDER  = "#e2d9ce";
 
-export default function Home() {
-  const contentRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-  const [showNav, setShowNav] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+// ── Shared button styles ─────────────────────────────────────────────────────
+const btnPrimary: React.CSSProperties = {
+  display: "inline-block",
+  padding: "0.85rem 2rem",
+  backgroundColor: RED,
+  color: WHITE,
+  borderRadius: "8px",
+  fontWeight: "bold",
+  fontSize: "1rem",
+  textDecoration: "none",
+  border: "none",
+  cursor: "pointer",
+  transition: "background 0.2s",
+};
+const btnOutline: React.CSSProperties = {
+  display: "inline-block",
+  padding: "0.85rem 2rem",
+  backgroundColor: "transparent",
+  color: WHITE,
+  borderRadius: "8px",
+  fontWeight: "bold",
+  fontSize: "1rem",
+  textDecoration: "none",
+  border: `2px solid ${WHITE}`,
+  cursor: "pointer",
+};
 
-  useEffect(() => {
-    let latestScrollY = 0;
-    let ticking = false;
-    let windowHeight = window.innerHeight;
-
-    setIsMobile(window.innerWidth < 768);
-
-    const onScroll = () => {
-      latestScrollY = window.scrollY;
-      requestTick();
-    };
-
-    const onResize = () => {
-      windowHeight = window.innerHeight;
-    };
-
-    const requestTick = () => {
-      if (!ticking) {
-        requestAnimationFrame(update);
-        ticking = true;
-      }
-    };
-
-    const update = () => {
-      ticking = false;
-      const slowScroll = latestScrollY / 2;
-      const blurOpacity = (latestScrollY * 2) / windowHeight;
-      const opacity = 1.4 - latestScrollY / 400;
-
-      if (contentRef.current) {
-        contentRef.current.style.transform = `translateY(${slowScroll}px)`;
-        contentRef.current.style.opacity = `${opacity}`;
-      }
-
-      if (overlayRef.current) {
-        overlayRef.current.style.opacity = `${blurOpacity}`;
-      }
-
-      setShowNav(latestScrollY > windowHeight * 0.75);
-    };
-
-    window.addEventListener("scroll", onScroll);
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
-
-  return (
-    <div>
-      <nav
-        style={{
-          ...styles.nav,
-          transform: showNav ? "translateY(0)" : "translateY(-100%)",
-          opacity: showNav ? 1 : 0,
-        }}
-      >
-        <div style={styles.navInner}>
-  <img
-    src="/images/HeaderLogo.png"
-    alt="Pipcasso Logo"
-    style={styles.navLogo}
-  />
-
-  {isMobile ? (
-    <>
-      <button
-        onClick={() => setMobileMenuOpen((prev) => !prev)}
-        style={{
-          background: "none",
-          border: "none",
-          fontSize: "1.75rem",
-          color: "#fff",
-          cursor: "pointer",
-        }}
-        aria-label="Toggle navigation"
-        >
-          {mobileMenuOpen ? "✖" : "☰"}
-        </button>
-
-      {mobileMenuOpen && (
-        <div
-          style={{
-            position: "absolute",
-            top: "70px",
-            right: 0,
-            left: 0,
-            backgroundColor: "#000",
-            padding: "1rem",
-            textAlign: "center",
-            zIndex: 999,
-          }}
-        >
-          <Link
-          href="/create"
-          onClick={() => setMobileMenuOpen(false)}
-          style={{ color: "#fff", display: "block", margin: "1rem 0" }}
-        >
-          Create
-        </Link>
-        <Link
-          href="/commissions"
-          onClick={() => setMobileMenuOpen(false)}
-          style={{ color: "#fff", display: "block", margin: "1rem 0" }}
-        >
-          Commissions
-        </Link>
-        <Link
-          href="/store"
-          onClick={() => setMobileMenuOpen(false)}
-          style={{ color: "#fff", display: "block", margin: "1rem 0" }}
-        >
-          Store
-        </Link>
-      </div>
-      )}
-    </>
-  ) : (
-    <div style={styles.navLinks}>
-      <Link href="/store" style={{ color: "#fff" }}>Create</Link>
-      <Link href="/commissions" style={{ color: "#fff" }}>Commissions</Link>
-      <Link href="/store" style={{ color: "#fff" }}>Store</Link>
-    </div>
-  )}
-</div>
-
-
-      </nav>
-
-      <header
-        style={{
-          height: isMobile ? "50vh" : "100vh",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            zIndex: 0,
-          }}
-          src="/videos/dice-falling.mp4"
-        />
-
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.6)",
-            zIndex: 1,
-          }}
-        />
-
-        <div
-          ref={contentRef}
-          style={{
-            position: "relative",
-            zIndex: 2,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "1rem",
-          }}
-        >
-          <img
-            src="/images/HeaderLogo.png"
-            alt="Pipcasso Logo"
-            style={{
-              width: "100%",
-              maxWidth: "100%",
-              objectFit: "contain",
-              marginBottom: "1.25rem",
-            }}
-          />
-          <h2
-  style={{
-    fontSize: "2rem",
-    fontWeight: "bold",
-    color: "#fff",
-    textAlign: "center",
-    marginBottom: "1rem",
-    fontFamily: "'Righteous', sans-serif",
-  }}
->
-  Envision. Create. Display.
-</h2>
-
-<button
-  onClick={() => router.push("/create")}
-  style={{
-    fontSize: "1rem",
-    padding: "0.75rem 2rem",
-    backgroundColor: "transparent",
-    color: "#fff",
-    border: "2px solid #fff",
-    borderRadius: "999px", // ✅ pill shape
-    cursor: "pointer",
-    fontWeight: "bold",
-    textTransform: "uppercase",
-    letterSpacing: "1px",
-  }}
->
-  Start Creating
-</button>
-
-        </div>
-      </header>
-
-{/* 🔁 Image Reveal Section with Overlayed Top-Centered Heading */}
-<div style={{ padding: "0", backgroundColor: "#FDF7F1", position: "relative" }}>
-  <div
-    style={{
-      position: "relative",
-      maxWidth: "600px",
-      margin: "0 auto",
-      height: "auto",
-    }}
-  >
-    {/* Top-Centered Heading */}
-    <h2
-  style={{
-    position: "absolute",
-    top: "1rem",
-    left: 0,
-    right: 0,
-    textAlign: "center", // ✅ center the text without transform
-    fontFamily: "'Bebas Neue', sans-serif",
-    fontSize: "1.4rem",
-    color: "#fff",
-    textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
-    letterSpacing: "1px",
-    zIndex: 2,
-    margin: 0,
-    padding: "0.25rem 1rem", // ✅ horizontal breathing room
-    boxSizing: "border-box", // ✅ respect full width
-    whiteSpace: "nowrap", // ✅ prevent line wrapping
-    overflow: "hidden",   // ✅ in case it's too long
-    textOverflow: "ellipsis", // ✅ gracefully truncate if needed
-  }}
->
-  See the transformation
-</h2>
-
-
-    {/* Slider */}
-    <ReactCompareImage
-      leftImage="/dog_real.png"
-      rightImage="/dog_dice.png"
-      sliderLineColor="#E84C3D"
-    />
-  </div>
-</div>
-
-
-
-
-      
-      <section style={{ width: "100%" }}>
-      {[
-  {
-    title: "DIY Kits",
-    desc: "Create your own dice mosaic using our software and build it yourself at home!",
-    href: "/store",
-    img: "/images/DiceKit.png",
-    cta: "Create Now →",
-    bgColor: "#ECB84A",
-  },
-  {
-    title: "Commissions",
-    desc: "Want us to build it for you? Commission a professional dice artist.",
-    href: "/commissions",
-    img: "/images/DiceCommission.png",
-    cta: "Request a Quote →",
-    bgColor: "#6A3073",
-  },
-  {
-    title: "Prints",
-    desc: "Order custom-printed versions of your mosaic — no dice needed!",
-    href: "/create",
-    img: "/images/DicePrints.png",
-    cta: "View Prints →",
-    bgColor: "#155e63",
-  },
-].map((feature, index) => {
-  const isEven = index % 2 === 1;
-
+// ── FAQ accordion item ───────────────────────────────────────────────────────
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
   return (
     <div
-      key={index}
-      className={`feature-block ${isEven ? "reverse" : ""}`}
       style={{
-        display: "flex",
-        flexDirection: isEven ? "row-reverse" : "row",
-        flexWrap: "wrap",
-        minHeight: "400px",
-        backgroundColor: feature.bgColor,
-        color: "#FDF7F1",
-        width: "100%",
+        borderBottom: `1px solid ${BORDER}`,
+        padding: "1.1rem 0",
+        cursor: "pointer",
       }}
+      onClick={() => setOpen((v) => !v)}
     >
-      {/* Image */}
-      <div
-        style={{
-          flex: "1 1 50%",
-          backgroundImage: `url(${feature.img})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          minHeight: "300px",
-        }}
-      />
-
-      {/* Text */}
-      <div
-        style={{
-          flex: "1 1 50%",
-          padding: "2rem",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-      >
-        <h3 style={{ fontSize: "2rem", marginBottom: "1rem", fontFamily: "'Bebas Neue', sans-serif", textTransform: "uppercase" }}>
-          {feature.title}
-        </h3>
-        <p
-  style={{
-    fontSize: "1rem",
-    lineHeight: "1.6",
-    marginBottom: "2rem",
-    maxWidth: "800px",
-    margin: "0 auto",
-    textAlign: "center",
-  }}
->
-  At <strong>Pipcasso</strong>, you can turn your favorite photo into a custom dice mosaic. Just upload an image and we’ll generate a downloadable Dice Map — ready to print or build with real dice.
-</p>
-        <Link
-          href={feature.href}
-          style={{
-            color: "#fff",
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-            padding: "0.5rem 1rem",
-            borderRadius: "6px",
-            fontWeight: "bold",
-            textDecoration: "none",
-            width: "fit-content",
-          }}
-        >
-          {feature.cta}
-        </Link>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
+        <span style={{ fontWeight: 700, fontSize: "1rem", color: DARK }}>{q}</span>
+        <span style={{ fontSize: "1.2rem", color: RED, flexShrink: 0 }}>{open ? "−" : "+"}</span>
       </div>
-    </div>
-  );
-})}
-
-</section>
-
-<style jsx>{`
-  @media (max-width: 768px) {
-    .feature-block,
-    .feature-block.reverse {
-      flex-direction: column !important;
-      min-height: 600px; /* or try 100vh for full-screen feel */
-    }
-
-    .feature-block > div {
-      flex: none !important;
-      width: 100% !important;
-    }
-  }
-`}</style>
-
-
-
-
-    <section style={{ backgroundColor: "#fdf7f1", padding: "4rem 1rem", textAlign: "center" }}>
-  <h2
-    style={{
-      fontFamily: "'Bebas Neue', sans-serif",
-      fontSize: "2.25rem",
-      marginBottom: "1rem",
-      letterSpacing: "1px",
-      color: "#E84C3D",
-    }}
-  >
-    Contact Us
-  </h2>
-  <p style={{ fontSize: "1rem", color: "#4b5563", maxWidth: "600px", margin: "0 auto 2rem" }}>
-    Have questions about a project, commission, or custom idea? Reach out and our team will get back to you within 1 business day.
-  </p>
-
-  <a
-    href="mailto:commissions@pipcasso.com"
-    style={{
-      backgroundColor: "#E84C3D",
-      color: "#fff",
-      padding: "0.75rem 1.5rem",
-      fontSize: "1rem",
-      borderRadius: "8px",
-      textDecoration: "none",
-      fontWeight: "bold",
-    }}
-  >
-    Email Us
-  </a>
-</section>
-
-
-
-      <footer style={styles.footer}>
-        <p>&copy; {new Date().getFullYear()} Pipcasso. All rights reserved.</p>
-      </footer>
+      {open && (
+        <p style={{ marginTop: "0.75rem", color: MUTED, lineHeight: 1.7, fontSize: "0.95rem" }}>{a}</p>
+      )}
     </div>
   );
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
-  header: {
-    position: "relative",
-    height: "75vh",
-    overflow: "hidden",
-  },
-  splitContainer: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    alignItems: "stretch",
-    gap: "2rem",
-    width: "100%",
-  },
-  videoBackground: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    zIndex: 0,
-    filter: "blur(4px) brightness(0.4)",
-  },
-  videoOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
-    zIndex: 1,
-  },
-  content: {
-    position: "absolute",
-    inset: 0,
-    zIndex: 2,
-  },
-  hgroup: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    textAlign: "center",
-    zIndex: 2,
-    paddingInline: "1rem",
-  },
-  imageLogo: {
-    maxWidth: "90vw",
-    width: "100%",
-    marginBottom: "1.5rem",
-    filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.4))",
-  },
-  button: {
-    fontSize: "1.25rem",
-    backgroundColor: "#EAAA4F",
-    border: "none",
-    color: "#fff",
-    padding: "0.75rem 2rem",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    transition: "background 0.2s ease",
-  },
-  nav: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "70px",
-    backgroundColor: "#000",
-    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
-    display: "flex",
-    alignItems: "center",
-    zIndex: 999,
-    transition: "transform 0.4s ease, opacity 0.4s ease",
-    transform: "translateY(-100%)",
-    opacity: 0,
-  },
-  navInner: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    width: "100%",
-    padding: "0 1.5rem",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  navLogo: {
-    height: "40px",
-    width: "auto",
-  },
-  navLinks: {
-    display: "flex",
-    gap: "1.5rem",
-    fontSize: "1rem",
-    fontWeight: "bold",
-    color: "#fff", // ✅ white link text
-  },
-  
-  sideBySide: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    alignItems: "stretch",
-    gap: "2rem",
-    padding: "4rem 1rem",
-    backgroundColor: "#fff",
-  },
-  sliderSection: {
-    textAlign: "center",
-    display: "flex",
-    alignItems: "stretch",
-  },
-  sliderWrapper: {
-    flex: "0 1 30%",
-    minWidth: "300px",
-    maxWidth: "400px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  features: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "1.5rem",
-    justifyContent: "center",
-  },
-  featureCard: {
-    background: "#f3f4f6",
-    padding: "2rem",
-    borderRadius: "12px",
-    textAlign: "center",
-    boxShadow: "0 4px 8px rgba(0,0,0,0.05)",
-  },
-  footer: {
-    padding: "2rem",
-    textAlign: "center",
-    backgroundColor: "#000000",
-    color: "#fff",
-    fontSize: "0.9rem",
-  },
-};
+// ── Main page ────────────────────────────────────────────────────────────────
+const hero = (
+  <section
+    style={{
+      height: "100vh",
+      position: "relative",
+      overflow: "hidden",
+    }}
+  >
+    <video
+      autoPlay
+      muted
+      loop
+      playsInline
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        zIndex: 0,
+      }}
+      src="/videos/dice-falling.mp4"
+    />
+
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        zIndex: 1,
+      }}
+    />
+
+    <div
+      style={{
+        position: "relative",
+        zIndex: 2,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "1rem",
+      }}
+    >
+      <img
+        src="/images/HeaderLogo.png"
+        alt="Pipcasso Logo"
+        style={{
+          width: "100%",
+          maxWidth: "100%",
+          objectFit: "contain",
+          marginBottom: "1.25rem",
+        }}
+      />
+
+      <p
+        style={{
+          color: GOLD,
+          fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)",
+          letterSpacing: "0.18em",
+          textAlign: "center",
+          marginBottom: "1.75rem",
+          fontFamily: "'Righteous', sans-serif",
+          textShadow: "0 2px 12px rgba(0,0,0,0.6)",
+          textTransform: "uppercase",
+        }}
+      >
+        America&apos;s #1 Custom Dice Mosaic Company
+      </p>
+
+      <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+        <Link href="/create" style={btnPrimary}>
+          Create Yours Now
+        </Link>
+        <a href="#how-it-works" style={btnOutline}>
+          See How It Works
+        </a>
+      </div>
+    </div>
+  </section>
+);
+
+export default function HomepageV2() {
+  return (
+    <Layout hero={hero}>
+      <Head>
+        <title>Pipcasso — Turn Any Photo Into a Dice Mosaic</title>
+        <meta name="description" content="America's #1 custom dice mosaic company. Instant digital delivery. Color-guided building tools included." />
+      </Head>
+
+      {/* ── TRANSFORMATION SLIDER + INTRO TEXT ──────────────────────────── */}
+      <section style={{ backgroundColor: CREAM, padding: "4rem 1.5rem" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <div className="slider-layout">
+
+            {/* Left: Slider */}
+            <div className="slider-col">
+              <div style={{ borderRadius: 12, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
+                <ReactCompareImage
+                  leftImage="/dog_real.png"
+                  rightImage="/dog_dice.png"
+                  sliderLineColor={RED}
+                />
+              </div>
+              <p style={{ marginTop: "0.75rem", color: MUTED, fontSize: "0.85rem", textAlign: "center" }}>
+                Drag the slider to reveal the transformation
+              </p>
+            </div>
+
+            {/* Right: Descriptive text */}
+            <div className="text-col">
+              <h2
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "clamp(2rem, 4vw, 3rem)",
+                  color: DARK,
+                  letterSpacing: "1px",
+                  lineHeight: 1.1,
+                  marginBottom: "1.25rem",
+                }}
+              >
+                Dice Art. Reimagined.
+              </h2>
+              <p style={{ color: MUTED, fontSize: "1rem", lineHeight: 1.75, marginBottom: "2rem" }}>
+                At Pipcasso, we transform any photo into a stunning mosaic made from thousands of dice.
+                Whether it&apos;s a portrait, a pet, a logo, or a cherished memory — our generator instantly maps
+                your image into a buildable dice masterpiece. See what your photo looks like as a dice mosaic in seconds.
+              </p>
+              <Link href="/create" style={btnPrimary}>
+                Start Creating →
+              </Link>
+            </div>
+
+          </div>
+        </div>
+
+        <style jsx>{`
+          .slider-layout {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+          }
+          .slider-col {
+            flex: 1 1 50%;
+            min-width: 0;
+          }
+          .text-col {
+            flex: 1 1 50%;
+            min-width: 0;
+          }
+          @media (max-width: 768px) {
+            .slider-layout {
+              flex-direction: column;
+            }
+          }
+        `}</style>
+      </section>
+
+      {/* ── IMAGE SCROLLER ──────────────────────────────────────────────── */}
+      <section style={{ backgroundColor: DARK, overflow: "hidden", padding: "2.5rem 0" }}>
+        <div className="scroller-track">
+          {[
+            "/images/scroller/dog.jpg",
+            "/images/scroller/lioness.jpg",
+            "/images/scroller/logo1.jpg",
+            "/images/scroller/logo2.jpg",
+            "/images/scroller/marilyn.jpg",
+            "/images/scroller/mj.jpg",
+            "/images/scroller/tiger.jpg",
+            "/images/scroller/usa.jpg",
+            "/images/scroller/yoda.jpg",
+            "/images/scroller/dog.jpg",
+            "/images/scroller/lioness.jpg",
+            "/images/scroller/logo1.jpg",
+            "/images/scroller/logo2.jpg",
+            "/images/scroller/marilyn.jpg",
+            "/images/scroller/mj.jpg",
+            "/images/scroller/tiger.jpg",
+            "/images/scroller/usa.jpg",
+            "/images/scroller/yoda.jpg",
+          ].map((src, i) => (
+            <img
+              key={i}
+              src={src}
+              alt=""
+              style={{
+                width: 220,
+                height: 280,
+                objectFit: "cover",
+                borderRadius: 10,
+                flexShrink: 0,
+              }}
+            />
+          ))}
+        </div>
+
+        <style jsx>{`
+          @keyframes scroll {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+          }
+          .scroller-track {
+            display: flex;
+            gap: 16px;
+            width: max-content;
+            animation: scroll 30s linear infinite;
+          }
+          .scroller-track:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+      </section>
+
+      {/* ── HOW IT WORKS ────────────────────────────────────────────────── */}
+      <section id="how-it-works" style={{ backgroundColor: DARK, color: WHITE, padding: "5rem 1.5rem" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
+          <p style={{ color: RED, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+            Simple Process
+          </p>
+          <h2
+            style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+              marginBottom: "3.5rem",
+              letterSpacing: "1px",
+            }}
+          >
+            How It Works
+          </h2>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: "2rem",
+            }}
+          >
+            {[
+              {
+                step: "01",
+                icon: "📸",
+                title: "Upload Your Photo",
+                desc: "Choose any photo — a portrait, pet, landscape, or logo. Our tool handles the rest.",
+              },
+              {
+                step: "02",
+                icon: "🎨",
+                title: "Choose Your Style & Size",
+                desc: "Pick from 6 mosaic styles and select your grid size. Preview the result instantly.",
+              },
+              {
+                step: "03",
+                icon: "📦",
+                title: "Download, Build, or Ship",
+                desc: "Get your blueprint instantly, order a framed print, or have a professional build it for you.",
+              },
+            ].map((item) => (
+              <div
+                key={item.step}
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.06)",
+                  borderRadius: 14,
+                  padding: "2rem 1.5rem",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  position: "relative",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-1rem",
+                    left: "1.5rem",
+                    backgroundColor: RED,
+                    color: WHITE,
+                    fontWeight: 900,
+                    fontSize: "0.75rem",
+                    padding: "0.2rem 0.6rem",
+                    borderRadius: 6,
+                    letterSpacing: 1,
+                  }}
+                >
+                  Step {item.step}
+                </div>
+                <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem", marginTop: "0.5rem" }}>{item.icon}</div>
+                <h3 style={{ fontWeight: 700, fontSize: "1.1rem", color: WHITE, marginBottom: "0.6rem" }}>{item.title}</h3>
+                <p style={{ color: "#bbb", fontSize: "0.9rem", lineHeight: 1.65 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: "3rem" }}>
+            <Link href="/create" style={btnPrimary}>
+              Get Started — It&apos;s Free to Try
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. BUILD MODE SHOWCASE ──────────────────────────────────────── */}
+      <section style={{ backgroundColor: DARK, color: WHITE, padding: "5rem 1.5rem" }}>
+        <div
+          style={{
+            maxWidth: 1000,
+            margin: "0 auto",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "3rem",
+            alignItems: "center",
+          }}
+        >
+          {/* Text side */}
+          <div>
+            <p style={{ color: GOLD, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+              Exclusive Feature
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+                marginBottom: "1.25rem",
+                letterSpacing: "1px",
+                lineHeight: 1.1,
+              }}
+            >
+              Build With Confidence
+            </h2>
+            <p style={{ color: "#ccc", lineHeight: 1.7, marginBottom: "1.75rem", fontSize: "0.97rem" }}>
+              Every Dice Map purchase includes access to our exclusive{" "}
+              <strong style={{ color: WHITE }}>Build Mode</strong> — a free interactive tool that turns
+              your blueprint into a step-by-step digital guide. Think of it like a GPS for your mosaic.
+              It tells you exactly which die to place next, tracks your progress, and lets you jump to any
+              row instantly. No guessing, no losing your place.
+            </p>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+              {[
+                "Cell-by-cell guidance — one die at a time",
+                "Switch between number view and dice face view",
+                "Jump to any row instantly",
+                "Tracks your progress automatically",
+                "Works perfectly on mobile while you build",
+              ].map((pt) => (
+                <li key={pt} style={{ display: "flex", alignItems: "center", gap: "0.6rem", color: "#ddd", fontSize: "0.95rem" }}>
+                  <span style={{ color: GOLD, fontWeight: 700, fontSize: "1.1rem" }}>✓</span>
+                  {pt}
+                </li>
+              ))}
+            </ul>
+            <Link href="/build" style={{ ...btnPrimary, backgroundColor: GOLD, color: DARK }}>
+              Try Build Mode
+            </Link>
+          </div>
+
+          {/* Mockup side */}
+          <div
+            style={{
+              backgroundColor: "#1a1a1a",
+              borderRadius: 16,
+              overflow: "hidden",
+              border: "1px solid #333",
+              boxShadow: "0 16px 48px rgba(0,0,0,0.5)",
+            }}
+          >
+            <img
+              src="/images/build-mode.png"
+              alt="Build Mode screenshot"
+              style={{ width: "100%", display: "block" }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── COMMISSION BANNER ───────────────────────────────────────────── */}
+      <div
+        style={{
+          backgroundColor: "#1a1200",
+          borderTop: `1px solid ${GOLD}33`,
+          borderBottom: `1px solid ${GOLD}33`,
+          padding: "1.1rem 1.5rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1rem",
+          flexWrap: "wrap" as const,
+        }}
+      >
+        <p style={{ color: GOLD, fontWeight: 600, fontSize: "0.97rem", margin: 0 }}>
+          Speak to us about commissioning your own piece
+        </p>
+        <Link
+          href="/commissions"
+          style={{
+            ...btnPrimary,
+            backgroundColor: GOLD,
+            color: DARK,
+            fontSize: "0.85rem",
+            padding: "0.5rem 1.25rem",
+            whiteSpace: "nowrap" as const,
+          }}
+        >
+          Commissions →
+        </Link>
+      </div>
+
+      {/* ── COMMISSIONS ─────────────────────────────────────────────────── */}
+      <section style={{ backgroundColor: DARK, color: WHITE, padding: "5rem 1.5rem" }}>
+        <div
+          style={{
+            maxWidth: 1000,
+            margin: "0 auto",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "3rem",
+            alignItems: "center",
+          }}
+        >
+          {/* Photo */}
+          <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+            <img
+              src="/images/commission2.jpeg"
+              alt="Custom dice mosaic commission"
+              style={{ width: "100%", display: "block", objectFit: "cover", aspectRatio: "1/1" }}
+            />
+          </div>
+
+          {/* Text */}
+          <div>
+            <p style={{ color: GOLD, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+              Hand Built By Us
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: "clamp(2rem, 5vw, 3.2rem)",
+                marginBottom: "1.25rem",
+                letterSpacing: "1px",
+                lineHeight: 1.05,
+              }}
+            >
+              Want the Real Thing?
+            </h2>
+            <p style={{ color: "#ccc", lineHeight: 1.75, marginBottom: "2rem", fontSize: "0.97rem" }}>
+              We hand-build custom dice mosaic pieces for private homes, businesses, and brands. Every piece
+              is made from thousands of dice, individually placed by hand. From portraits to logos
+              — if you can imagine it, we can build it. Pieces start at $1,000 and are built and shipped
+              directly to you.
+            </p>
+            <Link href="/commissions" style={btnPrimary}>
+              Request a Commission →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. WHAT YOU GET ─────────────────────────────────────────────── */}
+      <section style={{ backgroundColor: WHITE, padding: "5rem 1.5rem" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <p style={{ textAlign: "center", color: RED, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+            Products
+          </p>
+          <h2
+            style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+              color: DARK,
+              textAlign: "center",
+              marginBottom: "3rem",
+              letterSpacing: "1px",
+            }}
+          >
+            What You Get
+          </h2>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: "1.5rem",
+            }}
+          >
+            {[
+              {
+                icon: "🗺️",
+                title: "Dice Map",
+                desc: "Your photo as a step-by-step building blueprint. Instantly downloadable, printer-ready.",
+                price: "From $14.99",
+                href: "/create",
+                cta: "Create Now",
+                accent: TEAL,
+              },
+              {
+                icon: "🖼️",
+                title: "Framed Print",
+                desc: "A stunning framed print of your dice mosaic portrait. Arrives ready to hang.",
+                price: "From $59.99",
+                href: "/create",
+                cta: "Order Print",
+                accent: GOLD,
+              },
+              {
+                icon: "🎨",
+                title: "Commission",
+                desc: "Let us build it for you. A professional dice artist creates your mosaic and ships it to your door.",
+                price: "Custom quote",
+                href: "/commissions",
+                cta: "Request Quote",
+                accent: RED,
+              },
+            ].map((card) => (
+              <div
+                key={card.title}
+                style={{
+                  backgroundColor: CREAM,
+                  borderRadius: 14,
+                  padding: "2rem 1.5rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  border: `1px solid ${BORDER}`,
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+                }}
+              >
+                <div style={{ fontSize: "2.2rem", marginBottom: "0.75rem" }}>{card.icon}</div>
+                <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.5rem", color: card.accent, marginBottom: "0.5rem", letterSpacing: "0.5px" }}>
+                  {card.title}
+                </h3>
+                <p style={{ color: MUTED, fontSize: "0.92rem", lineHeight: 1.6, flexGrow: 1, marginBottom: "1.25rem" }}>
+                  {card.desc}
+                </p>
+                <div style={{ fontWeight: 700, color: DARK, fontSize: "1rem", marginBottom: "1rem" }}>
+                  {card.price}
+                </div>
+                <Link
+                  href={card.href}
+                  style={{
+                    ...btnPrimary,
+                    backgroundColor: card.accent,
+                    textAlign: "center",
+                    fontSize: "0.9rem",
+                    padding: "0.6rem 1.25rem",
+                  }}
+                >
+                  {card.cta}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6. WHY PIPCASSO ─────────────────────────────────────────────── */}
+      <section style={{ backgroundColor: TEAL, color: WHITE, padding: "5rem 1.5rem" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
+          <p style={{ color: GOLD, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+            Why Choose Us
+          </p>
+          <h2
+            style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+              marginBottom: "3rem",
+              letterSpacing: "1px",
+            }}
+          >
+            Why Pipcasso
+          </h2>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: "1.25rem",
+              textAlign: "left",
+            }}
+          >
+            {[
+              { icon: "🇺🇸", title: "USA-Based Company", desc: "Designed, built, and supported right here in America." },
+              { icon: "⚡", title: "Instant Digital Delivery", desc: "Your dice map is ready to download the moment you pay." },
+              { icon: "🎨", title: "Color-Coded Building Guide", desc: "Standard black & white dice with full-color visual guidance for every step." },
+              { icon: "🔧", title: "Exclusive Build Mode Tool", desc: "A step-by-step digital assistant included with every Dice Map purchase." },
+              { icon: "💰", title: "Every Budget Covered", desc: "From $14.99 dice maps to custom commissioned pieces — something for everyone." },
+              { icon: "📄", title: "Professional Quality Blueprints", desc: "Print-ready, labeled maps with row and column guides for flawless building." },
+            ].map((item) => (
+              <div
+                key={item.title}
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                  borderRadius: 12,
+                  padding: "1.4rem 1.5rem",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  display: "flex",
+                  gap: "1rem",
+                  alignItems: "flex-start",
+                }}
+              >
+                <span style={{ fontSize: "1.6rem", flexShrink: 0 }}>{item.icon}</span>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: "0.97rem", marginBottom: "0.3rem" }}>{item.title}</div>
+                  <div style={{ color: "rgba(255,255,255,0.75)", fontSize: "0.88rem", lineHeight: 1.55 }}>{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 7. FAQ ──────────────────────────────────────────────────────── */}
+      <section style={{ backgroundColor: WHITE, padding: "5rem 1.5rem" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto" }}>
+          <p style={{ textAlign: "center", color: RED, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+            FAQ
+          </p>
+          <h2
+            style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+              color: DARK,
+              textAlign: "center",
+              marginBottom: "3rem",
+              letterSpacing: "1px",
+            }}
+          >
+            FAQ
+          </h2>
+
+          <FaqItem
+            q="What kind of dice are used?"
+            a="Standard 10mm black & white pips dice. The color you see in the mosaic preview and blueprint is a visual guide only — every die in the actual build is black and white."
+          />
+          <FaqItem
+            q="How big can my mosaic be?"
+            a="Our standard sizes go up to a 100×100 grid (10,000 dice), which creates a large-format piece. Custom sizes are available for commission orders."
+          />
+          <FaqItem
+            q="How does Build Mode work?"
+            a="After purchase, enter your access code at pipcasso.com/build. The tool loads your mosaic grid and guides you cell by cell. You can view dice images or numbers, jump to any row, and track your progress — all from your phone or computer."
+          />
+          <FaqItem
+            q="Can I commission a custom piece?"
+            a="Yes! Our professional dice artists can build any size mosaic and ship it framed to your door. Visit the Commissions page to get a quote."
+          />
+          <FaqItem
+            q="How long does delivery take?"
+            a="Digital products (dice map blueprint, Build Mode access) are instant. Framed prints ship within 5–7 business days. Commission pieces are quoted individually based on complexity and size."
+          />
+        </div>
+      </section>
+
+      {/* ── 8. FOOTER CTA ───────────────────────────────────────────────── */}
+      <section
+        style={{
+          backgroundColor: DARK,
+          color: WHITE,
+          padding: "5rem 1.5rem",
+          textAlign: "center",
+        }}
+      >
+        <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🎲</div>
+        <h2
+          style={{
+            fontFamily: "'Bebas Neue', sans-serif",
+            fontSize: "clamp(2rem, 5vw, 3.2rem)",
+            marginBottom: "1rem",
+            letterSpacing: "1px",
+          }}
+        >
+          Ready to Create Yours?
+        </h2>
+        <p style={{ color: "#aaa", fontSize: "1rem", marginBottom: "2.5rem", maxWidth: 480, margin: "0 auto 2.5rem" }}>
+          Upload a photo and see your dice mosaic preview in seconds. No account required.
+        </p>
+        <Link
+          href="/create"
+          style={{
+            ...btnPrimary,
+            fontSize: "1.15rem",
+            padding: "1rem 2.75rem",
+            borderRadius: 10,
+          }}
+        >
+          Start Creating — Free
+        </Link>
+      </section>
+    </Layout>
+  );
+}
