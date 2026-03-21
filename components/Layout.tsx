@@ -49,9 +49,6 @@ export default function Layout({ children, hero }: { children: React.ReactNode; 
     <Link href="/commissions" style={{ color: "#fff", margin: "0 1rem" }}>
       Commissions
     </Link>
-    <Link href="/store" style={{ color: "#fff", margin: "0 1rem" }}>
-      DIY Kits
-    </Link>
   </nav>
 
   {/* Mobile hamburger */}
@@ -91,9 +88,6 @@ export default function Layout({ children, hero }: { children: React.ReactNode; 
       </Link>
       <Link href="/commissions" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
         Commissions
-      </Link>
-      <Link href="/store" onClick={() => setMenuOpen(false)} style={{ color: "#fff", margin: "0.5rem 0" }}>
-        DIY Kits
       </Link>
     </nav>
   )}

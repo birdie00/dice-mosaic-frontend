@@ -195,7 +195,7 @@ export default function HomepageV2() {
               {
                 step: "03",
                 title: "Build or Buy",
-                desc: "Download your dice map and build it yourself, or order a framed print or commission",
+                desc: "Download your dice map, order a framed print, or request a commission",
                 img: "/images/commission1.jpeg",
               },
             ].map((item) => (
@@ -261,7 +261,6 @@ export default function HomepageV2() {
             <div className="cards-col">
               {[
                 { title: "Dice Map PDF",  price: "From $14.99",   href: "/create",       cta: "Create Now",     accent: TEAL   },
-                { title: "DIY Kit",       price: "From $499",     href: "/store",        cta: "Shop Kits",      accent: PURPLE },
                 { title: "Framed Print",  price: "From $59.99",   href: "/create",       cta: "Order Print",    accent: GOLD   },
                 { title: "Commission",    price: "Custom quote",  href: "/commissions",  cta: "Request Quote",  accent: RED    },
               ].map((card) => (
@@ -435,15 +434,6 @@ export default function HomepageV2() {
                 href: "/create",
                 cta: "Create Now",
                 accent: TEAL,
-              },
-              {
-                icon: "🎲",
-                title: "DIY Kit",
-                desc: "Everything you need: dice, frame, and your custom Dice Map. Just follow the guide and build.",
-                price: "From $499",
-                href: "/store",
-                cta: "Shop Kits",
-                accent: PURPLE,
               },
               {
                 icon: "🖼️",
@@ -672,10 +662,6 @@ export default function HomepageV2() {
           <FaqItem
             q="How big can my mosaic be?"
             a="Our standard sizes go up to 120×120 dice, which creates a large-format piece. Custom sizes are available for commission orders."
-          />
-          <FaqItem
-            q="What's included in the DIY Kit?"
-            a="The DIY Kit includes enough dice to complete your mosaic, a custom-fitted frame, and a printed copy of your Dice Map PDF. Build Mode access is also included."
           />
           <FaqItem
             q="How does Build Mode work?"
