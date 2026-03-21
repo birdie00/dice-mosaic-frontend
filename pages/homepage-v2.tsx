@@ -398,16 +398,18 @@ export default function HomepageV2() {
             </h2>
             <p style={{ color: "#ccc", lineHeight: 1.7, marginBottom: "1.75rem", fontSize: "0.97rem" }}>
               Every Dice Map purchase includes access to our exclusive{" "}
-              <strong style={{ color: WHITE }}>Build Mode</strong> — a step-by-step digital guide
-              that walks you through placing every single die, one at a time.
+              <strong style={{ color: WHITE }}>Build Mode</strong> — a free interactive tool that turns
+              your PDF blueprint into a step-by-step digital guide. Think of it like a GPS for your mosaic.
+              It tells you exactly which die to place next, tracks your progress, and lets you jump to any
+              row instantly. No guessing, no losing your place.
             </p>
             <ul style={{ listStyle: "none", padding: 0, margin: "0 0 2rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               {[
-                "Cell-by-cell guidance",
-                "Dice view & number view",
+                "Cell-by-cell guidance — one die at a time",
+                "Switch between number view and dice face view",
                 "Jump to any row instantly",
-                "Works perfectly on mobile",
-                "Save your progress anytime",
+                "Tracks your progress automatically",
+                "Works perfectly on mobile while you build",
               ].map((pt) => (
                 <li key={pt} style={{ display: "flex", alignItems: "center", gap: "0.6rem", color: "#ddd", fontSize: "0.95rem" }}>
                   <span style={{ color: GOLD, fontWeight: 700, fontSize: "1.1rem" }}>✓</span>
@@ -435,6 +437,88 @@ export default function HomepageV2() {
               alt="Build Mode screenshot"
               style={{ width: "100%", display: "block" }}
             />
+          </div>
+        </div>
+      </section>
+
+      {/* ── COMMISSION BANNER ───────────────────────────────────────────── */}
+      <div
+        style={{
+          backgroundColor: "#1a1200",
+          borderTop: `1px solid ${GOLD}33`,
+          borderBottom: `1px solid ${GOLD}33`,
+          padding: "1.1rem 1.5rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "1rem",
+          flexWrap: "wrap" as const,
+        }}
+      >
+        <p style={{ color: GOLD, fontWeight: 600, fontSize: "0.97rem", margin: 0 }}>
+          Speak to us about commissioning your own piece
+        </p>
+        <Link
+          href="/commissions"
+          style={{
+            ...btnPrimary,
+            backgroundColor: GOLD,
+            color: DARK,
+            fontSize: "0.85rem",
+            padding: "0.5rem 1.25rem",
+            whiteSpace: "nowrap" as const,
+          }}
+        >
+          Commissions →
+        </Link>
+      </div>
+
+      {/* ── COMMISSIONS ─────────────────────────────────────────────────── */}
+      <section style={{ backgroundColor: DARK, color: WHITE, padding: "5rem 1.5rem" }}>
+        <div
+          style={{
+            maxWidth: 1000,
+            margin: "0 auto",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "3rem",
+            alignItems: "center",
+          }}
+        >
+          {/* Photo */}
+          <div style={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 16px 48px rgba(0,0,0,0.5)" }}>
+            <img
+              src="/images/commission1.jpeg"
+              alt="Custom dice mosaic commission"
+              style={{ width: "100%", display: "block", objectFit: "cover", aspectRatio: "4/5" }}
+            />
+          </div>
+
+          {/* Text */}
+          <div>
+            <p style={{ color: GOLD, fontWeight: 700, letterSpacing: 3, fontSize: "0.8rem", textTransform: "uppercase", marginBottom: "0.75rem" }}>
+              Hand Built By Us
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: "clamp(2rem, 5vw, 3.2rem)",
+                marginBottom: "1.25rem",
+                letterSpacing: "1px",
+                lineHeight: 1.05,
+              }}
+            >
+              Want the Real Thing?
+            </h2>
+            <p style={{ color: "#ccc", lineHeight: 1.75, marginBottom: "2rem", fontSize: "0.97rem" }}>
+              We hand-build custom dice mosaic pieces for private homes, businesses, and brands. Every piece
+              is made from thousands of real black dice, individually placed by hand. From portraits to logos
+              — if you can imagine it, we can build it. Pieces start at $1,000 and are built and shipped
+              directly to you.
+            </p>
+            <Link href="/commissions" style={btnPrimary}>
+              Request a Commission →
+            </Link>
           </div>
         </div>
       </section>
