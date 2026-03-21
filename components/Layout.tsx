@@ -1,11 +1,27 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Layout({ children, hero }: { children: React.ReactNode; hero?: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showNav, setShowNav] = useState(false);
+
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setShowNav(window.scrollY > window.innerHeight * 0.75);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
@@ -23,9 +39,14 @@ export default function Layout({ children, hero }: { children: React.ReactNode; 
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    position: "sticky",
+    position: "fixed",
     top: 0,
+    left: 0,
+    right: 0,
     zIndex: 1000,
+    transition: "transform 0.4s ease, opacity 0.4s ease",
+    transform: showNav ? "translateY(0)" : "translateY(-100%)",
+    opacity: showNav ? 1 : 0,
   }}
 >
   {/* Logo */}

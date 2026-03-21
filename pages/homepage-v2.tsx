@@ -129,12 +129,14 @@ const hero = (
 
       <p
         style={{
-          color: WHITE,
-          fontSize: "1.1rem",
-          letterSpacing: "0.08em",
+          color: GOLD,
+          fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)",
+          letterSpacing: "0.18em",
           textAlign: "center",
-          marginBottom: "1.5rem",
+          marginBottom: "1.75rem",
           fontFamily: "'Righteous', sans-serif",
+          textShadow: "0 2px 12px rgba(0,0,0,0.6)",
+          textTransform: "uppercase",
         }}
       >
         America&apos;s #1 Custom Dice Mosaic Company
@@ -490,7 +492,7 @@ export default function HomepageV2() {
             <img
               src="/images/commission2.jpeg"
               alt="Custom dice mosaic commission"
-              style={{ width: "100%", display: "block", objectFit: "cover", aspectRatio: "4/5" }}
+              style={{ width: "100%", display: "block", objectFit: "cover", aspectRatio: "1/1" }}
             />
           </div>
 
@@ -690,16 +692,16 @@ export default function HomepageV2() {
               letterSpacing: "1px",
             }}
           >
-            Common Questions
+            FAQ
           </h2>
 
           <FaqItem
             q="What kind of dice are used?"
-            a="Standard 16mm black & white pips dice. The color you see in the mosaic preview and blueprint is a visual guide only — every die in the actual build is black and white."
+            a="Standard 10mm black & white pips dice. The color you see in the mosaic preview and blueprint is a visual guide only — every die in the actual build is black and white."
           />
           <FaqItem
             q="How big can my mosaic be?"
-            a="Our standard sizes go up to 120×120 dice, which creates a large-format piece. Custom sizes are available for commission orders."
+            a="Our standard sizes go up to a 100×100 grid (10,000 dice), which creates a large-format piece. Custom sizes are available for commission orders."
           />
           <FaqItem
             q="How does Build Mode work?"
