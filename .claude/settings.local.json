@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \":*)",
+      "Bash(py -3 -c \"import PIL; print\\(PIL.__version__\\)\")",
+      "Bash(python3 -c \"import PIL; print\\(PIL.__version__\\)\")",
+      "Bash(\"C:\\\\Users\\\\kokom\\\\AppData\\\\Local\\\\Microsoft\\\\WindowsApps\\\\python3.exe\" --version 2>&1)",
+      "Read(//c/Users/kokom/AppData/Local/Programs/**)",
+      "Bash(ls /c/Python*)",
+      "Read(//c/Users/kokom/**)",
+      "Bash(npm install:*)",
+      "Bash(node -e \":*)",
+      "Bash(cd:*)"
+    ]
+  }
+}
