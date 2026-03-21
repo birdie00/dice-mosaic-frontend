@@ -228,6 +228,61 @@ export default function HomepageV2() {
         `}</style>
       </section>
 
+      {/* ── IMAGE SCROLLER ──────────────────────────────────────────────── */}
+      <section style={{ backgroundColor: DARK, overflow: "hidden", padding: "2.5rem 0" }}>
+        <div className="scroller-track">
+          {[
+            "/images/scroller/dog.png",
+            "/images/scroller/lioness.png",
+            "/images/scroller/logo1.png",
+            "/images/scroller/logo2.png",
+            "/images/scroller/marilyn.png",
+            "/images/scroller/mj.png",
+            "/images/scroller/tiger.png",
+            "/images/scroller/usa.png",
+            "/images/scroller/yoda.png",
+            "/images/scroller/dog.png",
+            "/images/scroller/lioness.png",
+            "/images/scroller/logo1.png",
+            "/images/scroller/logo2.png",
+            "/images/scroller/marilyn.png",
+            "/images/scroller/mj.png",
+            "/images/scroller/tiger.png",
+            "/images/scroller/usa.png",
+            "/images/scroller/yoda.png",
+          ].map((src, i) => (
+            <img
+              key={i}
+              src={src}
+              alt=""
+              style={{
+                width: 220,
+                height: 280,
+                objectFit: "cover",
+                borderRadius: 10,
+                flexShrink: 0,
+              }}
+            />
+          ))}
+        </div>
+
+        <style jsx>{`
+          @keyframes scroll {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+          }
+          .scroller-track {
+            display: flex;
+            gap: 16px;
+            width: max-content;
+            animation: scroll 30s linear infinite;
+          }
+          .scroller-track:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+      </section>
+
       {/* ── HOW IT WORKS ────────────────────────────────────────────────── */}
       <section id="how-it-works" style={{ backgroundColor: DARK, color: WHITE, padding: "5rem 1.5rem" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
