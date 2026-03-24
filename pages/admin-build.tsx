@@ -3,15 +3,53 @@ import { useRouter } from "next/router";
 
 const BACKEND_URL = "https://dice-mosaic-backend.onrender.com";
 
-const DICE_COLORS: Record<number, { bg: string; text: string }> = {
-  0: { bg: "#111111", text: "#ffffff" },
-  1: { bg: "#e74c3c", text: "#ffffff" },
-  2: { bg: "#2980b9", text: "#ffffff" },
-  3: { bg: "#e67e22", text: "#ffffff" },
-  4: { bg: "#27ae60", text: "#ffffff" },
-  5: { bg: "#f1c40f", text: "#000000" },
-  6: { bg: "#ffffff",  text: "#000000" },
+const DICE_COLORS: Record<number, { bg: string; label: string; text: string }> = {
+  0: { bg: '#111111', label: 'Black',  text: '#ffffff' },
+  1: { bg: '#e74c3c', label: 'Red',    text: '#ffffff' },
+  2: { bg: '#2980b9', label: 'Blue',   text: '#ffffff' },
+  3: { bg: '#e67e22', label: 'Orange', text: '#ffffff' },
+  4: { bg: '#27ae60', label: 'Green',  text: '#ffffff' },
+  5: { bg: '#f1c40f', label: 'Yellow', text: '#000000' },
+  6: { bg: '#ffffff',  label: 'White',  text: '#000000' },
 };
+
+// Copied exactly from build.tsx
+function DiceCell({ val, size, diceView, border, boxShadow, animation, opacity, onClick, cursor }: {
+  val: number; size: number; diceView: boolean;
+  border?: string; boxShadow?: string; animation?: string;
+  opacity?: number; onClick?: () => void; cursor?: string;
+}) {
+  const color = DICE_COLORS[val] ?? DICE_COLORS[0];
+  const fontSize = Math.max(7, Math.floor(size * 0.52));
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        width: size, height: size, flexShrink: 0,
+        backgroundColor: diceView ? '#1a1a1a' : color.bg,
+        border: border ?? 'none',
+        boxSizing: 'border-box', position: 'relative',
+        zIndex: boxShadow ? 2 : 1,
+        boxShadow: boxShadow ?? 'none',
+        animation: animation ?? 'none',
+        opacity: opacity ?? 1,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: cursor ?? 'default',
+        borderRadius: size <= 14 ? 2 : 4,
+      }}
+    >
+      {size >= 8 && (diceView ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={`/dice/dice_${val}.png`} alt={String(val)}
+          style={{ width: '95%', height: '95%', objectFit: 'contain', pointerEvents: 'none', userSelect: 'none' }} />
+      ) : (
+        <span style={{ fontSize, color: color.text, fontWeight: 'bold', lineHeight: 1, userSelect: 'none', pointerEvents: 'none' }}>
+          {val}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 export default function AdminBuildPage() {
   const router = useRouter();
@@ -33,6 +71,7 @@ export default function AdminBuildPage() {
   const [gridWidth, setGridWidth] = useState(60);
   const [gridHeight, setGridHeight] = useState(60);
   const [smartRotation, setSmartRotation] = useState(false);
+  const [diceView, setDiceView] = useState(false);
   const [grid, setGrid] = useState<number[][] | null>(null);
   const [rotations, setRotations] = useState<number[][] | null>(null);
   const [status, setStatus] = useState<"idle" | "generating" | "error">("idle");
@@ -220,9 +259,29 @@ export default function AdminBuildPage() {
       {/* Grid */}
       {grid && (
         <>
-          <div style={{ marginBottom: "0.75rem", fontSize: "0.8rem", color: "#aaa" }}>
-            {grid.length} × {grid[0]?.length} grid — click any cell to cycle die value (0–6)
-            {rotations && <span style={{ color: "#27ae60", marginLeft: 12 }}>✓ Smart rotation applied</span>}
+          {/* Grid toolbar */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: "0.75rem", flexWrap: "wrap" }}>
+            <span style={{ fontSize: "0.8rem", color: "#aaa" }}>
+              {grid.length} × {grid[0]?.length} — click any cell to cycle (0–6)
+              {rotations && <span style={{ color: "#27ae60", marginLeft: 10 }}>✓ smart rotation</span>}
+            </span>
+
+            {/* Dice View / Number View toggle — same as build.tsx */}
+            <button
+              onClick={() => setDiceView((v) => !v)}
+              style={{
+                padding: "0.35rem 0.85rem",
+                backgroundColor: "#6B3FA0",
+                color: "#fff",
+                border: "none",
+                borderRadius: 6,
+                cursor: "pointer",
+                fontWeight: "bold",
+                fontSize: "0.8rem",
+              }}
+            >
+              {diceView ? "Switch to Number View" : "🎲 Switch to Dice View"}
+            </button>
           </div>
 
           <div style={{
@@ -235,33 +294,26 @@ export default function AdminBuildPage() {
             {grid.map((row, r) => (
               <div key={r} style={{ display: "flex" }}>
                 {row.map((val, c) => {
-                  const color = DICE_COLORS[val] ?? DICE_COLORS[0];
                   const rot = rotations?.[r]?.[c] ?? 0;
+                  const needsRotation = (val === 2 || val === 3) && rot !== 0;
                   return (
+                    // Rotation wrapper — keeps DiceCell layout intact while applying transform
                     <div
                       key={c}
-                      onClick={() => cycleCell(r, c)}
                       title={`R${r + 1} C${c + 1} = ${val}`}
                       style={{
-                        width: cellSize,
-                        height: cellSize,
-                        backgroundColor: color.bg,
-                        cursor: "pointer",
                         flexShrink: 0,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        transform: (val === 2 || val === 3) && rot ? `rotate(${rot}deg)` : undefined,
-                        fontSize: cellSize >= 12 ? cellSize * 0.55 : 0,
-                        color: color.text,
-                        fontWeight: "bold",
-                        userSelect: "none",
-                        boxSizing: "border-box",
-                        borderRight: c % 10 === 9 ? "1px solid rgba(255,255,255,0.08)" : undefined,
-                        borderBottom: r % 10 === 9 ? "1px solid rgba(255,255,255,0.08)" : undefined,
+                        transform: needsRotation ? `rotate(${rot}deg)` : undefined,
                       }}
                     >
-                      {cellSize >= 12 ? val : ""}
+                      <DiceCell
+                        val={val}
+                        size={cellSize}
+                        diceView={diceView}
+                        onClick={() => cycleCell(r, c)}
+                        cursor="pointer"
+                        border={(!diceView && val === 6) ? "1px solid #444" : undefined}
+                      />
                     </div>
                   );
                 })}
@@ -269,15 +321,17 @@ export default function AdminBuildPage() {
             ))}
           </div>
 
-          {/* Color legend */}
-          <div style={{ display: "flex", gap: 12, marginTop: "0.75rem", flexWrap: "wrap" }}>
-            {Object.entries(DICE_COLORS).map(([k, v]) => (
-              <div key={k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "0.75rem" }}>
-                <div style={{ width: 14, height: 14, backgroundColor: v.bg, border: "1px solid #555", borderRadius: 2 }} />
-                <span style={{ color: "#aaa" }}>{k}</span>
-              </div>
-            ))}
-          </div>
+          {/* Color legend (number view only) */}
+          {!diceView && (
+            <div style={{ display: "flex", gap: 12, marginTop: "0.75rem", flexWrap: "wrap" }}>
+              {Object.entries(DICE_COLORS).map(([k, v]) => (
+                <div key={k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "0.75rem" }}>
+                  <div style={{ width: 14, height: 14, backgroundColor: v.bg, border: "1px solid #555", borderRadius: 2 }} />
+                  <span style={{ color: "#aaa" }}>{k} {v.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Export */}
           <div style={{ marginTop: "1.5rem" }}>
