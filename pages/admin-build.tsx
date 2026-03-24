@@ -384,11 +384,14 @@ export default function AdminBuildPage() {
             {mosaicStyles.length} styles generated — click one to load it into the editor
             {smartRotation && <span style={{ color: "#27ae60", marginLeft: 8 }}>(smart rotation will apply on selection)</span>}
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))",
+            gap: "1rem",
+          }}>
             {mosaicStyles.map((s) => {
-              const thumbCols = s.grid[0]?.length ?? 1;
-              const thumbRows = s.grid.length;
-              const cellPx = Math.max(1, Math.floor(160 / thumbCols));
+              const cols = s.grid[0]?.length ?? 1;
+              const rows = s.grid.length;
               const isSelected = selectedStyleId === s.style_id;
               return (
                 <div
@@ -398,35 +401,35 @@ export default function AdminBuildPage() {
                     cursor: "pointer",
                     border: isSelected ? "2px solid #e74c3c" : "2px solid #444",
                     borderRadius: 6,
-                    padding: 4,
+                    padding: 6,
                     backgroundColor: isSelected ? "#2a1a1a" : "#222",
                     transition: "border 0.15s",
                   }}
                 >
-                  {/* Thumbnail grid */}
+                  {/* Dice-image preview — fills the card width, preserves aspect ratio */}
                   <div style={{
                     display: "grid",
-                    gridTemplateColumns: `repeat(${thumbCols}, ${cellPx}px)`,
+                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                    aspectRatio: `${cols} / ${rows}`,
+                    width: "100%",
                     lineHeight: 0,
-                    width: thumbCols * cellPx,
-                    height: thumbRows * cellPx,
                     overflow: "hidden",
+                    borderRadius: 3,
                   }}>
                     {s.grid.map((row, r) =>
                       row.map((val, c) => (
-                        <div
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
                           key={`${r}-${c}`}
-                          style={{
-                            width: cellPx,
-                            height: cellPx,
-                            backgroundColor: (DICE_COLORS[val] ?? DICE_COLORS[0]).bg,
-                          }}
+                          src={`/dice/dice_${val}.png`}
+                          alt=""
+                          style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
                         />
                       ))
                     )}
                   </div>
-                  <div style={{ fontSize: "0.7rem", color: isSelected ? "#e74c3c" : "#888", textAlign: "center", marginTop: 4 }}>
-                    Style #{s.style_id}{isSelected ? " ✓" : ""}
+                  <div style={{ fontSize: "0.75rem", color: isSelected ? "#e74c3c" : "#888", textAlign: "center", marginTop: 5 }}>
+                    Style #{s.style_id}{isSelected ? " ✓ selected" : ""}
                   </div>
                 </div>
               );
