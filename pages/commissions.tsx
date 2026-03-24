@@ -1,8 +1,31 @@
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Layout from "@/components/Layout";
 
 export default function CommissionsPage() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const handleSubmit = async () => {
+    if (!email.trim()) return;
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/commission-inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setStatus("success");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
+
   return (
     <Layout>
       <div
@@ -76,31 +99,50 @@ export default function CommissionsPage() {
 {/* CTA Section */}
 <section style={{ textAlign: "center", margin: "3rem 0" }}>
   <div style={{ marginTop: "2rem" }}>
-    <input
-      type="email"
-      placeholder="Your email address"
-      style={{
-        padding: "0.75rem",
-        width: "300px",
-        maxWidth: "90%",
-        borderRadius: "8px",
-        border: "1px solid #ccc",
-        marginRight: "1rem",
-      }}
-    />
-    <button
-      style={{
-        padding: "0.75rem 1.5rem",
-        fontSize: "1rem",
-        backgroundColor: "#E84C3D",
-        color: "#fff",
-        border: "none",
-        borderRadius: "8px",
-        cursor: "pointer",
-      }}
-    >
-      I'm Interested!
-    </button>
+    {status === "success" ? (
+      <p style={{ color: "#27ae60", fontWeight: "bold", fontSize: "1.1rem" }}>
+        Thanks! We&apos;ll be in touch soon.
+      </p>
+    ) : (
+      <>
+        <input
+          type="email"
+          placeholder="Your email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+          style={{
+            padding: "0.75rem",
+            width: "300px",
+            maxWidth: "90%",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+            marginRight: "1rem",
+          }}
+        />
+        <button
+          onClick={handleSubmit}
+          disabled={status === "loading"}
+          style={{
+            padding: "0.75rem 1.5rem",
+            fontSize: "1rem",
+            backgroundColor: "#E84C3D",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: status === "loading" ? "not-allowed" : "pointer",
+            opacity: status === "loading" ? 0.7 : 1,
+          }}
+        >
+          {status === "loading" ? "Sending..." : "I'm Interested!"}
+        </button>
+        {status === "error" && (
+          <p style={{ color: "#b91c1c", marginTop: "0.75rem", fontSize: "0.9rem" }}>
+            Something went wrong. Please try again or email us directly.
+          </p>
+        )}
+      </>
+    )}
   </div>
 </section>
 
