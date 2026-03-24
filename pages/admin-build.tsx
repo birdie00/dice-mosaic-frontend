@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
+import ReactCrop, { type Crop, type PixelCrop, centerCrop, convertToPixelCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
 const BACKEND_URL = "https://dice-mosaic-backend.onrender.com";
 
@@ -66,8 +68,12 @@ export default function AdminBuildPage() {
   }, [router.isReady, router.query.key]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [crop, setCrop] = useState<Crop>();
+  const [croppedFile, setCroppedFile] = useState<File | null>(null);
+  const [croppedPreview, setCroppedPreview] = useState<string | null>(null);
   const [gridWidth, setGridWidth] = useState(60);
   const [gridHeight, setGridHeight] = useState(60);
   const [smartRotation, setSmartRotation] = useState(false);
@@ -84,11 +90,49 @@ export default function AdminBuildPage() {
     setImageFile(file);
     setGrid(null);
     setRotations(null);
-    if (file) {
-      setImagePreview(URL.createObjectURL(file));
-    } else {
-      setImagePreview(null);
-    }
+    setCrop(undefined);
+    setCroppedFile(null);
+    setCroppedPreview(null);
+    setImagePreview(file ? URL.createObjectURL(file) : null);
+  };
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { width, height } = e.currentTarget;
+    // Start with a centered crop covering 80% of the image
+    setCrop(centerCrop({ unit: "%", width: 80 }, width, height));
+  };
+
+  const applyCrop = () => {
+    const img = imgRef.current;
+    if (!img || !crop) return;
+    const pixelCrop: PixelCrop = convertToPixelCrop(crop, img.width, img.height);
+    const canvas = document.createElement("canvas");
+    const scaleX = img.naturalWidth / img.width;
+    const scaleY = img.naturalHeight / img.height;
+    canvas.width = Math.round(pixelCrop.width * scaleX);
+    canvas.height = Math.round(pixelCrop.height * scaleY);
+    const ctx = canvas.getContext("2d")!;
+    ctx.drawImage(
+      img,
+      pixelCrop.x * scaleX,
+      pixelCrop.y * scaleY,
+      pixelCrop.width * scaleX,
+      pixelCrop.height * scaleY,
+      0, 0,
+      canvas.width,
+      canvas.height,
+    );
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      setCroppedFile(new File([blob], "cropped.png", { type: "image/png" }));
+      setCroppedPreview(URL.createObjectURL(blob));
+    }, "image/png");
+  };
+
+  const resetCrop = () => {
+    setCroppedFile(null);
+    setCroppedPreview(null);
+    setCrop(undefined);
   };
 
   const handleGenerate = async () => {
@@ -101,9 +145,10 @@ export default function AdminBuildPage() {
     setExportStatus("idle");
 
     try {
-      // Step 1: analyze
+      // Step 1: analyze — use cropped version if available
+      const fileToSend = croppedFile ?? imageFile;
       const formData = new FormData();
-      formData.append("file", imageFile, "upload.png");
+      formData.append("file", fileToSend, "upload.png");
       formData.append("grid_width", gridWidth.toString());
       formData.append("grid_height", gridHeight.toString());
 
@@ -121,7 +166,7 @@ export default function AdminBuildPage() {
       // Step 2: smart rotation (if enabled)
       if (smartRotation) {
         const rotForm = new FormData();
-        rotForm.append("file", imageFile, "upload.png");
+        rotForm.append("file", fileToSend, "upload.png");
         rotForm.append("grid_data", JSON.stringify(generatedGrid));
 
         const rotRes = await fetch(`${BACKEND_URL}/smart-rotation`, {
@@ -245,10 +290,61 @@ export default function AdminBuildPage() {
         </button>
       </div>
 
-      {/* Image preview */}
-      {imagePreview && (
-        <img src={imagePreview} alt="preview"
-          style={{ height: 100, objectFit: "contain", borderRadius: 6, marginBottom: "1rem", border: "1px solid #444" }} />
+      {/* Crop UI */}
+      {imagePreview && !croppedPreview && (
+        <div style={{ marginBottom: "1rem" }}>
+          <div style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>
+            Drag and resize the crop box, then click <strong style={{ color: "#eee" }}>Crop</strong> to confirm.
+          </div>
+          <ReactCrop
+            crop={crop}
+            onChange={(c) => setCrop(c)}
+            style={{ maxWidth: 600, display: "block" }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              ref={imgRef}
+              src={imagePreview}
+              alt="upload"
+              onLoad={handleImageLoad}
+              style={{ maxWidth: 600, maxHeight: 480, display: "block" }}
+            />
+          </ReactCrop>
+          <div style={{ marginTop: "0.6rem", display: "flex", gap: 8 }}>
+            <button
+              onClick={applyCrop}
+              disabled={!crop}
+              style={{
+                padding: "0.4rem 1rem", backgroundColor: "#27ae60", color: "#fff",
+                border: "none", borderRadius: 6, cursor: crop ? "pointer" : "not-allowed",
+                opacity: crop ? 1 : 0.5, fontWeight: "bold", fontSize: "0.85rem",
+              }}
+            >
+              Crop
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Cropped preview */}
+      {croppedPreview && (
+        <div style={{ marginBottom: "1rem", display: "flex", alignItems: "flex-start", gap: 12 }}>
+          <div>
+            <div style={{ fontSize: "0.75rem", color: "#aaa", marginBottom: 4 }}>Cropped image (will be sent to backend)</div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={croppedPreview} alt="cropped"
+              style={{ maxHeight: 160, maxWidth: 320, objectFit: "contain", borderRadius: 6, border: "1px solid #27ae60", display: "block" }} />
+          </div>
+          <button
+            onClick={resetCrop}
+            style={{
+              marginTop: 20, padding: "0.35rem 0.85rem", backgroundColor: "#444", color: "#eee",
+              border: "1px solid #666", borderRadius: 6, cursor: "pointer", fontSize: "0.8rem",
+            }}
+          >
+            Reset Crop
+          </button>
+        </div>
       )}
 
       {/* Error */}
