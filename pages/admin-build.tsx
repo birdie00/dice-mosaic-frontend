@@ -227,17 +227,22 @@ export default function AdminBuildPage() {
     setExportStatus("saving");
     setDraftResult(null);
     try {
+      const payload = { grid };
+      console.log("[admin-build] export payload: grid dimensions", grid.length, "x", grid[0]?.length, "| JSON size", JSON.stringify(payload).length, "bytes");
       const res = await fetch("/api/admin-save-draft", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ grid }),
+        body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("Save failed");
       const data = await res.json();
+      console.log("[admin-build] export response status:", res.status, "| body:", data);
+      if (!res.ok) throw new Error(data?.detail ?? data?.error ?? `HTTP ${res.status}`);
       setDraftResult({ id: data.id, name: data.name });
       setExportStatus("done");
-    } catch {
+    } catch (err: any) {
+      console.error("[admin-build] export failed:", err);
       setExportStatus("error");
+      setErrorMsg(err.message ?? "Unknown error");
     }
   };
 
@@ -539,7 +544,9 @@ export default function AdminBuildPage() {
             )}
 
             {exportStatus === "error" && (
-              <p style={{ marginTop: "0.5rem", color: "#e74c3c", fontSize: "0.85rem" }}>Failed to save draft. Check console.</p>
+              <p style={{ marginTop: "0.5rem", color: "#e74c3c", fontSize: "0.85rem" }}>
+                Failed to save draft: {errorMsg || "check console for details"}
+              </p>
             )}
           </div>
         </>
