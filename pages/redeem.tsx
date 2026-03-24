@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Layout from "@/components/Layout";
 
 export default function RedeemPage() {
   const [email, setEmail] = useState('');
@@ -36,6 +37,7 @@ export default function RedeemPage() {
   };
 
   return (
+    <Layout>
     <div
       style={{
         backgroundColor: '#3C5A78', // Blue
@@ -171,5 +173,6 @@ export default function RedeemPage() {
         )}
       </div>
     </div>
+    </Layout>
   );
 }

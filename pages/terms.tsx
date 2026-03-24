@@ -1,8 +1,9 @@
 import Head from "next/head";
+import Layout from "@/components/Layout";
 
 export default function TermsOfService() {
   return (
-    <>
+    <Layout>
       <Head>
         <title>Terms of Service — Pipcasso</title>
       </Head>
@@ -84,6 +85,6 @@ export default function TermsOfService() {
           </p>
         </section>
       </main>
-    </>
+    </Layout>
   );
 }

@@ -1,8 +1,9 @@
 import Head from "next/head";
+import Layout from "@/components/Layout";
 
 export default function RefundPolicy() {
   return (
-    <>
+    <Layout>
       <Head>
         <title>Refund Policy — Pipcasso</title>
       </Head>
@@ -53,6 +54,6 @@ export default function RefundPolicy() {
           </p>
         </section>
       </main>
-    </>
+    </Layout>
   );
 }

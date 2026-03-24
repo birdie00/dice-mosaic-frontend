@@ -1,8 +1,9 @@
 import Head from "next/head";
+import Layout from "@/components/Layout";
 
 export default function PrivacyPolicy() {
   return (
-    <>
+    <Layout>
       <Head>
         <title>Privacy Policy — Pipcasso</title>
       </Head>
@@ -72,6 +73,6 @@ export default function PrivacyPolicy() {
           </p>
         </section>
       </main>
-    </>
+    </Layout>
   );
 }

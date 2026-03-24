@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import Layout from '@/components/Layout';
 
 const DICE_COLORS: Record<number, { bg: string; label: string; text: string }> = {
   0: { bg: '#111111', label: 'Black',  text: '#ffffff' },
@@ -222,7 +223,7 @@ export default function BuildPage() {
   // ── Login screen ───────────────────────────────────────────────────────
   if (screen === 'login') {
     return (
-      <>
+      <Layout>
         <Head><title>Build Mode — Pipcasso</title></Head>
         <div style={{ minHeight: '100vh', backgroundColor: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
           <div style={{ backgroundColor: PANEL, borderRadius: 16, padding: '3rem', maxWidth: 420, width: '100%', margin: '1rem', boxShadow: '0 4px 24px rgba(0,0,0,0.10)', border: `1px solid ${BORDER}` }}>
@@ -253,7 +254,7 @@ export default function BuildPage() {
             </button>
           </div>
         </div>
-      </>
+      </Layout>
     );
   }
 
@@ -318,7 +319,7 @@ export default function BuildPage() {
     const BOTTOM_BAR_H = 64;
     const TOGGLE_H     = 48;
     return (
-      <>
+      <Layout>
         <Head><title>Build Mode — {project.projectName}</title></Head>
         <style>{`
           @keyframes cellPulse {
@@ -448,13 +449,13 @@ export default function BuildPage() {
             </button>
           </div>
         </div>
-      </>
+      </Layout>
     );
   }
 
   // ── DESKTOP LAYOUT ──────────────────────────────────────────────────────
   return (
-    <>
+    <Layout>
       <Head><title>Build Mode — {project.projectName}</title></Head>
       <style>{`
         @keyframes cellPulse {
@@ -561,6 +562,6 @@ export default function BuildPage() {
           </div>
         </div>
       </div>
-    </>
+    </Layout>
   );
 }

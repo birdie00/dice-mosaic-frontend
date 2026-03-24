@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Layout from "@/components/Layout";
 
 export default function ThankYouPage() {
   const router = useRouter();
@@ -91,6 +92,7 @@ const generate = async () => {
   
 
   return (
+    <Layout>
     <div
       style={{
         backgroundColor: "#3B1B47",
@@ -290,5 +292,6 @@ const generate = async () => {
         </div>
       </div>
     </div>
-  );  
+    </Layout>
+  );
 }
