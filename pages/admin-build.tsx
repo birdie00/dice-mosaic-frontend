@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
-import ReactCrop, { type Crop, type PixelCrop, centerCrop, convertToPixelCrop } from "react-image-crop";
+import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop, convertToPixelCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
 const BACKEND_URL = "https://dice-mosaic-backend.onrender.com";
@@ -78,8 +78,19 @@ export default function AdminBuildPage() {
   const [gridHeight, setGridHeight] = useState(60);
   const [smartRotation, setSmartRotation] = useState(false);
   const [diceView, setDiceView] = useState(false);
+  const [mosaicStyles, setMosaicStyles] = useState<{ style_id: number; grid: number[][] }[]>([]);
+  const [selectedStyleId, setSelectedStyleId] = useState<number | null>(null);
   const [grid, setGrid] = useState<number[][] | null>(null);
   const [rotations, setRotations] = useState<number[][] | null>(null);
+
+  // Re-lock crop aspect ratio whenever grid dimensions change (and image is loaded, crop not yet confirmed)
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img || !imagePreview || croppedPreview || img.width === 0) return;
+    const aspect = gridWidth / gridHeight;
+    setCrop(makeAspectCrop({ unit: "%", width: 80 }, aspect, img.width, img.height));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gridWidth, gridHeight]);
   const [status, setStatus] = useState<"idle" | "generating" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [exportStatus, setExportStatus] = useState<"idle" | "saving" | "done" | "error">("idle");
@@ -98,8 +109,8 @@ export default function AdminBuildPage() {
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
-    // Start with a centered crop covering 80% of the image
-    setCrop(centerCrop({ unit: "%", width: 80 }, width, height));
+    const aspect = gridWidth / gridHeight;
+    setCrop(makeAspectCrop({ unit: "%", width: 80 }, aspect, width, height));
   };
 
   const applyCrop = () => {
@@ -141,6 +152,8 @@ export default function AdminBuildPage() {
     setErrorMsg("");
     setGrid(null);
     setRotations(null);
+    setMosaicStyles([]);
+    setSelectedStyleId(null);
     setDraftResult(null);
     setExportStatus("idle");
 
@@ -160,32 +173,42 @@ export default function AdminBuildPage() {
 
       if (!analyzeRes.ok) throw new Error(`Analyze failed: ${analyzeRes.status}`);
       const analyzeData = await analyzeRes.json();
-      const generatedGrid: number[][] = analyzeData.styles[0].full_grid ?? analyzeData.styles[0].grid;
-      setGrid(generatedGrid);
-
-      // Step 2: smart rotation (if enabled)
-      if (smartRotation) {
-        const rotForm = new FormData();
-        rotForm.append("file", fileToSend, "upload.png");
-        rotForm.append("grid_data", JSON.stringify(generatedGrid));
-
-        const rotRes = await fetch(`${BACKEND_URL}/smart-rotation`, {
-          method: "POST",
-          body: rotForm,
-          signal: AbortSignal.timeout(60000),
-        });
-
-        if (rotRes.ok) {
-          const rotData = await rotRes.json();
-          setRotations(rotData.rotations);
-        }
-        // Non-fatal: if smart rotation fails, just show grid without rotations
-      }
+      const styles: { style_id: number; grid: number[][]; full_grid?: number[][] }[] = analyzeData.styles;
+      setMosaicStyles(styles.map((s) => ({ style_id: s.style_id, grid: s.full_grid ?? s.grid })));
+      // Smart rotation runs when the user selects a style (see handleSelectStyle)
 
       setStatus("idle");
     } catch (err: any) {
       setErrorMsg(err.message ?? "Unknown error");
       setStatus("error");
+    }
+  };
+
+  const handleSelectStyle = async (styleId: number) => {
+    const chosen = mosaicStyles.find((s) => s.style_id === styleId);
+    if (!chosen) return;
+    setSelectedStyleId(styleId);
+    setGrid(chosen.grid);
+    setRotations(null);
+    setDraftResult(null);
+    setExportStatus("idle");
+
+    if (smartRotation) {
+      const fileToSend = croppedFile ?? imageFile;
+      if (!fileToSend) return;
+      try {
+        const rotForm = new FormData();
+        rotForm.append("file", fileToSend, "upload.png");
+        rotForm.append("grid_data", JSON.stringify(chosen.grid));
+        const rotRes = await fetch(`${BACKEND_URL}/smart-rotation`, {
+          method: "POST",
+          body: rotForm,
+          signal: AbortSignal.timeout(60000),
+        });
+        if (rotRes.ok) setRotations((await rotRes.json()).rotations);
+      } catch {
+        // Non-fatal — grid still loads without rotation
+      }
     }
   };
 
@@ -294,11 +317,13 @@ export default function AdminBuildPage() {
       {imagePreview && !croppedPreview && (
         <div style={{ marginBottom: "1rem" }}>
           <div style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>
-            Drag and resize the crop box, then click <strong style={{ color: "#eee" }}>Crop</strong> to confirm.
+            Crop box is locked to <strong style={{ color: "#eee" }}>{gridWidth}:{gridHeight}</strong> ratio (matches grid dimensions).
+            Resize or drag, then click <strong style={{ color: "#eee" }}>Crop</strong> to confirm.
           </div>
           <ReactCrop
             crop={crop}
             onChange={(c) => setCrop(c)}
+            aspect={gridWidth / gridHeight}
             style={{ maxWidth: 600, display: "block" }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -350,6 +375,64 @@ export default function AdminBuildPage() {
       {/* Error */}
       {status === "error" && (
         <p style={{ color: "#e74c3c", marginBottom: "1rem", fontSize: "0.85rem" }}>Error: {errorMsg}</p>
+      )}
+
+      {/* Style picker */}
+      {mosaicStyles.length > 0 && (
+        <div style={{ marginBottom: "1.5rem" }}>
+          <div style={{ fontSize: "0.85rem", color: "#aaa", marginBottom: "0.75rem" }}>
+            {mosaicStyles.length} styles generated — click one to load it into the editor
+            {smartRotation && <span style={{ color: "#27ae60", marginLeft: 8 }}>(smart rotation will apply on selection)</span>}
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
+            {mosaicStyles.map((s) => {
+              const thumbCols = s.grid[0]?.length ?? 1;
+              const thumbRows = s.grid.length;
+              const cellPx = Math.max(1, Math.floor(160 / thumbCols));
+              const isSelected = selectedStyleId === s.style_id;
+              return (
+                <div
+                  key={s.style_id}
+                  onClick={() => handleSelectStyle(s.style_id)}
+                  style={{
+                    cursor: "pointer",
+                    border: isSelected ? "2px solid #e74c3c" : "2px solid #444",
+                    borderRadius: 6,
+                    padding: 4,
+                    backgroundColor: isSelected ? "#2a1a1a" : "#222",
+                    transition: "border 0.15s",
+                  }}
+                >
+                  {/* Thumbnail grid */}
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${thumbCols}, ${cellPx}px)`,
+                    lineHeight: 0,
+                    width: thumbCols * cellPx,
+                    height: thumbRows * cellPx,
+                    overflow: "hidden",
+                  }}>
+                    {s.grid.map((row, r) =>
+                      row.map((val, c) => (
+                        <div
+                          key={`${r}-${c}`}
+                          style={{
+                            width: cellPx,
+                            height: cellPx,
+                            backgroundColor: (DICE_COLORS[val] ?? DICE_COLORS[0]).bg,
+                          }}
+                        />
+                      ))
+                    )}
+                  </div>
+                  <div style={{ fontSize: "0.7rem", color: isSelected ? "#e74c3c" : "#888", textAlign: "center", marginTop: 4 }}>
+                    Style #{s.style_id}{isSelected ? " ✓" : ""}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
 
       {/* Grid */}
