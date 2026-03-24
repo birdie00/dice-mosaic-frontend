@@ -3,12 +3,20 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 export default function Layout({ children, hero }: { children: React.ReactNode; hero?: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showNav, setShowNav] = useState(false);
+  const router = useRouter();
+  const isHomepage = router.pathname === "/";
+  const [showNav, setShowNav] = useState(!isHomepage);
 
   useEffect(() => {
+    if (!isHomepage) {
+      setShowNav(true);
+      return;
+    }
+    setShowNav(window.scrollY > window.innerHeight * 0.75);
     let ticking = false;
     const onScroll = () => {
       if (!ticking) {
@@ -21,7 +29,7 @@ export default function Layout({ children, hero }: { children: React.ReactNode; 
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isHomepage]);
 
   return (
     <>
