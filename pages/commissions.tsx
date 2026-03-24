@@ -117,7 +117,7 @@ export default function CommissionsPage() {
             <p>
               Want to talk to a real human? <br />
               Email us directly at{" "}
-              <a href="mailto:commissions@pipcasso.com">commissions@pipcasso.com</a>
+              <a href="mailto:jacob@kokomoandco.com">jacob@kokomoandco.com</a>
             </p>
           </section>
         </div>
