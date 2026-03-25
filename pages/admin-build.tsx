@@ -53,19 +53,44 @@ function DiceCell({ val, size, diceView, border, boxShadow, animation, opacity, 
   );
 }
 
+const ADMIN_PASSWORD = "Pipcasso!321";
+const SESSION_KEY = "admin_build_authed";
+
 export default function AdminBuildPage() {
   const router = useRouter();
-  const [authed, setAuthed] = useState(false);
+  const [keyOk, setKeyOk] = useState(false);
+  const [passwordOk, setPasswordOk] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
 
-  // Auth check — wait for router to be ready so query params are available
+  const authed = keyOk && passwordOk;
+
+  // Step 1: URL key check
   useEffect(() => {
     if (!router.isReady) return;
     if (router.query.key === "pipcasso") {
-      setAuthed(true);
+      setKeyOk(true);
     } else {
       router.replace("/");
     }
   }, [router.isReady, router.query.key]);
+
+  // Step 2: Restore password auth from sessionStorage
+  useEffect(() => {
+    if (typeof sessionStorage !== "undefined" && sessionStorage.getItem(SESSION_KEY) === "1") {
+      setPasswordOk(true);
+    }
+  }, []);
+
+  const handlePasswordSubmit = () => {
+    if (passwordInput === ADMIN_PASSWORD) {
+      sessionStorage.setItem(SESSION_KEY, "1");
+      setPasswordOk(true);
+      setPasswordError(false);
+    } else {
+      setPasswordError(true);
+    }
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -251,7 +276,54 @@ export default function AdminBuildPage() {
     ? Math.max(6, Math.min(14, Math.floor(900 / (grid[0]?.length ?? 60))))
     : 10;
 
-  if (!authed) return null;
+  if (!keyOk) return null;
+
+  if (!passwordOk) {
+    return (
+      <div style={{
+        minHeight: "100vh", backgroundColor: "#1a1a1a", display: "flex",
+        alignItems: "center", justifyContent: "center", fontFamily: "monospace",
+      }}>
+        <div style={{
+          backgroundColor: "#222", border: "1px solid #444", borderRadius: 8,
+          padding: "2rem 2.5rem", width: 320, textAlign: "center",
+        }}>
+          <div style={{ fontSize: "1.1rem", color: "#f1c40f", fontWeight: "bold", marginBottom: "1.5rem" }}>
+            🔒 Admin Build Mode
+          </div>
+          <input
+            type="password"
+            value={passwordInput}
+            onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(false); }}
+            onKeyDown={(e) => e.key === "Enter" && handlePasswordSubmit()}
+            placeholder="Password"
+            autoFocus
+            style={{
+              width: "100%", padding: "0.6rem 0.75rem", borderRadius: 6,
+              border: passwordError ? "1px solid #e74c3c" : "1px solid #555",
+              backgroundColor: "#333", color: "#eee", fontSize: "1rem",
+              boxSizing: "border-box", marginBottom: "0.75rem",
+            }}
+          />
+          {passwordError && (
+            <div style={{ color: "#e74c3c", fontSize: "0.82rem", marginBottom: "0.75rem" }}>
+              Incorrect password
+            </div>
+          )}
+          <button
+            onClick={handlePasswordSubmit}
+            style={{
+              width: "100%", padding: "0.6rem", backgroundColor: "#e74c3c", color: "#fff",
+              border: "none", borderRadius: 6, fontWeight: "bold", fontSize: "0.95rem",
+              cursor: "pointer",
+            }}
+          >
+            Enter
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ fontFamily: "monospace", padding: "1.5rem", backgroundColor: "#1a1a1a", minHeight: "100vh", color: "#eee" }}>
