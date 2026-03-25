@@ -537,9 +537,14 @@ export default function AdminBuildPage() {
 
             {exportStatus === "done" && draftResult && (
               <div style={{ marginTop: "0.75rem", padding: "0.75rem 1rem", backgroundColor: "#1e3a1e", border: "1px solid #27ae60", borderRadius: 6, fontSize: "0.85rem" }}>
-                <div style={{ color: "#27ae60", fontWeight: "bold", marginBottom: 4 }}>✓ Draft saved</div>
-                <div style={{ color: "#aaa" }}>Name: <span style={{ color: "#eee" }}>{draftResult.name}</span></div>
-                <div style={{ color: "#aaa" }}>Draft ID: <code style={{ color: "#f1c40f", userSelect: "all" }}>{draftResult.id}</code></div>
+                <div style={{ color: "#27ae60", fontWeight: "bold", marginBottom: 6 }}>✓ Draft saved to build mode</div>
+                <div style={{ color: "#aaa", marginBottom: 4 }}>Name: <span style={{ color: "#eee" }}>{draftResult.name}</span></div>
+                <div style={{ color: "#aaa", marginBottom: 8 }}>
+                  Build mode code: <code style={{ color: "#f1c40f", fontSize: "1.1rem", userSelect: "all", letterSpacing: 2 }}>{draftResult.id}</code>
+                </div>
+                <div style={{ color: "#555", fontSize: "0.75rem" }}>
+                  Load at: <span style={{ color: "#888" }}>/build?code={draftResult.id}</span>
+                </div>
               </div>
             )}
 
