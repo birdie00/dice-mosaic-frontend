@@ -28,10 +28,10 @@ const {
 
 
   const priceMap: Record<string, string | Record<string, string>> = {
-    	lowres: "price_1RD2wr2fwLaC6Z6dInNMdCrA",
-	highres: "price_1RHoaW2fwLaC6Z6d8BX28zWn",
-    	pdf: "price_1RD2xW2fwLaC6Z6dbxHYbwKC",
-    	bundle: "price_1RD3532fwLaC6Z6d7g5U4D24",
+    	lowres: "price_1TBeRyGsd5hPM5GltF6aMyXf",
+	highres: "price_1TBeRxGsd5hPM5GlgU8HIxDm",
+    	pdf: "price_1TBeRyGsd5hPM5GlEXVzdwOb",
+    	bundle: "price_1TBeRyGsd5hPM5GlbEkwMixN",
     	print: {
      	 small: "price_1RD3Bp2fwLaC6Z6d69IThiiL",
     	  medium: "price_1RD3Bp2fwLaC6Z6dnYfjXG6Y",
