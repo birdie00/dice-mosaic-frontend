@@ -53,7 +53,7 @@ async function sendOwnerNotification({
 
   await resend.emails.send({
     from: "Pipcasso <noreply@pipcasso.com>",
-    to: "getpipcasso@gmail.com",
+    to: "jacob@kokomoandco.com",
     subject: `🎲 New Pipcasso Order — ${productType}`,
     text: body,
   });
@@ -95,7 +95,7 @@ async function sendGelatoFailureAlert({
 
   await resend.emails.send({
     from: "Pipcasso <noreply@pipcasso.com>",
-    to: "getpipcasso@gmail.com",
+    to: "jacob@kokomoandco.com",
     subject: "⚠️ Gelato Order Failed — Manual Action Needed",
     text: body,
   });
