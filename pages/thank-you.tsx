@@ -20,53 +20,57 @@ export default function ThankYouPage() {
 
     const fetchSession = async () => {
       try {
-        const res = await fetch(`/api/get-stripe-session?session_id=${session_id}`);
-        const data = await res.json();
+        const [sessionRes, filesRes] = await Promise.all([
+          fetch(`/api/get-stripe-session?session_id=${session_id}`),
+          fetch(`/api/get-order-files?session_id=${session_id}`),
+        ]);
+
+        const data = await sessionRes.json();
+        const files = filesRes.ok ? await filesRes.json() : null;
 
         console.log("🎯 Raw response from get-stripe-session:", data);
-        console.log("🔍 pdfUrl in response:", data?.metadata?.pdfUrl);
+        console.log("📦 Order files from Supabase:", files);
 
         if (data?.metadata) {
           setProductType(data.metadata.productType || null);
-          setPdfUrl(data.metadata.pdfUrl || null);
-          setLowResUrl(data.metadata.lowResImageUrl || null);
-          setHighResUrl(data.metadata.highResImageUrl || null);
-          // 🧠 If this is a highres order, but no highResImageUrl was passed
-if (
-  data?.metadata?.productType === "highres" &&
-  data.metadata.grid &&
-  data.metadata.styleId &&
-  data.metadata.projectName &&
-  !data.metadata.highResImageUrl
-) {
-  setGeneratingHighRes(true);
+          setPdfUrl(files?.pdf_url || data.metadata.pdfUrl || null);
+          setLowResUrl(files?.low_res_url || data.metadata.lowResImageUrl || null);
+          setHighResUrl(files?.high_res_url || data.metadata.highResImageUrl || null);
 
-const generate = async () => {
-  const res = await fetch("/api/generate-highres", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      grid: JSON.parse(data.metadata.grid),
-      styleId: data.metadata.styleId,
-      projectName: data.metadata.projectName,
-    }),
-  });
+          if (
+            data?.metadata?.productType === "highres" &&
+            data.metadata.grid &&
+            data.metadata.styleId &&
+            data.metadata.projectName &&
+            !files?.high_res_url &&
+            !data.metadata.highResImageUrl
+          ) {
+            setGeneratingHighRes(true);
 
-  const result = await res.json();
-  setHighResDownloadUrl(result.imageUrl);
-  setGeneratingHighRes(false);
-};
+            const generate = async () => {
+              const res = await fetch("/api/generate-highres", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  grid: JSON.parse(data.metadata.grid),
+                  styleId: data.metadata.styleId,
+                  projectName: data.metadata.projectName,
+                }),
+              });
 
+              const result = await res.json();
+              setHighResDownloadUrl(result.imageUrl);
+              setGeneratingHighRes(false);
+            };
 
-  generate();
-}
+            generate();
+          }
 
           setCode(data.code || null);
         } else {
           setPdfUrl(null);
         }
-
-              } catch (error) {
+      } catch (error) {
         console.error("Error fetching session:", error);
         setPdfUrl(null);
       } finally {

@@ -4,6 +4,7 @@ import { buffer } from "micro";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 import { Resend } from "resend";
+import { supabase } from "@/lib/supabase";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -136,6 +137,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const productType = session.metadata?.productType || "unknown";
+
+    await supabase.from("order_files").upsert({
+      session_id: session.id,
+      product_type: productType,
+      high_res_url: session.metadata?.highResImageUrl || null,
+      low_res_url: session.metadata?.lowResImageUrl || null,
+      pdf_url: session.metadata?.pdfUrl || null,
+      email: session.customer_details?.email || session.metadata?.email || null,
+    }, { onConflict: "session_id" });
 
     let gelatoFailed = false;
     let gelatoErrorMessage = "";
