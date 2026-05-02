@@ -253,7 +253,7 @@ const handleCustomRatioChange = () => {
         throw new Error("Missing dice_map_url in response.");
       }
 
-      const resolvedPdfUrl = `${BACKEND_URL}${data.dice_map_url}`;
+      const resolvedPdfUrl = data.dice_map_url.startsWith("http") ? data.dice_map_url : `${BACKEND_URL}${data.dice_map_url}`;
       setPdfUrl(resolvedPdfUrl);
 
       // Save grid to grid_drafts immediately — fire and forget, non-blocking.
@@ -296,7 +296,7 @@ const handleCustomRatioChange = () => {
 
     if (!res.ok) throw new Error(`generate-image error ${res.status}`);
     const data = await res.json();
-    return `${BACKEND_URL}${data.image_url}`;
+    return data.image_url.startsWith("http") ? data.image_url : `${BACKEND_URL}${data.image_url}`;
   };
   
   const handleStripeCheckout = async (
