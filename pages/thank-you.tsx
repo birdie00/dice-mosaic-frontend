@@ -138,6 +138,7 @@ const generate = async () => {
                 onClick={async () => {
                   try {
                     const res = await fetch(lowResUrl);
+                    if (!res.ok) throw new Error(`Server returned ${res.status}`);
                     const blob = await res.blob();
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
@@ -146,7 +147,7 @@ const generate = async () => {
                     a.click();
                     URL.revokeObjectURL(url);
                   } catch (err) {
-                    alert("Failed to download image. Please try again.");
+                    alert("Failed to download image. Please contact support at getpipcasso@gmail.com.");
                     console.error(err);
                   }
                 }}
@@ -161,6 +162,7 @@ const generate = async () => {
                 onClick={async () => {
                   try {
                     const res = await fetch(highResUrl);
+                    if (!res.ok) throw new Error(`Server returned ${res.status}`);
                     const blob = await res.blob();
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
@@ -169,7 +171,7 @@ const generate = async () => {
                     a.click();
                     URL.revokeObjectURL(url);
                   } catch (err) {
-                    alert("Failed to download image. Please try again.");
+                    alert("Failed to download image. Please contact support at getpipcasso@gmail.com.");
                     console.error(err);
                   }
                 }}
@@ -200,6 +202,7 @@ const generate = async () => {
                     onClick={async () => {
                       try {
                         const res = await fetch(highResUrl);
+                        if (!res.ok) throw new Error(`Server returned ${res.status}`);
                         const blob = await res.blob();
                         const url = URL.createObjectURL(blob);
                         const a = document.createElement("a");
@@ -208,7 +211,7 @@ const generate = async () => {
                         a.click();
                         URL.revokeObjectURL(url);
                       } catch (err) {
-                        alert("Failed to download high-res image. Please try again.");
+                        alert("Failed to download high-res image. Please contact support at getpipcasso@gmail.com.");
                         console.error(err);
                       }
                     }}
