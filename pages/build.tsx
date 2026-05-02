@@ -5,12 +5,12 @@ import Layout from '@/components/Layout';
 
 const DICE_COLORS: Record<number, { bg: string; label: string; text: string }> = {
   0: { bg: '#111111', label: 'Black',  text: '#ffffff' },
-  1: { bg: '#e74c3c', label: 'Red',    text: '#ffffff' },
-  2: { bg: '#2980b9', label: 'Blue',   text: '#ffffff' },
-  3: { bg: '#e67e22', label: 'Orange', text: '#ffffff' },
-  4: { bg: '#27ae60', label: 'Green',  text: '#ffffff' },
-  5: { bg: '#f1c40f', label: 'Yellow', text: '#000000' },
-  6: { bg: '#ffffff', label: 'White',  text: '#000000' },
+  1: { bg: '#4a1080', label: 'Purple', text: '#ffffff' },
+  2: { bg: '#1a3aaa', label: 'Blue',   text: '#ffffff' },
+  3: { bg: '#6abf2a', label: 'Green',  text: '#000000' },
+  4: { bg: '#f5c518', label: 'Yellow', text: '#000000' },
+  5: { bg: '#e07830', label: 'Orange', text: '#000000' },
+  6: { bg: '#f5f0e8', label: 'White',  text: '#000000' },
 };
 
 interface ProjectData {
