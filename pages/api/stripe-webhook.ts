@@ -138,7 +138,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session = event.data.object as Stripe.Checkout.Session;
     const productType = session.metadata?.productType || "unknown";
 
-    await supabase.from("order_files").upsert({
+    const { error: upsertError } = await supabase.from("order_files").upsert({
       session_id: session.id,
       product_type: productType,
       high_res_url: session.metadata?.highResImageUrl || null,
@@ -146,6 +146,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       pdf_url: session.metadata?.pdfUrl || null,
       email: session.customer_details?.email || session.metadata?.email || null,
     }, { onConflict: "session_id" });
+    if (upsertError) console.error("❌ order_files upsert failed:", JSON.stringify(upsertError));
 
     let gelatoFailed = false;
     let gelatoErrorMessage = "";
