@@ -24,11 +24,12 @@ export default function RedeemPage() {
 
     const data = await res.json();
 
-    if (res.ok && data.pdfUrl) {
-      setPdfUrl(data.pdfUrl);
-    } else if (res.ok && data.imageUrl) {
-      setImageUrl(data.imageUrl);
-      setImageLabel(data.label || 'Download Your Image');
+    if (res.ok && (data.pdfUrl || data.imageUrl)) {
+      if (data.pdfUrl) setPdfUrl(data.pdfUrl);
+      if (data.imageUrl) {
+        setImageUrl(data.imageUrl);
+        setImageLabel(data.label || 'Download Your Image');
+      }
     } else {
       setError(data.error || "Access code not found or doesn't match your email.");
     }
