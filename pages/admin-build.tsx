@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
-import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop, convertToPixelCrop } from "react-image-crop";
+import ReactCrop, { type Crop, type PixelCrop, makeAspectCrop, convertToPixelCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
 const BACKEND_URL = "https://dice-mosaic-backend.onrender.com";
@@ -15,7 +15,115 @@ const DICE_COLORS: Record<number, { bg: string; label: string; text: string }> =
   6: { bg: '#f5f0e8', label: 'White',  text: '#000000' },
 };
 
-// Copied exactly from build.tsx
+// ─── Pure orientation helpers (outside component, no side effects) ────────────
+
+/**
+ * Computes a Sobel gradient over one cell's image region and returns the
+ * nearest-90° rotation (0 | 90 | 180 | 270) that aligns the die's sloped
+ * edge with the light-to-dark direction.
+ */
+function computeCellGradientAngle(
+  data: Uint8ClampedArray,
+  imgWidth: number,
+  imgHeight: number,
+  r: number, c: number,
+  cellW: number, cellH: number,
+): number {
+  // Clamp to valid pixel range (1..n-2 so neighbours always exist)
+  const x0 = Math.max(1, Math.floor(c * cellW));
+  const y0 = Math.max(1, Math.floor(r * cellH));
+  const x1 = Math.min(imgWidth - 2, Math.floor((c + 1) * cellW));
+  const y1 = Math.min(imgHeight - 2, Math.floor((r + 1) * cellH));
+
+  const luma = (x: number, y: number) => {
+    const i = (y * imgWidth + x) * 4;
+    return data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+  };
+
+  let gx = 0, gy = 0;
+  for (let y = y0; y <= y1; y++) {
+    for (let x = x0; x <= x1; x++) {
+      gx += luma(x + 1, y) - luma(x - 1, y);
+      gy += luma(x, y + 1) - luma(x, y - 1);
+    }
+  }
+
+  const angleDeg = Math.atan2(gy, gx) * 180 / Math.PI;
+  return ((Math.round(angleDeg / 90) * 90) % 360 + 360) % 360;
+}
+
+/**
+ * Writes alternating vertical (0°) / horizontal (90°) orientations for 6-cells
+ * that appear in runs of length > 1.  Horizontal runs are processed first and
+ * their cells are locked so overlapping vertical runs do not override them.
+ */
+function applyRunOrientations(grid: number[][], result: number[][]): void {
+  const rows = grid.length;
+  const cols = grid[0]?.length ?? 0;
+  // Track cells already assigned by a horizontal run
+  const horizLocked: boolean[][] = Array.from({ length: rows }, () => new Array(cols).fill(false));
+
+  // Horizontal runs
+  for (let r = 0; r < rows; r++) {
+    let start = -1;
+    for (let c = 0; c <= cols; c++) {
+      if (c < cols && grid[r][c] === 6) {
+        if (start === -1) start = c;
+      } else {
+        const len = c - start;
+        if (start !== -1 && len > 1) {
+          for (let i = 0; i < len; i++) {
+            // Even index in run → vertical (0°), odd → horizontal (90°)
+            result[r][start + i] = i % 2 === 0 ? 0 : 90;
+            horizLocked[r][start + i] = true;
+          }
+        }
+        start = -1;
+      }
+    }
+  }
+
+  // Vertical runs (skip cells already oriented by a horizontal run)
+  for (let c = 0; c < cols; c++) {
+    let start = -1;
+    for (let r = 0; r <= rows; r++) {
+      if (r < rows && grid[r][c] === 6) {
+        if (start === -1) start = r;
+      } else {
+        const len = r - start;
+        if (start !== -1 && len > 1) {
+          for (let i = 0; i < len; i++) {
+            if (!horizLocked[start + i][c]) {
+              result[start + i][c] = i % 2 === 0 ? 0 : 90;
+            }
+          }
+        }
+        start = -1;
+      }
+    }
+  }
+}
+
+/**
+ * Writes parity-based orientations for all 6-cells.
+ * Indexing is 0-based:
+ *   odd rows  (r % 2 === 1)                    → vertical  (0°)
+ *   even rows (r % 2 === 0) + even col          → horizontal (90°)
+ *   even rows + odd col                         → vertical  (0°)
+ */
+function applyParityOrientations(grid: number[][], result: number[][]): void {
+  const rows = grid.length;
+  const cols = grid[0]?.length ?? 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c] !== 6) continue;
+      result[r][c] = (r % 2 === 0 && c % 2 === 0) ? 90 : 0;
+    }
+  }
+}
+
+// ─── DiceCell (copied from build.tsx) ────────────────────────────────────────
+
 function DiceCell({ val, size, diceView, border, boxShadow, animation, opacity, onClick, cursor }: {
   val: number; size: number; diceView: boolean;
   border?: string; boxShadow?: string; animation?: string;
@@ -53,6 +161,38 @@ function DiceCell({ val, size, diceView, border, boxShadow, animation, opacity, 
   );
 }
 
+// ─── Toggle component (shared style) ─────────────────────────────────────────
+
+function Toggle({ label, value, onChange, disabled }: {
+  label: string; value: boolean; onChange: () => void; disabled?: boolean;
+}) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, opacity: disabled ? 0.45 : 1 }}>
+      <label style={{ fontSize: "0.8rem", color: "#aaa" }}>{label}</label>
+      <div
+        onClick={disabled ? undefined : onChange}
+        style={{
+          width: 44, height: 24, borderRadius: 12,
+          cursor: disabled ? "not-allowed" : "pointer",
+          backgroundColor: value ? "#27ae60" : "#555",
+          position: "relative", transition: "background 0.2s",
+        }}
+      >
+        <div style={{
+          position: "absolute", top: 3, left: value ? 23 : 3,
+          width: 18, height: 18, borderRadius: "50%", backgroundColor: "#fff",
+          transition: "left 0.2s",
+        }} />
+      </div>
+      <span style={{ fontSize: "0.75rem", color: value ? "#27ae60" : "#666" }}>
+        {value ? "ON" : "OFF"}
+      </span>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 const ADMIN_PASSWORD = "Pipcasso!321";
 const SESSION_KEY = "admin_build_authed";
 
@@ -65,7 +205,7 @@ export default function AdminBuildPage() {
 
   const authed = keyOk && passwordOk;
 
-  // Step 1: URL key check
+  // URL key check
   useEffect(() => {
     if (!router.isReady) return;
     if (router.query.key === "pipcasso") {
@@ -75,7 +215,7 @@ export default function AdminBuildPage() {
     }
   }, [router.isReady, router.query.key]);
 
-  // Step 2: Restore password auth from sessionStorage
+  // Restore password auth from sessionStorage
   useEffect(() => {
     if (typeof sessionStorage !== "undefined" && sessionStorage.getItem(SESSION_KEY) === "1") {
       setPasswordOk(true);
@@ -101,14 +241,28 @@ export default function AdminBuildPage() {
   const [croppedPreview, setCroppedPreview] = useState<string | null>(null);
   const [gridWidth, setGridWidth] = useState(60);
   const [gridHeight, setGridHeight] = useState(60);
+
+  // ── Rotation toggles ───────────────────────────────────────────────────────
+  // smartRotation: calls the backend /smart-rotation endpoint for val 2/3 cells
   const [smartRotation, setSmartRotation] = useState(false);
+  // slopeGradient: client-side Sobel gradient rotation for val 2/3 cells
+  const [slopeGradient, setSlopeGradient] = useState(false);
+  // alternateSixes: alternates vertical/horizontal orientation in runs of 6s
+  const [alternateSixes, setAlternateSixes] = useState(false);
+  // paritySixes: row/column parity orientation for all 6-cells (overrides alternateSixes)
+  const [paritySixes, setParitySixes] = useState(false);
+
   const [diceView, setDiceView] = useState(false);
   const [mosaicStyles, setMosaicStyles] = useState<{ style_id: number; grid: number[][] }[]>([]);
   const [selectedStyleId, setSelectedStyleId] = useState<number | null>(null);
   const [grid, setGrid] = useState<number[][] | null>(null);
+  // rotations: rotation array returned by the backend smart-rotation endpoint (val 2/3)
   const [rotations, setRotations] = useState<number[][] | null>(null);
+  // slopeRotations: client-computed gradient rotations (val 2/3, used when slopeGradient ON)
+  const [slopeRotations, setSlopeRotations] = useState<number[][] | null>(null);
+  const [gradientBusy, setGradientBusy] = useState(false);
 
-  // Re-lock crop aspect ratio whenever grid dimensions change (and image is loaded, crop not yet confirmed)
+  // Re-lock crop aspect ratio whenever grid dimensions change
   useEffect(() => {
     const img = imgRef.current;
     if (!img || !imagePreview || croppedPreview || img.width === 0) return;
@@ -116,16 +270,116 @@ export default function AdminBuildPage() {
     setCrop(makeAspectCrop({ unit: "%", width: 80 }, aspect, img.width, img.height));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gridWidth, gridHeight]);
+
   const [status, setStatus] = useState<"idle" | "generating" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [exportStatus, setExportStatus] = useState<"idle" | "saving" | "done" | "error">("idle");
   const [draftResult, setDraftResult] = useState<{ id: string; name: string } | null>(null);
 
+  // ── Merged display orientations (used for rendering and export) ────────────
+  // Priority for val 2/3: slopeGradient > smartRotation > 0
+  // Priority for val 6:   paritySixes   > alternateSixes > 0
+  const displayOrientations = useMemo<number[][] | null>(() => {
+    if (!grid) return null;
+    const rows = grid.length;
+    const cols = grid[0]?.length ?? 0;
+    if (!rows || !cols) return null;
+
+    const result: number[][] = Array.from({ length: rows }, () => new Array(cols).fill(0));
+
+    // Backend smart rotation for val 2/3
+    if (smartRotation && rotations) {
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (grid[r][c] === 2 || grid[r][c] === 3) {
+            result[r][c] = rotations[r]?.[c] ?? 0;
+          }
+        }
+      }
+    }
+
+    // Client gradient rotation for val 2/3 (overrides smartRotation when both ON)
+    if (slopeGradient && slopeRotations) {
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (grid[r][c] === 2 || grid[r][c] === 3) {
+            result[r][c] = slopeRotations[r]?.[c] ?? 0;
+          }
+        }
+      }
+    }
+
+    // Alternating-run orientation for val 6
+    if (alternateSixes) {
+      applyRunOrientations(grid, result);
+    }
+
+    // Parity orientation for val 6 (overrides alternateSixes when both ON)
+    if (paritySixes) {
+      applyParityOrientations(grid, result);
+    }
+
+    return result;
+  }, [grid, smartRotation, rotations, slopeGradient, slopeRotations, alternateSixes, paritySixes]);
+
+  // ── Gradient computation (Toggle 1) ───────────────────────────────────────
+  const computeGradientRotations = async (currentGrid: number[][], previewUrl: string) => {
+    setGradientBusy(true);
+    try {
+      const imgEl = new Image();
+      await new Promise<void>((resolve, reject) => {
+        imgEl.onload = () => resolve();
+        imgEl.onerror = reject;
+        imgEl.src = previewUrl;
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = imgEl.naturalWidth;
+      canvas.height = imgEl.naturalHeight;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(imgEl, 0, 0);
+      const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      const rows = currentGrid.length;
+      const cols = currentGrid[0]?.length ?? 0;
+      const cellW = canvas.width / cols;
+      const cellH = canvas.height / rows;
+
+      const result = currentGrid.map((row, r) =>
+        row.map((_val, c) =>
+          computeCellGradientAngle(data, canvas.width, canvas.height, r, c, cellW, cellH)
+        )
+      );
+
+      setSlopeRotations(result);
+    } catch {
+      // Non-fatal — orientation falls back to 0
+    } finally {
+      setGradientBusy(false);
+    }
+  };
+
+  // Re-run gradient computation whenever Toggle 1 is enabled (or turned off)
+  useEffect(() => {
+    if (!slopeGradient) {
+      setSlopeRotations(null);
+      return;
+    }
+    if (grid && croppedPreview) {
+      computeGradientRotations(grid, croppedPreview);
+    }
+  // Only re-trigger when the toggle itself changes — image/grid changes are
+  // handled via handleSelectStyle so we don't recompute on every cell edit.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slopeGradient]);
+
+  // ── File / crop handlers ──────────────────────────────────────────────────
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     setImageFile(file);
     setGrid(null);
     setRotations(null);
+    setSlopeRotations(null);
     setCrop(undefined);
     setCroppedFile(null);
     setCroppedPreview(null);
@@ -171,19 +425,20 @@ export default function AdminBuildPage() {
     setCrop(undefined);
   };
 
+  // ── Generate ──────────────────────────────────────────────────────────────
   const handleGenerate = async () => {
     if (!imageFile) return;
     setStatus("generating");
     setErrorMsg("");
     setGrid(null);
     setRotations(null);
+    setSlopeRotations(null);
     setMosaicStyles([]);
     setSelectedStyleId(null);
     setDraftResult(null);
     setExportStatus("idle");
 
     try {
-      // Step 1: analyze — use cropped version if available
       const fileToSend = croppedFile ?? imageFile;
       const formData = new FormData();
       formData.append("file", fileToSend, "upload.png");
@@ -200,8 +455,6 @@ export default function AdminBuildPage() {
       const analyzeData = await analyzeRes.json();
       const styles: { style_id: number; grid: number[][]; full_grid?: number[][] }[] = analyzeData.styles;
       setMosaicStyles(styles.map((s) => ({ style_id: s.style_id, grid: s.full_grid ?? s.grid })));
-      // Smart rotation runs when the user selects a style (see handleSelectStyle)
-
       setStatus("idle");
     } catch (err: any) {
       setErrorMsg(err.message ?? "Unknown error");
@@ -209,34 +462,47 @@ export default function AdminBuildPage() {
     }
   };
 
+  // ── Style selection ───────────────────────────────────────────────────────
   const handleSelectStyle = async (styleId: number) => {
     const chosen = mosaicStyles.find((s) => s.style_id === styleId);
     if (!chosen) return;
     setSelectedStyleId(styleId);
     setGrid(chosen.grid);
     setRotations(null);
+    setSlopeRotations(null);
     setDraftResult(null);
     setExportStatus("idle");
 
+    // Backend smart rotation
     if (smartRotation) {
       const fileToSend = croppedFile ?? imageFile;
-      if (!fileToSend) return;
-      try {
-        const rotForm = new FormData();
-        rotForm.append("file", fileToSend, "upload.png");
-        rotForm.append("grid_data", JSON.stringify(chosen.grid));
-        const rotRes = await fetch(`${BACKEND_URL}/smart-rotation`, {
-          method: "POST",
-          body: rotForm,
-          signal: AbortSignal.timeout(60000),
-        });
-        if (rotRes.ok) setRotations((await rotRes.json()).rotations);
-      } catch {
-        // Non-fatal — grid still loads without rotation
+      if (fileToSend) {
+        try {
+          const rotForm = new FormData();
+          rotForm.append("file", fileToSend, "upload.png");
+          rotForm.append("grid_data", JSON.stringify(chosen.grid));
+          const rotRes = await fetch(`${BACKEND_URL}/smart-rotation`, {
+            method: "POST",
+            body: rotForm,
+            signal: AbortSignal.timeout(60000),
+          });
+          if (rotRes.ok) setRotations((await rotRes.json()).rotations);
+        } catch {
+          // Non-fatal
+        }
+      }
+    }
+
+    // Client-side gradient rotation (Toggle 1)
+    if (slopeGradient) {
+      const previewUrl = croppedPreview ?? imagePreview;
+      if (previewUrl) {
+        computeGradientRotations(chosen.grid, previewUrl);
       }
     }
   };
 
+  // ── Cell editing ──────────────────────────────────────────────────────────
   const cycleCell = (r: number, c: number) => {
     if (!grid) return;
     setGrid((prev) => {
@@ -247,12 +513,14 @@ export default function AdminBuildPage() {
     });
   };
 
+  // ── Export ────────────────────────────────────────────────────────────────
   const handleExport = async () => {
     if (!grid) return;
     setExportStatus("saving");
     setDraftResult(null);
     try {
-      const payload = { grid };
+      // Include the merged orientation data so /build can apply rotations
+      const payload = { grid, rotations: displayOrientations };
       console.log("[admin-build] export payload: grid dimensions", grid.length, "x", grid[0]?.length, "| JSON size", JSON.stringify(payload).length, "bytes");
       const res = await fetch("/api/admin-save-draft", {
         method: "POST",
@@ -271,7 +539,6 @@ export default function AdminBuildPage() {
     }
   };
 
-  // Calculate cell size so the grid fits in ~900px wide
   const cellSize = grid
     ? Math.max(6, Math.min(14, Math.floor(900 / (grid[0]?.length ?? 60))))
     : 10;
@@ -325,12 +592,15 @@ export default function AdminBuildPage() {
     );
   }
 
+  // Suppress unused var warning — authed is the combined gate used above
+  void authed;
+
   return (
     <div style={{ fontFamily: "monospace", padding: "1.5rem", backgroundColor: "#1a1a1a", minHeight: "100vh", color: "#eee" }}>
       <h1 style={{ margin: "0 0 1.5rem", fontSize: "1.3rem", color: "#f1c40f" }}>🔧 Admin Build Mode</h1>
 
       {/* Controls */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", alignItems: "flex-end", marginBottom: "1.5rem" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", alignItems: "flex-end", marginBottom: "1rem" }}>
 
         {/* Upload */}
         <div>
@@ -353,28 +623,6 @@ export default function AdminBuildPage() {
             style={{ width: 60, padding: "0.35rem", backgroundColor: "#333", color: "#eee", border: "1px solid #555", borderRadius: 4 }} />
         </div>
 
-        {/* Smart Rotation toggle */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <label style={{ fontSize: "0.8rem", color: "#aaa" }}>Smart Rotation</label>
-          <div
-            onClick={() => setSmartRotation((v) => !v)}
-            style={{
-              width: 44, height: 24, borderRadius: 12, cursor: "pointer",
-              backgroundColor: smartRotation ? "#27ae60" : "#555",
-              position: "relative", transition: "background 0.2s",
-            }}
-          >
-            <div style={{
-              position: "absolute", top: 3, left: smartRotation ? 23 : 3,
-              width: 18, height: 18, borderRadius: "50%", backgroundColor: "#fff",
-              transition: "left 0.2s",
-            }} />
-          </div>
-          <span style={{ fontSize: "0.75rem", color: smartRotation ? "#27ae60" : "#666" }}>
-            {smartRotation ? "ON" : "OFF"}
-          </span>
-        </div>
-
         {/* Generate button */}
         <button
           onClick={handleGenerate}
@@ -388,6 +636,51 @@ export default function AdminBuildPage() {
         >
           {status === "generating" ? "Generating..." : "Generate Mosaic"}
         </button>
+      </div>
+
+      {/* Rotation / Orientation toggles — all grouped together */}
+      <div style={{
+        display: "flex", flexWrap: "wrap", gap: "1rem", alignItems: "center",
+        marginBottom: "1.5rem", padding: "0.75rem 1rem",
+        backgroundColor: "#222", border: "1px solid #444", borderRadius: 8,
+      }}>
+        <span style={{ fontSize: "0.75rem", color: "#666", marginRight: 4, letterSpacing: 1, textTransform: "uppercase" }}>
+          Orientation
+        </span>
+
+        <Toggle
+          label="Smart Rotation"
+          value={smartRotation}
+          onChange={() => setSmartRotation((v) => !v)}
+        />
+
+        <div style={{ width: 1, height: 24, backgroundColor: "#444" }} />
+
+        <Toggle
+          label="Slope 2s & 3s by gradient"
+          value={slopeGradient}
+          onChange={() => setSlopeGradient((v) => !v)}
+        />
+        {gradientBusy && (
+          <span style={{ fontSize: "0.72rem", color: "#f1c40f" }}>computing gradients…</span>
+        )}
+
+        <div style={{ width: 1, height: 24, backgroundColor: "#444" }} />
+
+        <Toggle
+          label="Alternate 6s in runs"
+          value={alternateSixes}
+          onChange={() => setAlternateSixes((v) => !v)}
+        />
+
+        <Toggle
+          label="6s by row parity"
+          value={paritySixes}
+          onChange={() => setParitySixes((v) => !v)}
+        />
+        {paritySixes && alternateSixes && (
+          <span style={{ fontSize: "0.72rem", color: "#e07830" }}>parity overrides runs</span>
+        )}
       </div>
 
       {/* Crop UI */}
@@ -460,6 +753,7 @@ export default function AdminBuildPage() {
           <div style={{ fontSize: "0.85rem", color: "#aaa", marginBottom: "0.75rem" }}>
             {mosaicStyles.length} styles generated — click one to load it into the editor
             {smartRotation && <span style={{ color: "#27ae60", marginLeft: 8 }}>(smart rotation will apply on selection)</span>}
+            {slopeGradient && <span style={{ color: "#3498db", marginLeft: 8 }}>(gradient rotation will apply on selection)</span>}
           </div>
           <div style={{
             display: "grid",
@@ -483,7 +777,6 @@ export default function AdminBuildPage() {
                     transition: "border 0.15s",
                   }}
                 >
-                  {/* Dice-image preview — fills the card width, preserves aspect ratio */}
                   <div style={{
                     display: "grid",
                     gridTemplateColumns: `repeat(${cols}, 1fr)`,
@@ -522,10 +815,13 @@ export default function AdminBuildPage() {
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: "0.75rem", flexWrap: "wrap" }}>
             <span style={{ fontSize: "0.8rem", color: "#aaa" }}>
               {grid.length} × {grid[0]?.length} — click any cell to cycle (0–6)
-              {rotations && <span style={{ color: "#27ae60", marginLeft: 10 }}>✓ smart rotation</span>}
+              {rotations && smartRotation && <span style={{ color: "#27ae60", marginLeft: 10 }}>✓ smart rotation</span>}
+              {slopeRotations && slopeGradient && <span style={{ color: "#3498db", marginLeft: 10 }}>✓ gradient rotation</span>}
+              {alternateSixes && !paritySixes && <span style={{ color: "#9b59b6", marginLeft: 10 }}>✓ alternate 6s</span>}
+              {paritySixes && <span style={{ color: "#e07830", marginLeft: 10 }}>✓ parity 6s</span>}
             </span>
 
-            {/* Dice View / Number View toggle — same as build.tsx */}
+            {/* Dice View / Number View toggle */}
             <button
               onClick={() => setDiceView((v) => !v)}
               style={{
@@ -553,16 +849,14 @@ export default function AdminBuildPage() {
             {grid.map((row, r) => (
               <div key={r} style={{ display: "flex" }}>
                 {row.map((val, c) => {
-                  const rot = rotations?.[r]?.[c] ?? 0;
-                  const needsRotation = (val === 2 || val === 3) && rot !== 0;
+                  const orient = displayOrientations?.[r]?.[c] ?? 0;
                   return (
-                    // Rotation wrapper — keeps DiceCell layout intact while applying transform
                     <div
                       key={c}
-                      title={`R${r + 1} C${c + 1} = ${val}`}
+                      title={`R${r + 1} C${c + 1} = ${val}${orient ? ` rot${orient}°` : ""}`}
                       style={{
                         flexShrink: 0,
-                        transform: needsRotation ? `rotate(${rot}deg)` : undefined,
+                        transform: orient !== 0 ? `rotate(${orient}deg)` : undefined,
                       }}
                     >
                       <DiceCell

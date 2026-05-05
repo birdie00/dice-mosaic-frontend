@@ -45,11 +45,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   let grid: number[][];
+  let savedRotations: number[][] | null = null;
   try {
-    // grid_data may be a pre-parsed array (jsonb column) or a JSON string (text column)
-    grid = typeof data.grid_data === 'string'
+    // grid_data may be:
+    //   - a pre-parsed array (jsonb column, legacy format)
+    //   - a JSON string of a flat array (legacy text format)
+    //   - a JSON string of { grid, rotations } (new format from admin-build)
+    const parsed: unknown = typeof data.grid_data === 'string'
       ? JSON.parse(data.grid_data)
       : data.grid_data;
+
+    if (Array.isArray(parsed)) {
+      grid = parsed as number[][];
+    } else if (parsed && typeof parsed === 'object' && 'grid' in parsed) {
+      const p = parsed as { grid: number[][]; rotations?: number[][] | null };
+      grid = p.grid;
+      savedRotations = p.rotations ?? null;
+    } else {
+      throw new Error('Unrecognised grid_data shape');
+    }
   } catch {
     return res.status(500).json({ error: 'Invalid grid data' });
   }
@@ -62,5 +76,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     rows,
     cols,
     grid,
+    rotations: savedRotations,
   });
 }
